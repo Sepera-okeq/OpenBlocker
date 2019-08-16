@@ -18,23 +18,19 @@ public class EnchantEvent {
 
 	@SubscribeEvent
 	public void findItem(TickEvent.PlayerTickEvent event) {
-		if (debug1 || !event.player.getEntityWorld().isRemote && !event.player.capabilities.isCreativeMode && Main.getInstance().getListEnchant() != null) {
-			for (int i = 0; i < Main.getInstance().getListEnchant().size(); ++i) {
-				int id = Integer.valueOf(Main.getInstance().getListEnchant().get(i).toString().split(":")[0]);
-				if (debug1 || !PexUtils.hasPex("xblocker.enchant", event.player)) {
-
-					for (int j = 0; j < event.player.inventory.getSizeInventory(); ++j) {
-						ItemStack item2 = event.player.inventory.getStackInSlot(j);
-						if (item2 != null && id < 256 && findEnchID(id, item2)) {
-							event.player.inventory.setInventorySlotContents(j, removeEnchID(id, item2));
-							event.player.sendMessage(new TextComponentTranslation("enchant.block.erroruse", ChatForm.prefix));
-							break;
-						}
-					}
+	if (debug1 || !event.player.getEntityWorld().isRemote && !event.player.capabilities.isCreativeMode && Main.getInstance().getListEnchant() != null)
+		for (int i = 0; i < Main.getInstance().getListEnchant().size(); ++i) {
+			int id = Integer.valueOf(Main.getInstance().getListEnchant().get(i).toString().split(":")[0]);
+		if (debug1 || !PexUtils.hasPex("xblocker.enchant", event.player))
+			for (int j = 0; j < event.player.inventory.getSizeInventory(); ++j) {
+				ItemStack item2 = event.player.inventory.getStackInSlot(j);
+				if (item2 != null && id < 256 && findEnchID(id, item2)) {
+					event.player.inventory.setInventorySlotContents(j, removeEnchID(id, item2));
+					event.player.sendMessage(new TextComponentTranslation("enchant.block.erroruse", ChatForm.prefix));
+					break;
 				}
 			}
 		}
-
 	}
 
 	private static boolean findEnchID(int findID, ItemStack is) {
@@ -73,10 +69,9 @@ public class EnchantEvent {
 					newnbttaglist.appendTag(nbttagcompound);
 				}
 			}
-
-			NBTTagCompound var8 = is.getTagCompound();
-			var8.setTag("ench", newnbttaglist);
-			is.setTagCompound(var8);
+			NBTTagCompound nbt = is.getTagCompound();
+			nbt.setTag("ench", newnbttaglist);
+			is.setTagCompound(nbt);
 			return is;
 		}
 	}

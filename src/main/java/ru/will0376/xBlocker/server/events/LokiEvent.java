@@ -32,23 +32,18 @@ public class LokiEvent {
 	private HashMap<EntityPlayer, Long> cooldown = new HashMap<>();
 	private static boolean debug1 = Main.debug;
 
-	public Item getItem(World w, int x, int y, int z) {
-		return Item.getItemFromBlock(w.getBlockState(new BlockPos(x, y, z)).getBlock());
+
+	public ItemStack getPickBlock(World world, BlockPos pos) {
+		try {
+			Item item = Item.getItemFromBlock(world.getBlockState(pos).getBlock());
+			if (item == null)
+				return ItemStack.EMPTY;
+			else
+				return new ItemStack(item, 1, Block.getBlockFromItem(item).getMetaFromState(world.getBlockState(pos)));
+		}catch (Exception e){e.printStackTrace(); return ItemStack.EMPTY;}
 	}
 
-	public ItemStack getPickBlock(World world, int x, int y, int z, Block block2) {
-		Item item = this.getItem(world, x, y, z);
-		if (item == null) {
-			return null;
-		} else {
-			Block block = Block.getBlockFromItem(item);
-			return new ItemStack(item, 1, block.getMetaFromState(world.getBlockState(new BlockPos(x, y, z))));
-		}
-	}
-
-	@SubscribeEvent(
-			priority = EventPriority.HIGHEST
-	)
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onBlockInteract(PlayerInteractEvent event) {
 		try {
 			if (debug1 || !event.getWorld().isRemote && Main.getInstance().getListItems() != null) {
@@ -64,21 +59,20 @@ public class LokiEvent {
 	}
 
 	private void blockBlockInteract(PlayerInteractEvent event, ItemData id, int i, String line, String line2) {
-		ItemData check = id;
-		String name = check.name;
-		int meta = check.meta;
+		String name = id.name;
+		int meta = id.meta;
 		Block block = Block.getBlockFromName(name);
 		Item it = Item.getByNameOrId(name);
 		boolean has = false;
-		if (PexUtils.hasPex("xblocker.interact." + Main.config.getServerName() + "." + name + ":" + meta, event.getEntityPlayer())) {
+		if (PexUtils.hasPex("xblocker.interact." + Main.config.getServerName() + "." + name + ":" + meta, event.getEntityPlayer()))
 			has = true;
-		}
 
 		if (debug1 || !PexUtils.hasPex("xblocker." + Main.config.getServerName() + "." + name + ":" + meta, event.getEntityPlayer())) {
-			ItemStack is;
+
 			if (debug1)
 				has = false;
-			is = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
+
+			ItemStack is = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
 
 			if (is.getItem() != Items.AIR && it == is.getItem() && meta == is.getMetadata()) {
 				sendToPlayerMessage(event.getEntityPlayer(), line2);
@@ -92,13 +86,10 @@ public class LokiEvent {
 				return;
 			}
 		}
-		int x = event.getPos().getX();
-		int y = event.getPos().getY();
-		int z = event.getPos().getZ();
 		Block block2 = event.getWorld().getBlockState(event.getPos()).getBlock();
 		ItemStack item = null;
 		if (block2 != null) {
-			item = this.getPickBlock(event.getWorld(), x, y, z, block2);
+			item = this.getPickBlock(event.getWorld(), event.getPos());
 		}
 
 		if (!has && item != null && block2 == block && item.getItem() instanceof ItemBlock && item.getMetadata() == meta) {
@@ -108,9 +99,7 @@ public class LokiEvent {
 		}
 	}
 
-	@SubscribeEvent(
-			priority = EventPriority.HIGHEST
-	)
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onItemUse(PlayerInteractEvent.RightClickItem event) {
 		if (debug1 || !event.getEntityPlayer().getEntityWorld().isRemote && Main.getInstance().getListItems() != null) {
 			for (int i = 0; i < Main.getInstance().getListItems().size(); ++i) {
@@ -130,14 +119,12 @@ public class LokiEvent {
 			ItemStack is;
 			is = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
 			if (is.getItem() != Items.AIR && Item.getByNameOrId(name) == is.getItem() && is.getMetadata() == meta) {
-				//event.getEntityPlayer().sendMessage(new TextComponentString(line));
 				sendToPlayerMessage(event.getEntityPlayer(), line);
 				event.setCanceled(true);
 				return;
 			}
 			is = event.getEntityPlayer().getHeldItem(EnumHand.OFF_HAND);
 			if (is.getItem() != Items.AIR && Item.getByNameOrId(name) == is.getItem() && is.getMetadata() == meta) {
-				//event.getEntityPlayer().sendMessage(new TextComponentString(line));
 				sendToPlayerMessage(event.getEntityPlayer(), line);
 				event.setCanceled(true);
 				return;
@@ -145,17 +132,15 @@ public class LokiEvent {
 		}
 	}
 
-	@SubscribeEvent(
-			priority = EventPriority.HIGHEST
-	)
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityAttack(AttackEntityEvent event) {
 		if (debug1 || !event.getEntityPlayer().getEntityWorld().isRemote && Main.getInstance().getListItems() != null) {
-			for (int i = 0; i < Main.getInstance().getListItems().size(); ++i) {
+			for (int i = 0; i < Main.getInstance().getListItems().size(); ++i)
 				blockEntityAtc(event, Main.getInstance().getListItems().get(i), i, false);
-			}
-			for (int i = 0; i < Main.getInstance().getListTemp().size(); ++i) {
+
+			for (int i = 0; i < Main.getInstance().getListTemp().size(); ++i)
 				blockEntityAtc(event, Main.getInstance().getListTemp().get(i), i, true);
-			}
+
 		}
 
 	}
@@ -167,17 +152,14 @@ public class LokiEvent {
 		String message = "";
 		if (!timed) {
 			if (event.getTarget() instanceof EntityPlayer)
-//				message = "Взаимодействие по игрокам данным предметом запрещено."; //по игрокам
 				message = new TextComponentTranslation("lokievent.block.entitypl.atc", ChatForm.prefix).getFormattedText();
 			else
-//				message = "Взаимодействие по сущностям данным предметом запрещено."; //по сущностям
 				message = new TextComponentTranslation("lokievent.block.entity.atc", ChatForm.prefix).getFormattedText();
-		} else {
+		}
+		else {
 			if (event.getTarget() instanceof EntityPlayer)
-//				message = "Взаимодействие по игрокам данным предметом временно запрещено."; //по игрокам
 				message = new TextComponentTranslation("lokievent.block.entitypl.atctemp", ChatForm.prefix).getFormattedText();
 			else
-//				message = "Взаимодействие по сущностям данным предметом запрещено."; //по сущностям
 				message = new TextComponentTranslation("lokievent.block.entity.atctemp", ChatForm.prefix).getFormattedText();
 		}
 
@@ -185,45 +167,35 @@ public class LokiEvent {
 			ItemStack is;
 			is = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
 			if (is.getItem() != Items.AIR && Item.getByNameOrId(name) == is.getItem()) {
-				//event.getEntityPlayer().sendMessage(new TextComponentString(message));
 				sendToPlayerMessage(event.getEntityPlayer(), message);
 				event.setCanceled(true);
 				return;
 			}
 			is = event.getEntityPlayer().getHeldItem(EnumHand.OFF_HAND);
 			if (is.getItem() != Items.AIR && Item.getByNameOrId(name) == is.getItem()) {
-				//event.getEntityPlayer().sendMessage(new TextComponentString(message));
 				sendToPlayerMessage(event.getEntityPlayer(), message);
 				event.setCanceled(true);
-				return;
 			}
 		}
 	}
 
-	@SubscribeEvent(
-			priority = EventPriority.HIGHEST
-	)
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onItemPickup(EntityItemPickupEvent event) {
-		if (debug1 || !event.getEntityPlayer().getEntityWorld().isRemote && event.getItem() != null && Main.getInstance().getListItems() != null) {
-			for (int i = 0; i < Main.getInstance().getListItems().size(); ++i) {
-				ItemData check = Main.getInstance().getListItems().get(i);
-				String name = check.name;
-				int meta = check.meta;
-				//String message = "Данный предмет запрещено подбирать.";
-				String message = new TextComponentTranslation("lokievent.pickup.error", ChatForm.prefix).getFormattedText();
-				if (debug1 || !PexUtils.hasPex("xblocker.drop." + Main.config.getServerName() + "." + name + ":" + meta, event.getEntityPlayer())) {
-					ItemStack is;
-					is = event.getItem().getItem();
-					if (is.getItem() != Items.AIR && Item.getByNameOrId(name) == is.getItem() && is.getMetadata() == meta) {
-						//event.getEntityPlayer().sendMessage(new TextComponentString(message));
-						sendToPlayerMessage(event.getEntityPlayer(), message);
-						event.setCanceled(true);
-						return;
-					}
+		if (debug1 || !event.getEntityPlayer().getEntityWorld().isRemote && event.getItem() != null && Main.getInstance().getListItems() != null)
+		for (int i = 0; i < Main.getInstance().getListItems().size(); ++i) {
+			ItemData check = Main.getInstance().getListItems().get(i);
+			String name = check.name;
+			int meta = check.meta;
+			String message = new TextComponentTranslation("lokievent.pickup.error", ChatForm.prefix).getFormattedText();
+			if (debug1 || !PexUtils.hasPex("xblocker.drop." + Main.config.getServerName() + "." + name + ":" + meta, event.getEntityPlayer())) {
+				ItemStack is = event.getItem().getItem();
+				if (is.getItem() != Items.AIR && Item.getByNameOrId(name) == is.getItem() && is.getMetadata() == meta) {
+					sendToPlayerMessage(event.getEntityPlayer(), message);
+					event.setCanceled(true);
+					return;
 				}
 			}
 		}
-
 	}
 
 	@SubscribeEvent
@@ -242,37 +214,28 @@ public class LokiEvent {
 	}
 
 	private void processDeleteItem(EntityPlayer player, String name, int meta) {
-		Item it = Item.getByNameOrId(name);
-
 		for (int slot = 0; slot < player.inventory.getSizeInventory(); ++slot) {
 			ItemStack stack = player.inventory.getStackInSlot(slot);
-			if (stack.getItem() != Items.AIR && it == stack.getItem() && meta == stack.getMetadata()) {
+			if (stack.getItem() != Items.AIR &&  Item.getByNameOrId(name) == stack.getItem() && meta == stack.getMetadata()) {
 				boolean hasPermission = false;
-				if (PexUtils.hasPex("xblocker." + Main.config.getServerName() + '.' + name + ':' + meta, player)) {
+				if (PexUtils.hasPex("xblocker." + Main.config.getServerName() + '.' + name + ':' + meta, player) || PexUtils.hasPex("xblocker.clear." + Main.config.getServerName() + '.' + name + ':' + meta, player))
 					hasPermission = true;
-				} else if (PexUtils.hasPex("xblocker.clear." + Main.config.getServerName() + '.' + name + ':' + meta, player)) {
-					hasPermission = true;
-				}
+
 				if (debug1)
 					hasPermission = false;
 				if (!hasPermission) {
 					int stackMeta = stack.getMetadata();
-					String message;
-					if (stackMeta == 0) {
-//						message = ChatForm.prefix+"Предмет " + name + " удален из Вашего инвентаря.";
+					String message = new TextComponentTranslation("lokievent.deleteitem", ChatForm.prefix, name + ":" + stackMeta).getFormattedText();
+
+					if (stackMeta == 0)
 						message = new TextComponentTranslation("lokievent.deleteitem", ChatForm.prefix, name).getFormattedText();
-					} else {
-//						message = ChatForm.prefix+"Предмет " + name + ':' + stackMeta + " удален из Вашего инвентаря.";
-						message = new TextComponentTranslation("lokievent.deleteitem", ChatForm.prefix, name + ":" + stackMeta).getFormattedText();
-					}
+
 					sendToPlayerMessage(player, message);
-					//player.sendMessage(new TextComponentString(message));
 					player.inventory.removeStackFromSlot(slot);
 					break;
 				}
 			}
 		}
-
 	}
 
 	private void sendToPlayerMessage(EntityPlayer player, String line) {

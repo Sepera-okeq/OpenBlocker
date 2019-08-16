@@ -39,11 +39,11 @@ public class JoinEvent {
 				}
 			}
 			String filelist2 = ConfigEnchUtils.readFromFileToString("list_ench");
-			String[] var19 = filelist2.split("@");
-			for (int i = 0; i < var19.length; ++i) {
-				if (!(var19.length < 1)) {
+			String[] allList2 = filelist2.split("@");
+			for (int i = 0; i < allList2.length; ++i) {
+				if (!(allList2.length < 1)) {
 					if (filelist2.contains(":")) {
-						String limit1 = var19[i];
+						String limit1 = allList2[i];
 						Main.network.sendTo(new MessageHandler_list_ench("1;" + limit1), (EntityPlayerMP) event.player);
 					}
 				}
