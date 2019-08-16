@@ -1,0 +1,76 @@
+tile.par=§
+tile.inf=∞
+
+enchant.block.erroruse=%sДанная магия запрещена для Вас.
+
+list.addblock.successfull=%sПредмет §3%s §cзапрещен!
+list.addblock.successfull.second=§3Причина:§r %s
+list.removeblock.successfull=%sПредмет §3%s §aбыл разрешен!
+
+list.addbtemplock.successfull=%sПредмет §3%s §6временно запрещен!
+list.addbtemplock.successfull.second=§3Причина:§r %s
+
+list.addcost.successfull=%sПредмет §3%s§r теперь имеет минимальную цену: §a%s.
+list.removecost.successfull=%sЦена у предмета §3%s §8была удалена!
+
+listlimit.remover.successfull=%sЛимитированный предмет§3 %s §aбыл разрешен.
+
+list.limit.adding=%sПредмет §3%s §dограничен(§r%s§d).
+
+list.enchant.removed=%sЗачарование §3%s §aбыло разрешено!
+list.enchant.error=%sЗачарование не было запрещено!
+list.enchant.added=%sЗачарование §3%s §cзапрещено!
+
+list.craft.added=%sКрафт §3%s §cбыл запрещен
+list.craft.removed=%sКрафт §3%s §aбыл разрешен
+
+list.reload.successfull=%sКонфиги успешно перезагружены
+error.isnotblock=%s§cДанный предмет должен быть блоком.
+error.handIsNull=%s§cВозьми предмет в руку.
+list.enchant.erradded=%s§cВозьми книгу зачарований в руку!
+error.limitzero=%s§cЛимит должен быть положительным.
+error.perm=%s§cТы не имеешь прав на команду!
+
+
+limitevent.blockowner.error=%sДанный блок не твой!
+limitevent.blockowner.limitover=%sВы исчерпали лимит на чанк (%s)
+limitevent.tooltip.limit=%s§6Данный предмет ограничен на чанк(%s§6)
+
+lokievent.tooltipres=§aПричина:§r %s
+lokievent.tooltip.blockeditem=§cДанный предмет запрещен!
+lokievent.tooltip.blockeditem2=%s§cДанный предмет запрещен!
+lokievent.tooltip.blockedtempitem=§6Данный предмет временно запрещен!
+lokievent.tooltip.blockedtempitem2=%s§6Данный предмет временно запрещен!
+lokievent.tooltip.cost=§7Минимальная цена: §b%s%s
+lokievent.deleteitem=%sПредмет %s удален из Вашего инвентаря
+lokievent.pickup.error=%s§nДанный предмет запрещено подбирать.
+lokievent.block.entitypl.atc=%sВзаимодействие по игрокам данным предметом запрещено.
+lokievent.block.entity.atc=%sВзаимодействие по сущностям данным предметом запрещено.
+lokievent.block.entitypl.atctemp=%sВзаимодействие по игрокам данным предметом временно запрещено.
+lokievent.block.entity.atctemp=%sВзаимодействие по сущностям данным предметом временно запрещено.
+lokievent.item.use.err=%sВзаимодействие с предметом запрещено!
+lokievent.item.use.temperr=%sВзаимодействие с предметом запрещено!
+lokievent.block.blockint=%sВзаимодействие с блоком запрещено!
+lokievent.block.tempblockint=%sВзаимодействие с блоком временно запрещено!
+action.bar.place.block=Кол-во блоков в чанке %s/%s
+
+gui.button.left.left=§l§b<<
+gui.button.right.right=§l§b>>
+gui.button.left=§9<
+gui.button.right=§9>
+gui.page.of=Страница %s из %s
+
+guiminiblock.allist=§6Список ограниченных на чанк предметов на сервере:
+guiminiblock.allist.empty=§7Ограниченные предметы на сервере отсутствуют.
+guiminiblock.list.add1=§c§n§o[Ограничено]§r §b§n§o%s
+guiminiblock.list.add2=Доступность: %s
+
+guilistitem.allist=§6Список запрещённых предметов на сервере:
+guilistitem.allist.empty=§7Запрещенные предметы на сервере отсутствуют.
+guilistitem.list.add1=§c§n§o[Запрещено]§r §b§n§o%s
+
+guienchant.allist=§6Список запрещённой магии на сервере:
+guienchant.allist.empty=§7Вся магия на сервере разрешена.
+guienchant.list.add1=§b§n§oЗачарование: %s
+
+limitevent.warring=Попытка поставить лимитированный блок на кординатах %s игроком %s

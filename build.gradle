@@ -1,0 +1,85 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+
+        maven {
+            name = 'forge'
+            url = 'https://files.minecraftforge.net/maven'
+        }
+    }
+    dependencies {
+        classpath 'ru.zaxar163.fixed.net.minecraftforge.gradle:ForgeGradle:2.3.1-SNAPSHOT'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: ru.justagod.plugin.CutterPlugin
+version = "1.0.5"
+group = "ru.will0376.xBlocker"
+archivesBaseName = "XBlocker"
+
+sourceCompatibility = targetCompatibility = '1.8'
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+minecraft {
+    version = "1.12.2-14.23.5.2784"
+    runDir = "run"
+    mappings = "snapshot_20180814"
+}
+configurations.all {
+    transitive = false
+}
+
+repositories {
+	mavenLocal()
+	maven { url "http://dvs1.progwml6.com/files/maven" } //JEI
+}
+dependencies {
+	compile "mezz.jei:jei_1.12.2:4.14.3.248:api"
+    compile fileTree(dir: 'lib', include: ['*.jar'])
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+    
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+    
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+    /*from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it)  }
+        configurations.compile.each { println it }
+    }*/
+		jar {
+			manifest {
+				attributes 'FMLAT': 'forge_at.cfg'
+            }
+        }
+}
+
+cutter {
+    annotation = 'ru.justagod.mineplugin.GradleSideOnly'
+    classesCache = file('cutter-cache')
+    classesDirs = [compileJava.destinationDir]
+    def clientSide = side('CLIENT')
+    def serverSide = side('SERVER')
+    builds {
+        client {
+            targetSides = [clientSide]
+            primalSides = [clientSide, serverSide]
+        }
+        server {
+            targetSides = [serverSide]
+            primalSides = [clientSide, serverSide]
+        }
+    }
+}
