@@ -26,13 +26,15 @@ public class RenderEvent {
 	}
 
 	public ItemStack getPickBlock(World world, int x, int y, int z) {
-		Item item = this.getItem(world, x, y, z);
-		if (item == null) {
-			return null;
-		} else {
-			Block block = item instanceof ItemBlock ? Block.getBlockFromItem(item) : this;
-			return new ItemStack(item, 1, block.getMetaFromState(world.getBlockState(new BlockPos(x, y, z))));
-		}
+		try {
+			Item item = this.getItem(world, x, y, z);
+			if (item == null) {
+				return ItemStack.EMPTY;
+			} else {
+				Block block = ((Block) (item instanceof ItemBlock ? Block.getBlockFromItem(item) : this));
+				return new ItemStack(item, 1, block.getMetaFromState(world.getBlockState(new BlockPos(x, y, z))));
+			}
+		}catch (Exception e){return ItemStack.EMPTY;}
 	}
 
 	@SubscribeEvent

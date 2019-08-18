@@ -39,7 +39,6 @@ repositories {
 	maven { url "http://dvs1.progwml6.com/files/maven" } //JEI
 }
 dependencies {
-	compile "mezz.jei:jei_1.12.2:4.14.3.248:api"
     compile fileTree(dir: 'lib', include: ['*.jar'])
 }
 

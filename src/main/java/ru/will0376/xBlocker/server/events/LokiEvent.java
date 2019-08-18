@@ -40,7 +40,7 @@ public class LokiEvent {
 				return ItemStack.EMPTY;
 			else
 				return new ItemStack(item, 1, Block.getBlockFromItem(item).getMetaFromState(world.getBlockState(pos)));
-		}catch (Exception e){e.printStackTrace(); return ItemStack.EMPTY;}
+		}catch (Exception e){return ItemStack.EMPTY;}
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
