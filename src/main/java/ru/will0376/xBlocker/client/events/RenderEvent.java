@@ -11,6 +11,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -21,18 +22,18 @@ import ru.will0376.xBlocker.client.gui.GuiColor;
 public class RenderEvent {
 	Minecraft mc = Minecraft.getMinecraft();
 
-	public Item getItem(World w, int x, int y, int z) {
-		return Item.getItemFromBlock(w.getBlockState(new BlockPos(x, y, z)).getBlock());
+	public Item getItem(World w, BlockPos pos) {
+		return Item.getItemFromBlock(w.getBlockState(pos).getBlock());
 	}
 
-	public ItemStack getPickBlock(World world, int x, int y, int z) {
+	public ItemStack getPickBlock(World world, BlockPos pos) {
 		try {
-			Item item = this.getItem(world, x, y, z);
+			Item item = this.getItem(world, pos);
 			if (item == null) {
 				return ItemStack.EMPTY;
 			} else {
 				Block block = ((Block) (item instanceof ItemBlock ? Block.getBlockFromItem(item) : this));
-				return new ItemStack(item, 1, block.getMetaFromState(world.getBlockState(new BlockPos(x, y, z))));
+				return new ItemStack(item, 1, block.getMetaFromState(world.getBlockState(pos)));
 			}
 		}catch (Exception e){return ItemStack.EMPTY;}
 	}
@@ -40,27 +41,20 @@ public class RenderEvent {
 	@SubscribeEvent
 	public void selectHighlight(DrawBlockHighlightEvent event) {
 		try {
-			if (event.getTarget() != null && event.getPlayer().getEntityWorld().getBlockState(new BlockPos(event.getTarget().getBlockPos().getX(), event.getTarget().getBlockPos().getY(), event.getTarget().getBlockPos().getZ())).getBlock() != Blocks.AIR) {
-				if (Main.getInstance().listItemsClient.size() != 0 && !Main.getInstance().listItemsClient.isEmpty()) {
-					if (Main.getInstance().listItemsClient.contains(":")) {
+			if(event.getTarget() != null)
+				if (event.getPlayer().getEntityWorld().getBlockState(event.getTarget().getBlockPos()).getBlock() != Blocks.AIR)
+					if (Main.getInstance().listItemsClient.size() != 0 && !Main.getInstance().listItemsClient.isEmpty())
 						for (int i = 0; i < Main.getInstance().listItemsClient.size(); ++i) {
 							String[] check = Main.getInstance().listItemsClient.get(i).split(":");
-							String name = check[0] + ":" + check[1];
-							int meta = Integer.parseInt(check[2].split("@")[0]);
-							Block blockFromName = Block.getBlockFromName(name);
-							int x = event.getTarget().getBlockPos().getX();
-							int y = event.getTarget().getBlockPos().getY();
-							int z = event.getTarget().getBlockPos().getZ();
-							ItemStack item = getPickBlock(event.getPlayer().getEntityWorld(), x, y, z);
-							Block targetblock = event.getPlayer().getEntityWorld().getBlockState(new BlockPos(event.getTarget().getBlockPos().getX(), event.getTarget().getBlockPos().getY(), event.getTarget().getBlockPos().getZ())).getBlock();
-							if (targetblock != Blocks.AIR && targetblock == blockFromName && item != null && item.getMetadata() == meta) {
-								this.render(event);
-							}
-						}
-					}
-				}
+							Block blockFromName = Block.getBlockFromName(check[0] + ":" + check[1]);
+							ItemStack item = getPickBlock(event.getPlayer().getEntityWorld(),event.getTarget().getBlockPos());
+							Block targetblock = event.getPlayer().getEntityWorld().getBlockState(event.getTarget().getBlockPos()).getBlock();
 
-				if (Main.getInstance().listItemsClient.size() != 0 && !Main.getInstance().listItemsClient.isEmpty()) {
+							if ( targetblock == blockFromName && item.getMetadata() == Integer.parseInt(check[2].split("@")[0]))
+								this.render(event);
+						}
+
+/*				if (Main.getInstance().listItemsClient.size() != 0 && !Main.getInstance().listItemsClient.isEmpty()) {
 					for (int i = 0; i < Main.getInstance().listItemsClient.size(); ++i) {
 						String all = Main.getInstance().listItemsClient.get(i);
 						if (all != null && all.contains(":")) {
@@ -68,20 +62,17 @@ public class RenderEvent {
 							String name = check[0] + ":" + check[1];
 							int meta = Integer.parseInt(check[2].split("@")[0]);
 							Block blockFromName = Block.getBlockFromName(name);
-							int x = event.getTarget().getBlockPos().getX();
-							int y = event.getTarget().getBlockPos().getY();
-							int var17 = event.getTarget().getBlockPos().getZ();
 							Block targetblock = event.getPlayer().getEntityWorld().getBlockState(new BlockPos(event.getTarget().getBlockPos().getX(), event.getTarget().getBlockPos().getY(), event.getTarget().getBlockPos().getZ())).getBlock();
-							ItemStack item = this.getPickBlock(event.getPlayer().getEntityWorld(), x, y, var17);
+							ItemStack item = this.getPickBlock(event.getPlayer().getEntityWorld(),event.getTarget().getBlockPos());
 							if (targetblock != Blocks.AIR && targetblock == blockFromName && item != null && item.getMetadata() == meta) {
 								this.render(event);
 							}
 
 						}
 					}
-				}
-			}
-		} catch (Exception e) {
+				}*/
+		}
+		catch (Exception e) {
 		}
 
 	}
@@ -103,7 +94,7 @@ public class RenderEvent {
 		GL11.glDisable(3553);
 		GL11.glDisable(2896);
 		GL11.glColor4f(GuiColor.RValue, GuiColor.GValue, GuiColor.BValue, GuiColor.AValue);
-		box(aabb);
+	//	box(aabb);
 		GL11.glColor4f(GuiColor.RValue, GuiColor.GValue, GuiColor.BValue, 1.75F);
 		lines(aabb);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.0F);
@@ -146,31 +137,73 @@ public class RenderEvent {
 	}
 
 	public static void lines(AxisAlignedBB aabb) {
-		GL11.glBegin(1);
-		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.minZ);
-		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.minZ);
-		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.minZ);
-		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.maxZ);
-		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.maxZ);
-		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.maxZ);
-		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.maxZ);
-		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.minZ);
-		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.minZ);
-		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.minZ);
-		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.minZ);
-		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.maxZ);
-		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.maxZ);
-		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.maxZ);
-		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.maxZ);
-		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.minZ);
-		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.minZ);
-		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.minZ);
-		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.maxZ);
-		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.maxZ);
-		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.minZ);
-		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.minZ);
-		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.maxZ);
-		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.maxZ);
+		Double minX = aabb.minX, minY = aabb.minY, minZ = aabb.minZ;
+		Double maxX = aabb.maxX, maxY = aabb.maxY, maxZ = aabb.maxZ;
+		GL11.glBegin(1);				// max   min
+											//  x	  n
+/*		System.out.println("minX: " + aabb.minX);
+		System.out.println("maxX: " + aabb.maxX);
+		System.out.println("minY: " + aabb.minY);
+		System.out.println("maxY: " + aabb.maxY);
+		System.out.println("minZ: " + aabb.minZ);
+		System.out.println("maxZ: " + aabb.maxZ);
+
+		[19:15:16] [Client thread/INFO] [STDOUT]: [ru.will0376.xBlocker.client.events.RenderEvent:lines:142]: minX: 31.0
+		[19:15:16] [Client thread/INFO] [STDOUT]: [ru.will0376.xBlocker.client.events.RenderEvent:lines:143]: maxX: 32.0
+		[19:15:16] [Client thread/INFO] [STDOUT]: [ru.will0376.xBlocker.client.events.RenderEvent:lines:144]: minY: 101.0
+		[19:15:16] [Client thread/INFO] [STDOUT]: [ru.will0376.xBlocker.client.events.RenderEvent:lines:145]: maxY: 102.0
+		[19:15:16] [Client thread/INFO] [STDOUT]: [ru.will0376.xBlocker.client.events.RenderEvent:lines:146]: minZ: 102.0
+		[19:15:17] [Client thread/INFO] [STDOUT]: [ru.will0376.xBlocker.client.events.RenderEvent:lines:147]: maxZ: 103.0
+		*/
+		//top
+		GL11.glVertex3d(minX, maxY, minZ); //nxn
+		GL11.glVertex3d(maxX, maxY, minZ); //xxn
+
+		GL11.glVertex3d(maxX, maxY, minZ); //xxn
+		GL11.glVertex3d(maxX, maxY, maxZ); //xxx
+
+		GL11.glVertex3d(maxX, maxY, maxZ); //xxx
+		GL11.glVertex3d(minX, maxY, maxZ); //nxx
+
+		GL11.glVertex3d(minX, maxY, maxZ); //nxx
+		GL11.glVertex3d(minX, maxY, minZ); //nxn
+
+		GL11.glVertex3d(minX, maxY, minZ); //nxn
+		GL11.glVertex3d(maxX , maxY, maxZ); //xxx
+
+		GL11.glVertex3d(minX, maxY, maxZ); //nxx
+		GL11.glVertex3d(maxX, maxY, minZ); //xxn
+		//end top
+		//top lines
+		GL11.glVertex3d(minX, maxY, minZ); //
+		GL11.glVertex3d(minX, minY, minZ); //
+		//end top lines
+/*
+
+		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.minZ); //nnn
+		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.minZ); //xnn
+
+		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.minZ); //xnn
+		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.maxZ); //xnx
+
+		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.maxZ); //xnx
+		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.maxZ); //nnx
+
+		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.maxZ); //nnx
+		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.minZ); //nnn
+
+		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.minZ); //nnn
+		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.minZ); //nxn
+		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.minZ); //nxn
+		//GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.maxZ); //xnx
+
+		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.maxZ); //xxx
+
+		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.minZ); //xxn
+		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.maxZ); //xxx
+
+		*//*GL11.glVertex3d(aabb.minX, aabb.minY, aabb.maxZ); //nnx
+		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.maxZ); //nxx*/
 		GL11.glEnd();
 	}
 }

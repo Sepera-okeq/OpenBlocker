@@ -21,7 +21,6 @@ public class LokiEventClient {
 			if (event.getItemStack() != ItemStack.EMPTY) {
 				NBTTagCompound nbt = new NBTTagCompound();
 				event.getItemStack().writeToNBT(nbt);
-				//System.out.println(nbt);
 				if (nbt.hasKey("fromCreative")) {
 					if (nbt.getString("fromCreative").equals("true")) {
 						event.getToolTip().add(1, "test");
@@ -71,10 +70,7 @@ public class LokiEventClient {
 			String ress = all[2].split("@")[1];
 			ItemStack is = event.getItemStack();
 			if (is.getItem() != Items.AIR && Item.getByNameOrId(name) == is.getItem() && is.getMetadata() == meta) {
-				String reason = "";
-
-				reason = new TextComponentTranslation("lokievent.tooltipres", BaseUtils.lat2cyr(ress.replaceAll("&", "§").replaceAll("_", " "))).getFormattedText();//reason = "Причина: " + BaseUtils.lat2cyr(id.parts[3].replaceAll("&", "§").replaceAll("_", " "));
-
+				String reason = new TextComponentTranslation("lokievent.tooltipres", BaseUtils.lat2cyr(ress.replaceAll("&", "§").replaceAll("_", " "))).getFormattedText();//reason = "Причина: " + BaseUtils.lat2cyr(id.parts[3].replaceAll("&", "§").replaceAll("_", " "));
 
 				if (!event.getToolTip().contains(line)) {
 					event.getToolTip().add(1, line);
