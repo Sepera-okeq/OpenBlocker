@@ -50,7 +50,7 @@ public class RenderEvent {
 							ItemStack item = getPickBlock(event.getPlayer().getEntityWorld(),event.getTarget().getBlockPos());
 							Block targetblock = event.getPlayer().getEntityWorld().getBlockState(event.getTarget().getBlockPos()).getBlock();
 
-							if ( targetblock == blockFromName && item.getMetadata() == Integer.parseInt(check[2].split("@")[0]))
+							if ( targetblock == blockFromName && (item.getMetadata() == Integer.parseInt(check[2].split("@")[0]) || Integer.parseInt(check[2].split("@")[0]) == -99))
 								this.render(event);
 						}
 
@@ -93,18 +93,70 @@ public class RenderEvent {
 		GL11.glEnable(3042);
 		GL11.glDisable(3553);
 		GL11.glDisable(2896);
-		GL11.glColor4f(GuiColor.RValue, GuiColor.GValue, GuiColor.BValue, GuiColor.AValue);
-	//	box(aabb);
 		GL11.glColor4f(GuiColor.RValue, GuiColor.GValue, GuiColor.BValue, 1.75F);
-		lines(aabb);
+		xes(aabb);
+		pluses(aabb);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.0F);
 		GL11.glEnable(2896);
 		GL11.glEnable(3553);
 		GL11.glDisable(3042);
 		GL11.glPopMatrix();
 	}
+	private static void pluses(AxisAlignedBB aabb){
+		double minX = aabb.minX, minY = aabb.minY, minZ = aabb.minZ;
+		double maxX = aabb.maxX, maxY = aabb.maxY, maxZ = aabb.maxZ;
+		GL11.glBegin(1);
+	//top
+		GL11.glVertex3d(minX+0.5, maxY+0.001, minZ);
+		GL11.glVertex3d(minX+0.5, maxY+0.001, maxZ);
 
-	public static void box(AxisAlignedBB aabb) {
+		GL11.glVertex3d(minX, maxY+0.001, minZ+0.5);
+		GL11.glVertex3d(maxX, maxY+0.001, minZ+0.5);
+	//end
+
+	//north
+		GL11.glVertex3d(minX, minY+0.5, minZ-0.001);
+		GL11.glVertex3d(maxX, minY+0.5, minZ-0.001);
+
+		GL11.glVertex3d(minX+0.5, minY, minZ-0.001);
+		GL11.glVertex3d(minX+0.5, maxY, minZ-0.001);
+	//end
+
+	//east
+		GL11.glVertex3d(maxX+0.001, minY+0.5, minZ);
+		GL11.glVertex3d(maxX+0.001, minY+0.5, maxZ);
+
+		GL11.glVertex3d(maxX+0.001, minY, minZ+0.5);
+		GL11.glVertex3d(maxX+0.001, maxY, minZ+0.5);
+	//end
+
+	//south
+		GL11.glVertex3d(minX, minY+0.5, maxZ+0.001);
+		GL11.glVertex3d(maxX, minY+0.5, maxZ+0.001);
+
+		GL11.glVertex3d(minX+0.5, minY, maxZ+0.001);
+		GL11.glVertex3d(minX+0.5, maxY, maxZ+0.001);
+	//end
+
+	//west
+		GL11.glVertex3d(minX-0.001, minY+0.5, minZ);
+		GL11.glVertex3d(minX-0.001, minY+0.5, maxZ);
+
+		GL11.glVertex3d(minX-0.001, minY, minZ+0.5);
+		GL11.glVertex3d(minX-0.001, maxY, minZ+0.5);
+	//end
+
+	//bottom
+		GL11.glVertex3d(minX, minY-0.001, minZ+0.5);
+		GL11.glVertex3d(maxX, minY-0.001, minZ+0.5);
+
+		GL11.glVertex3d(minX+0.5, minY, minZ);
+		GL11.glVertex3d(minX+0.5, minY, maxZ);
+	//end
+
+		GL11.glEnd();
+	}
+	/*public static void box(AxisAlignedBB aabb) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
@@ -134,76 +186,60 @@ public class RenderEvent {
 		bufferBuilder.addVertexData(tmp);
 		bufferBuilder.addVertexData(tmp);
 		tessellator.draw();
-	}
+	}*/
+	private static void xes(AxisAlignedBB aabb){
+		double minX = aabb.minX, minY = aabb.minY, minZ = aabb.minZ;
+		double maxX = aabb.maxX, maxY = aabb.maxY, maxZ = aabb.maxZ;
+		GL11.glBegin(1);
+	//top
+		GL11.glVertex3d(minX, maxY+0.001, minZ);
+		GL11.glVertex3d(maxX, maxY+0.001, maxZ);
 
-	public static void lines(AxisAlignedBB aabb) {
-		Double minX = aabb.minX, minY = aabb.minY, minZ = aabb.minZ;
-		Double maxX = aabb.maxX, maxY = aabb.maxY, maxZ = aabb.maxZ;
-		GL11.glBegin(1);				// max   min
-											//  x	  n
-/*		System.out.println("minX: " + aabb.minX);
-		System.out.println("maxX: " + aabb.maxX);
-		System.out.println("minY: " + aabb.minY);
-		System.out.println("maxY: " + aabb.maxY);
-		System.out.println("minZ: " + aabb.minZ);
-		System.out.println("maxZ: " + aabb.maxZ);
+		GL11.glVertex3d(minX, maxY+0.001, maxZ);
+		GL11.glVertex3d(maxX, maxY+0.001, minZ);
+	//end
 
-		[19:15:16] [Client thread/INFO] [STDOUT]: [ru.will0376.xBlocker.client.events.RenderEvent:lines:142]: minX: 31.0
-		[19:15:16] [Client thread/INFO] [STDOUT]: [ru.will0376.xBlocker.client.events.RenderEvent:lines:143]: maxX: 32.0
-		[19:15:16] [Client thread/INFO] [STDOUT]: [ru.will0376.xBlocker.client.events.RenderEvent:lines:144]: minY: 101.0
-		[19:15:16] [Client thread/INFO] [STDOUT]: [ru.will0376.xBlocker.client.events.RenderEvent:lines:145]: maxY: 102.0
-		[19:15:16] [Client thread/INFO] [STDOUT]: [ru.will0376.xBlocker.client.events.RenderEvent:lines:146]: minZ: 102.0
-		[19:15:17] [Client thread/INFO] [STDOUT]: [ru.will0376.xBlocker.client.events.RenderEvent:lines:147]: maxZ: 103.0
-		*/
-		//top
-		GL11.glVertex3d(minX, maxY, minZ); //nxn
-		GL11.glVertex3d(maxX, maxY, minZ); //xxn
+	//north
+		GL11.glVertex3d(maxX, maxY, minZ-0.001);
+		GL11.glVertex3d(minX, minY, minZ-0.001);
 
-		GL11.glVertex3d(maxX, maxY, minZ); //xxn
-		GL11.glVertex3d(maxX, maxY, maxZ); //xxx
+		GL11.glVertex3d(maxX, minY, minZ-0.001);
+		GL11.glVertex3d(minX, maxY, minZ-0.001);
+	//end north
 
-		GL11.glVertex3d(maxX, maxY, maxZ); //xxx
-		GL11.glVertex3d(minX, maxY, maxZ); //nxx
+	//east
+		GL11.glVertex3d(maxX+0.001, maxY, maxZ);
+		GL11.glVertex3d(maxX+0.001, minY, minZ);
 
-		GL11.glVertex3d(minX, maxY, maxZ); //nxx
-		GL11.glVertex3d(minX, maxY, minZ); //nxn
+		GL11.glVertex3d(maxX+0.001, maxY, minZ);
+		GL11.glVertex3d(maxX+0.001, minY, maxZ);
+	//end east
 
-		GL11.glVertex3d(minX, maxY, minZ); //nxn
-		GL11.glVertex3d(maxX , maxY, maxZ); //xxx
+	//south
+		GL11.glVertex3d(minX, maxY, maxZ+0.001);
+		GL11.glVertex3d(maxX, minY, maxZ+0.001);
 
-		GL11.glVertex3d(minX, maxY, maxZ); //nxx
-		GL11.glVertex3d(maxX, maxY, minZ); //xxn
-		//end top
-		//top lines
-		GL11.glVertex3d(minX, maxY, minZ); //
-		GL11.glVertex3d(minX, minY, minZ); //
-		//end top lines
-/*
+		GL11.glVertex3d(minX, minY, maxZ+0.001);
+		GL11.glVertex3d(maxX, maxY, maxZ+0.001);
+	//end
 
-		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.minZ); //nnn
-		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.minZ); //xnn
+	//west
+		GL11.glVertex3d(minX-0.001, maxY, minZ);
+		GL11.glVertex3d(minX-0.001, minY, maxZ);
 
-		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.minZ); //xnn
-		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.maxZ); //xnx
+		GL11.glVertex3d(minX-0.001, minY, minZ);
+		GL11.glVertex3d(minX-0.001, maxY, maxZ);
+	//end
 
-		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.maxZ); //xnx
-		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.maxZ); //nnx
+	//bottom
+		GL11.glVertex3d(minX, minY-0.001, minZ);
+		GL11.glVertex3d(maxX, minY-0.001, maxZ);
 
-		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.maxZ); //nnx
-		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.minZ); //nnn
+		GL11.glVertex3d(minX, minY-0.001, maxZ);
+		GL11.glVertex3d(maxX, minY-0.001, minZ);
+	//end
 
-		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.minZ); //nnn
-		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.minZ); //nxn
-		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.minZ); //nxn
-		//GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.maxZ); //xnx
-
-		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.maxZ); //xxx
-
-		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.minZ); //xxn
-		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.maxZ); //xxx
-
-		*//*GL11.glVertex3d(aabb.minX, aabb.minY, aabb.maxZ); //nnx
-		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.maxZ); //nxx*/
 		GL11.glEnd();
 	}
+
 }

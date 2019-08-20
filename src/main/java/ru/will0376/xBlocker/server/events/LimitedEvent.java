@@ -36,7 +36,6 @@ public class LimitedEvent {
 				return new ItemStack(item, 1, block.getMetaFromState(world.getBlockState(pos)));
 			}
 		} catch (Exception e) {
-			//e.printStackTrace();
 			return ItemStack.EMPTY;
 		}
 	}

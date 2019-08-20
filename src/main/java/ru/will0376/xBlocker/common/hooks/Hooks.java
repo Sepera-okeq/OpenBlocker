@@ -5,7 +5,13 @@ import gloomyfolken.hooklib.asm.Hook;
 import gloomyfolken.hooklib.asm.HookPriority;
 import gloomyfolken.hooklib.asm.ReturnCondition;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.recipebook.GuiButtonRecipe;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,6 +20,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.play.server.SPacketRecipeBook;
 import net.minecraft.stats.RecipeBook;
 import net.minecraft.stats.RecipeBookServer;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
 
@@ -34,7 +41,71 @@ public class Hooks {
 			return 1;
 		}
 	}
+	@Hook(priority = HookPriority.HIGHEST,returnCondition = ReturnCondition.ALWAYS)
+	public static void drawButton(GuiButtonRecipe br, Minecraft mc, int mouseX, int mouseY, float partialTicks){
+		try{
+			if (br.visible)
+			{
+				if (!GuiScreen.isCtrlKeyDown())
+				{
+					br.time += partialTicks;
+				}
 
+				br.hovered = mouseX >= br.x && mouseY >= br.y && mouseX < br.x + br.width && mouseY < br.y + br.height;
+				RenderHelper.enableGUIStandardItemLighting();
+				mc.getTextureManager().bindTexture(GuiButtonRecipe.RECIPE_BOOK);
+				GlStateManager.disableLighting();
+				int i = 29;
+
+				if (!br.list.containsCraftableRecipes())
+				{
+					i += 25;
+				}
+
+				int j = 206;
+
+				if (br.list.getRecipes(br.book.isFilteringCraftable()).size() > 1)
+				{
+					j += 25;
+				}
+
+				boolean flag = br.animationTime > 0.0F;
+
+				if (flag)
+				{
+					float f = 1.0F + 0.1F * (float)Math.sin((double)(br.animationTime / 15.0F * (float)Math.PI));
+					GlStateManager.pushMatrix();
+					GlStateManager.translate((float)(br.x + 8), (float)(br.y + 12), 0.0F);
+					GlStateManager.scale(f, f, 1.0F);
+					GlStateManager.translate((float)(-(br.x + 8)), (float)(-(br.y + 12)), 0.0F);
+					br.animationTime -= partialTicks;
+				}
+
+				br.drawTexturedModalRect(br.x, br.y, i, j, br.width, br.height);
+				List<IRecipe> list = br.getOrderedRecipes();
+				br.currentIndex = MathHelper.floor(br.time / 30.0F) % list.size();
+				ItemStack itemstack = ((IRecipe)list.get(br.currentIndex)).getRecipeOutput();
+				int k = 4;
+
+				if (br.list.hasSingleResultItem() && br.getOrderedRecipes().size() > 1)
+				{
+					mc.getRenderItem().renderItemAndEffectIntoGUI(itemstack, br.x + k + 1, br.y + k + 1);
+					--k;
+				}
+
+				mc.getRenderItem().renderItemAndEffectIntoGUI(itemstack, br.x + k, br.y + k);
+
+				if (flag)
+				{
+					GlStateManager.popMatrix();
+				}
+
+				GlStateManager.enableLighting();
+				RenderHelper.disableStandardItemLighting();
+			}
+		}catch (Exception ignore){}
+		
+	}
 	@Hook(priority = HookPriority.HIGHEST, returnCondition = ReturnCondition.ALWAYS)
 	public static void add(RecipeBookServer rbs, List<IRecipe> recipesIn, EntityPlayerMP player) {
 		try {

@@ -47,18 +47,17 @@ public class LokiEvent {
 	public void onBlockInteract(PlayerInteractEvent event) {
 		try {
 			if (debug1 || !event.getWorld().isRemote && Main.getInstance().getListItems() != null) {
-				for (int i = 0; i < Main.getInstance().getListItems().size(); ++i) {
-					blockBlockInteract(event, Main.getInstance().getListItems().get(i), i, new TextComponentTranslation("lokievent.block.blockint", ChatForm.prefix).getFormattedText(), new TextComponentTranslation("lokievent.tooltip.blockeditem2", ChatForm.prefix).getFormattedText());
-				}
-				for (int i = 0; i < Main.getInstance().getListTemp().size(); ++i) {
-					blockBlockInteract(event, Main.getInstance().getListTemp().get(i), i, new TextComponentTranslation("lokievent.block.tempblockint", ChatForm.prefix).getFormattedText(), new TextComponentTranslation("lokievent.tooltip.blockedtempitem2", ChatForm.prefix).getFormattedText());
-				}
+				for (int i = 0; i < Main.getInstance().getListItems().size(); ++i)
+					blockBlockInteract(event, Main.getInstance().getListItems().get(i), new TextComponentTranslation("lokievent.block.blockint", ChatForm.prefix).getFormattedText(), new TextComponentTranslation("lokievent.tooltip.blockeditem2", ChatForm.prefix).getFormattedText());
+
+				for (int i = 0; i < Main.getInstance().getListTemp().size(); ++i)
+					blockBlockInteract(event, Main.getInstance().getListTemp().get(i), new TextComponentTranslation("lokievent.block.tempblockint", ChatForm.prefix).getFormattedText(), new TextComponentTranslation("lokievent.tooltip.blockedtempitem2", ChatForm.prefix).getFormattedText());
+
 			}
-		} catch (Exception ignore) {
-		}
+		} catch (Exception ignore) {}
 	}
 
-	private void blockBlockInteract(PlayerInteractEvent event, ItemData id, int i, String line, String line2) {
+	private void blockBlockInteract(PlayerInteractEvent event, ItemData id, String line, String line2) {
 		String name = id.name;
 		int meta = id.meta;
 		Block block = Block.getBlockFromName(name);
@@ -74,13 +73,14 @@ public class LokiEvent {
 
 			ItemStack is = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
 
-			if (is.getItem() != Items.AIR && it == is.getItem() && meta == is.getMetadata()) {
+			if (is.getItem() != Items.AIR && it == is.getItem() && (is.getMetadata() == meta || meta == -99)) {
 				sendToPlayerMessage(event.getEntityPlayer(), line2);
 				event.setCanceled(true);
 				return;
 			}
+
 			is = event.getEntityPlayer().getHeldItem(EnumHand.OFF_HAND);
-			if (is.getItem() != Items.AIR && it == is.getItem() && meta == is.getMetadata()) {
+			if (is.getItem() != Items.AIR && it == is.getItem() && (is.getMetadata() == meta || meta == -99)) {
 				event.setCanceled(true);
 				sendToPlayerMessage(event.getEntityPlayer(), line2);
 				return;
@@ -88,11 +88,11 @@ public class LokiEvent {
 		}
 		Block block2 = event.getWorld().getBlockState(event.getPos()).getBlock();
 		ItemStack item = null;
-		if (block2 != null) {
+		if (block2 != null)
 			item = this.getPickBlock(event.getWorld(), event.getPos());
-		}
 
-		if (!has && item != null && block2 == block && item.getItem() instanceof ItemBlock && item.getMetadata() == meta) {
+
+		if (!has && item != null && block2 == block && item.getItem() instanceof ItemBlock && (item.getMetadata() == meta || meta == -99)) {
 			event.setCanceled(true);
 			sendToPlayerMessage(event.getEntityPlayer(), line);
 			return;
@@ -102,29 +102,29 @@ public class LokiEvent {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onItemUse(PlayerInteractEvent.RightClickItem event) {
 		if (debug1 || !event.getEntityPlayer().getEntityWorld().isRemote && Main.getInstance().getListItems() != null) {
-			for (int i = 0; i < Main.getInstance().getListItems().size(); ++i) {
-				blockItemUse(event, Main.getInstance().getListItems().get(i), i, new TextComponentTranslation("lokievent.item.use.err", ChatForm.prefix).getFormattedText());
-			}
-			for (int i = 0; i < Main.getInstance().getListTemp().size(); ++i) {
-				blockItemUse(event, Main.getInstance().getListTemp().get(i), i, new TextComponentTranslation("lokievent.item.use.temperr", ChatForm.prefix).getFormattedText());
-			}
+			for (int i = 0; i < Main.getInstance().getListItems().size(); ++i)
+				blockItemUse(event, Main.getInstance().getListItems().get(i), new TextComponentTranslation("lokievent.item.use.err", ChatForm.prefix).getFormattedText());
+
+			for (int i = 0; i < Main.getInstance().getListTemp().size(); ++i)
+				blockItemUse(event, Main.getInstance().getListTemp().get(i), new TextComponentTranslation("lokievent.item.use.temperr", ChatForm.prefix).getFormattedText());
+
 		}
 
 	}
 
-	private void blockItemUse(PlayerInteractEvent.RightClickItem event, ItemData id, int i, String line) {
+	private void blockItemUse(PlayerInteractEvent.RightClickItem event, ItemData id, String line) {
 		String name = id.name;
 		int meta = id.meta;
 		if (debug1 || !PexUtils.hasPex("xblocker." + Main.config.getServerName() + "." + name + ":" + meta, event.getEntityPlayer())) {
 			ItemStack is;
 			is = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
-			if (is.getItem() != Items.AIR && Item.getByNameOrId(name) == is.getItem() && is.getMetadata() == meta) {
+			if (is.getItem() != Items.AIR && Item.getByNameOrId(name) == is.getItem() && (is.getMetadata() == meta || meta == -99)) {
 				sendToPlayerMessage(event.getEntityPlayer(), line);
 				event.setCanceled(true);
 				return;
 			}
 			is = event.getEntityPlayer().getHeldItem(EnumHand.OFF_HAND);
-			if (is.getItem() != Items.AIR && Item.getByNameOrId(name) == is.getItem() && is.getMetadata() == meta) {
+			if (is.getItem() != Items.AIR && Item.getByNameOrId(name) == is.getItem() && (is.getMetadata() == meta || meta == -99)) {
 				sendToPlayerMessage(event.getEntityPlayer(), line);
 				event.setCanceled(true);
 				return;
@@ -136,16 +136,16 @@ public class LokiEvent {
 	public void onEntityAttack(AttackEntityEvent event) {
 		if (debug1 || !event.getEntityPlayer().getEntityWorld().isRemote && Main.getInstance().getListItems() != null) {
 			for (int i = 0; i < Main.getInstance().getListItems().size(); ++i)
-				blockEntityAtc(event, Main.getInstance().getListItems().get(i), i, false);
+				blockEntityAtc(event, Main.getInstance().getListItems().get(i), false);
 
 			for (int i = 0; i < Main.getInstance().getListTemp().size(); ++i)
-				blockEntityAtc(event, Main.getInstance().getListTemp().get(i), i, true);
+				blockEntityAtc(event, Main.getInstance().getListTemp().get(i), true);
 
 		}
 
 	}
 
-	private void blockEntityAtc(AttackEntityEvent event, ItemData id, int i, boolean timed) {
+	private void blockEntityAtc(AttackEntityEvent event, ItemData id, boolean timed) {
 		ItemData check = id;
 		String name = check.name;
 		int meta = check.meta;
@@ -171,6 +171,7 @@ public class LokiEvent {
 				event.setCanceled(true);
 				return;
 			}
+
 			is = event.getEntityPlayer().getHeldItem(EnumHand.OFF_HAND);
 			if (is.getItem() != Items.AIR && Item.getByNameOrId(name) == is.getItem()) {
 				sendToPlayerMessage(event.getEntityPlayer(), message);
@@ -189,7 +190,7 @@ public class LokiEvent {
 			String message = new TextComponentTranslation("lokievent.pickup.error", ChatForm.prefix).getFormattedText();
 			if (debug1 || !PexUtils.hasPex("xblocker.drop." + Main.config.getServerName() + "." + name + ":" + meta, event.getEntityPlayer())) {
 				ItemStack is = event.getItem().getItem();
-				if (is.getItem() != Items.AIR && Item.getByNameOrId(name) == is.getItem() && is.getMetadata() == meta) {
+				if (is.getItem() != Items.AIR && Item.getByNameOrId(name) == is.getItem() && (is.getMetadata() == meta || meta == -99)) {
 					sendToPlayerMessage(event.getEntityPlayer(), message);
 					event.setCanceled(true);
 					return;
@@ -200,23 +201,20 @@ public class LokiEvent {
 
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-		if (event.phase == TickEvent.Phase.END && !event.player.getEntityWorld().isRemote && !event.player.capabilities.isCreativeMode) {
-			ItemList list = Main.getInstance().getListItems();
-			if (list != null) {
-				for (int i = 0; i < list.size(); ++i) {
-					ItemData check = list.get(i);
-					processDeleteItem(event.player, check.name, check.meta);
-
-				}
+	if (event.phase == TickEvent.Phase.END && !event.player.getEntityWorld().isRemote && !event.player.capabilities.isCreativeMode) {
+		ItemList list = Main.getInstance().getListItems();
+		if (list != null)
+			for (int i = 0; i < list.size(); ++i) {
+				ItemData check = list.get(i);
+				processDeleteItem(event.player, check.name, check.meta);
 			}
 		}
-
 	}
 
 	private void processDeleteItem(EntityPlayer player, String name, int meta) {
 		for (int slot = 0; slot < player.inventory.getSizeInventory(); ++slot) {
 			ItemStack stack = player.inventory.getStackInSlot(slot);
-			if (stack.getItem() != Items.AIR &&  Item.getByNameOrId(name) == stack.getItem() && meta == stack.getMetadata()) {
+			if (stack.getItem() != Items.AIR &&  Item.getByNameOrId(name) == stack.getItem() && (meta == stack.getMetadata() || meta == -99)) {
 				boolean hasPermission = false;
 				if (PexUtils.hasPex("xblocker." + Main.config.getServerName() + '.' + name + ':' + meta, player) || PexUtils.hasPex("xblocker.clear." + Main.config.getServerName() + '.' + name + ':' + meta, player))
 					hasPermission = true;
@@ -246,7 +244,8 @@ public class LokiEvent {
 				cooldown.put(player, time + 1);
 				player.sendMessage(new TextComponentString(line));
 			}
-		} else {
+		}
+		else {
 			cooldown.put(player, time + 1);
 			player.sendMessage(new TextComponentString(line));
 		}

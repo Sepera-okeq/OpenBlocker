@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-FMLCorePlugin: ru.will0376.xBlocker.common.hooks.Hookloader
+FMLCorePlugin: ru.will0376.xBlocker.common.Hookloader
 FMLCorePluginContainsFMLMod: true
 Created-By: 1.7.0 (Oracle Corporation)
