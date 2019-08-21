@@ -16,7 +16,7 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: ru.justagod.plugin.CutterPlugin
-version = "1.0.5"
+version = "1.0.7"
 group = "ru.will0376.xBlocker"
 archivesBaseName = "XBlocker"
 
