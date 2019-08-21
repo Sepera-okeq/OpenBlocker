@@ -29,19 +29,20 @@ import ru.will0376.xBlocker.server.ServerProxy;
 import ru.will0376.xBlocker.server.utils.cfg.*;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @GradleSideOnly(GradleSide.SERVER)
 public class Command extends CommandBase {
-	public final String usage = TextFormatting.DARK_AQUA + "/xb (" + TextFormatting.RED + "add " + TextFormatting.RESET + "или " + TextFormatting.RED + "set) (причина)  \n" +
+	public final String usage = TextFormatting.DARK_AQUA + "/xb (" + TextFormatting.RED + "add " + TextFormatting.RESET + "или " + TextFormatting.RED + "set) (мета) (причина)  \n" +
 			TextFormatting.DARK_AQUA + "/xb " + TextFormatting.RED + "tempblock" + TextFormatting.RESET + " (причина)\n" +
 			TextFormatting.DARK_AQUA + "/xb " + TextFormatting.LIGHT_PURPLE + "mincost <цена>\n" +
-			TextFormatting.DARK_AQUA + "/xb (" + TextFormatting.GREEN + "delete " + TextFormatting.RESET + "или " + TextFormatting.GREEN + "remove) \n" +
+			TextFormatting.DARK_AQUA + "/xb (" + TextFormatting.GREEN + "delete " + TextFormatting.RESET + "или " + TextFormatting.GREEN + "remove) (мета) \n" +
 			TextFormatting.DARK_AQUA + "/xb " + TextFormatting.GREEN + "removeCost \n" +
 			TextFormatting.DARK_AQUA + "/xb (" + TextFormatting.GREEN + "deletetempblock " + TextFormatting.RESET + "или " + TextFormatting.GREEN + "removetempblock) \n" +
-			TextFormatting.DARK_AQUA + "/xb " + TextFormatting.GOLD + "limit" + TextFormatting.RESET + " <кол-во> (причина)\n" +
-			TextFormatting.DARK_AQUA + "/xb " + TextFormatting.GREEN + "removeLimit\n" +
+			TextFormatting.DARK_AQUA + "/xb " + TextFormatting.GOLD + "limit" + TextFormatting.RESET + " (мета) <кол-во> (причина)\n" +
+			TextFormatting.DARK_AQUA + "/xb " + TextFormatting.GREEN + "removeLimit (мета)\n" +
 			TextFormatting.DARK_AQUA + "/xb " + TextFormatting.DARK_PURPLE + "reload\n" +
 			TextFormatting.DARK_AQUA + "/xb " + TextFormatting.RED + "enchant\n" +
 			TextFormatting.DARK_AQUA + "/xb " + TextFormatting.GREEN + "enchant (remove или delete)\n" +
@@ -65,8 +66,14 @@ public class Command extends CommandBase {
 		else
 			return args.length >= 2 ? getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames()) : Collections.emptyList();
 	}
-
-	@GradleSideOnly(GradleSide.SERVER)
+	@Override
+	public List<String> getAliases(){
+		ArrayList<String> al = new ArrayList<>();
+		al.add("xblocker");
+		al.add("xblock");
+		al.add("blocker");
+		return al;
+	}
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length == 0) {
 			if (!checkPermission(sender, "xblocker.main.help"))
@@ -83,9 +90,13 @@ public class Command extends CommandBase {
 				String name = is.getItem().getRegistryName().toString();
 
 				int meta = is.getMetadata();
+				
 				String res = "";
-
+				if(args[1].equalsIgnoreCase("-99") || args[1].equals("all"))
+					meta = -99;
 				for (int i = 1; i < args.length; i++) {
+					if(meta == -99 && (args[i].equals("-99") || args[i].equals("all")))
+						continue;
 					res = res + args[i] + " ";
 				}
 				if (res.equalsIgnoreCase(""))
@@ -122,12 +133,11 @@ public class Command extends CommandBase {
 
 				ConfigTemp.addToFile("list_temp", name + ":" + meta + ":" + res);
 
-//               player.sendMessage(new TextComponentString(ChatForm.prefix + " Предмет " + name + " временно запрещен!"));
-//               player.sendMessage(new TextComponentString(" Причина: " + BaseUtils.lat2cyr(res).replaceAll("&", "§").replaceAll("_", " ")));
 				player.sendMessage(new TextComponentTranslation("list.addbtemplock.successfull", ChatForm.prefix, name));
 				player.sendMessage(new TextComponentTranslation("list.addbtemplock.successfull.second", BaseUtils.lat2cyr(res).replaceAll("&", "§").replaceAll("_", " ")));
-////
-			} else {
+
+			}
+			else {
 				player.sendMessage(new TextComponentTranslation("error.handIsNull", ChatForm.prefix_error));
 			}
 		} else if (args[0].equals("mincost")) {
@@ -177,6 +187,9 @@ public class Command extends CommandBase {
 				ItemStack is = player.getHeldItem(EnumHand.MAIN_HAND);
 				String name = is.getItem().getRegistryName().toString();
 				int meta = player.getHeldItem(EnumHand.MAIN_HAND).getMetadata();
+				if(args.length == 2 && (args[1].equalsIgnoreCase("-99") || args[1].equalsIgnoreCase("all"))){
+				meta = -99;
+				}
 				String[] allList = ConfigUtils.readFromFileToString("list").split("@");
 				for (int i = 0; i < allList.length; ++i) {
 					String limit1 = allList[i];
@@ -185,7 +198,6 @@ public class Command extends CommandBase {
 						Main.network.sendToAll(new MessageHandler_list("0;" + name + ";" + meta + ";" + res1[3]));
 						ConfigUtils.deleteFromFile("list", name + ":" + meta + ":" + res1[3]);
 						ConfigCraftUtils.deleteFromFile("list_craft", name + ":" + meta);
-//                       sender.sendMessage(new TextComponentString(ChatForm.prefix + "Предмет " + name + " был разрешен!"));
 						player.sendMessage(new TextComponentTranslation("list.removeblock.successfull", ChatForm.prefix, name));
 					}
 				}
@@ -292,7 +304,9 @@ public class Command extends CommandBase {
 					String name = player.getHeldItem(EnumHand.MAIN_HAND).getItem().getRegistryName().toString();
 					int meta = player.getHeldItem(EnumHand.MAIN_HAND).getMetadata();
 					String allLimited = ConfigLimitedUtils.readFromFileToString("list_limited");
-
+					if(args.length == 2)
+						if(args[1].equalsIgnoreCase("-99") || args[1].equalsIgnoreCase("all"))
+							meta = -99;
 					String[] res = allLimited.split("@");
 
 					for (int limit = 0; limit < res.length; ++limit) {
@@ -314,11 +328,12 @@ public class Command extends CommandBase {
 				} else
 					player.sendMessage(new TextComponentTranslation("error.isnotblock", ChatForm.prefix_error));//sender.sendMessage(new TextComponentString(ChatForm.prefix_error + "Данный предмет должен быть блоком."));
 			} else player.sendMessage(new TextComponentTranslation("error.handIsNull", ChatForm.prefix_error));
-		} else if (args[0].equals("limit")) {
+		}
+		else if (args[0].equals("limit")) {
 			if (!checkPermission(sender, "xblocker.lists.limit"))
 				return;
 			if (args.length <= 1) {
-				sender.sendMessage(new TextComponentString(ChatForm.prefix_error + "/xblocker limit <count> (res)"));
+				sender.sendMessage(new TextComponentString(ChatForm.prefix_error + "/xblocker limit (meta) <count> (res)"));
 				return;
 			}
 			if (player.getHeldItem(EnumHand.MAIN_HAND).getItem() != Items.AIR) {
@@ -328,7 +343,14 @@ public class Command extends CommandBase {
 					String allStrFromFile = ConfigLimitedUtils.readFromFileToString("list_limited");
 					String tmpstr = "";
 
-					for (int limit = 2; limit < args.length; ++limit) {
+					if(args[1].equalsIgnoreCase("-99") || args[1].equalsIgnoreCase("all"))
+					meta = -99;
+					int limitfor = 2;
+					if(meta == -99)
+						limitfor = 3;
+					for (int limit = limitfor; limit < args.length; ++limit) {
+						if(meta == -99 && (args[limit].equals("-99") || args[limit].equals("all")))
+							continue;
 						tmpstr += args[limit] + " ";
 					}
 					if (tmpstr.equals(""))
@@ -336,7 +358,9 @@ public class Command extends CommandBase {
 
 					tmpstr = BaseUtils.cyr2lat(tmpstr);
 					int limit = Integer.parseInt(args[1]);
-					if (limit > 0) {
+					if(meta == -99)
+						limit = Integer.parseInt(args[2]);
+					if (limit > 0 ) {
 						if (!allStrFromFile.contains(name + ":" + meta + ":" + limit + ":" + tmpstr)) {
 							Main.network.sendToAll(new MessageHandler_list_limited("1;" + name + ";" + meta + ";" + limit + ";" + tmpstr));
 							ConfigLimitedUtils.addToFile("list_limited", name + ":" + meta + ":" + limit + ":" + tmpstr);

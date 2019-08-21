@@ -71,7 +71,7 @@ public class LimitedEvent {
 							int count = Integer.parseInt(itemdata[3]);
 							Block block2 = event.getWorld().getBlockState(event.getPos()).getBlock();
 							ItemStack item = getPickBlock(event.getWorld(), event.getPos());
-							if (item != null && block2 == block && item.getMetadata() == meta)
+							if (item != null && block2 == block && (item.getMetadata() == meta || meta == -99))
 								try {
 									if (getBlocksInChunk(event) > count) {
 										event.getPlayer().sendMessage(new TextComponentTranslation("limitevent.blockowner.limitover", ChatForm.prefix, count));

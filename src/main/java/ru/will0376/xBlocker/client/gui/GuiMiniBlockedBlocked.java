@@ -71,7 +71,6 @@ public class GuiMiniBlockedBlocked extends GuiScreen {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		this.drawDefaultBackground();
 		boolean var1 = true;
-//      this.drawCenteredString(fontRenderer,"Список ограниченных предметов на сервере:", super.width / 2, 13, 16777215);
 		this.drawCenteredString(fontRenderer, I18n.format("guiminiblock.allist"), super.width / 2, 13, 16777215);
 		ScaledResolution scaledResolution = new ScaledResolution(this.minecraft);
 		this.scaledWidth = scaledResolution.getScaledWidth();
@@ -81,7 +80,6 @@ public class GuiMiniBlockedBlocked extends GuiScreen {
 		this.xCoord = 0;
 		this.yCoord = 38;
 		if (Main.getInstance().listLimitedClient.size() == 0)
-//         this.drawCenteredString(fontRenderer, "Ограниченные предметы на сервере отсутствуют.", super.width / 2, 35, 16777215);
 			this.drawCenteredString(fontRenderer, I18n.format("guiminiblock.allist.empty"), super.width / 2, 35, 16777215);
 
 
@@ -100,6 +98,10 @@ public class GuiMiniBlockedBlocked extends GuiScreen {
 					name = Main.getInstance().listLimitedClient.get(bEnch1).split(":");
 					blockname = name[0] + ":" + name[1];
 					meta = Integer.parseInt(name[2]);
+					boolean allmeta = false;
+					if(meta == -99){
+						meta = 0;
+					}
 					is = new ItemStack(Item.getByNameOrId(blockname), 1, meta);
 					if (is != null && Item.getByNameOrId(blockname) == is.getItem() && is.getMetadata() == meta) {
 						for (k = 1; k < 50; ++k) {
@@ -138,6 +140,9 @@ public class GuiMiniBlockedBlocked extends GuiScreen {
 					name = Main.getInstance().listLimitedClient.get(bEnch1).split(":");
 					blockname = name[0] + ":" + name[1];
 					meta = Integer.parseInt(name[2]);
+					if(meta == -99){
+						meta = 0;
+					}
 					is = new ItemStack(Item.getByNameOrId(blockname), 1, meta);
 					if (is != null && Item.getByNameOrId(blockname) == is.getItem() && is.getMetadata() == meta) {
 						for (k = 1; k < 50; ++k) {
@@ -182,6 +187,9 @@ public class GuiMiniBlockedBlocked extends GuiScreen {
 					name = Main.getInstance().listLimitedClient.get(bEnch1).split(":");
 					blockname = name[0] + ":" + name[1];
 					meta = Integer.parseInt(name[2]);
+					if(meta == -99){
+						meta = 0;
+					}
 					ArrayList list;
 					is = new ItemStack(Item.getByNameOrId(blockname), 1, meta);
 					if (is != null && Item.getByNameOrId(blockname) == is.getItem() && is.getMetadata() == meta) {

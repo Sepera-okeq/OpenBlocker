@@ -2,10 +2,12 @@ package ru.will0376.xBlocker;
 
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
+import net.minecraft.command.CommandHandler;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -18,6 +20,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 import ru.justagod.mineplugin.GradleSide;
 import ru.justagod.mineplugin.GradleSideOnly;
+import ru.will0376.xBlocker.client.commands.ClientComma;
 import ru.will0376.xBlocker.client.network.*;
 import ru.will0376.xBlocker.common.CommonProxy;
 import ru.will0376.xBlocker.common.Config;
@@ -95,6 +98,11 @@ public class Main {
 	@EventHandler
 	public void onServerStarting(FMLServerStartingEvent event) {
 		serverInit(event);
+	}
+
+	@EventHandler
+	public void onServerStartingOnClient(FMLServerStartingEvent event) {
+		event.registerServerCommand(new ClientComma());
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)
