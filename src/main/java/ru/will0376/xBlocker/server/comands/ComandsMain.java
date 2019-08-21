@@ -37,19 +37,19 @@ public class ComandsMain extends CommandBase {
 		}
 		switch (args[0].toLowerCase()){
 			case "add":
-			case "set": break;
-			case "tempblock": break;
-			case "mincost": break;
-			case "enchant":break; //add & remove
-			case "limit": break;
-			case "craft": break;
+			case "set": new CommandAdd().add(server, sender, args); break;
+			case "tempblock": new CommandTemp().add(server, sender, args); break;
+			case "mincost": new CommandMincost().execute(server, sender, args);break; //add & remove
+			case "enchant": new CommandEnchant().execute(server, sender, args);break; //add & remove
+			case "limit": new CommandLimit().add(server, sender, args); break;
+			case "craft": new CommandCraft().execute(server, sender, args); break; //add & remove
 
 
 			case "remove":
-			case "delete": break;
+			case "delete": new CommandAdd().remove(server, sender, args);break;
 			case "deletetempblock":
-			case "removetempblock": break;
-			case "removelimit": break;
+			case "removetempblock":  new CommandTemp().remove(server, sender, args); break;
+			case "removelimit": new CommandLimit().remove(server, sender, args); break;
 
 
 			case "perms": break;
