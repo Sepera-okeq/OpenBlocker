@@ -16,6 +16,7 @@ import ru.justagod.mineplugin.GradleSideOnly;
 import ru.will0376.xBlocker.common.CommonProxy;
 import ru.will0376.xBlocker.common.Config;
 import ru.will0376.xBlocker.common.ItemList;
+import ru.will0376.xBlocker.common.JsonHelper;
 import ru.will0376.xBlocker.server.IO;
 import ru.will0376.xBlocker.server.comands.ComandsMain;
 
@@ -32,7 +33,6 @@ public class Main {
 	public static final String MODID = "xblocker";
 	public static final String NAME = "xBlocker";
 	public static final String VERSION = "1.0.7";
-	public static boolean FOR_SERVER = true;
 	public static boolean debug = true;
 	public static Config config;
 	public static File configFile;
@@ -49,8 +49,13 @@ public class Main {
 
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent event) {
-		IO.path = event.getModConfigurationDirectory();
 		Logger = event.getModLog();
+		if(event.getSide().isServer() || debug) {
+			IO.path = new File(event.getModConfigurationDirectory().getAbsolutePath().trim() +File.separator+ "xblocker");
+			IO.fileJson = new File(IO.path+File.separator+"config.json");
+			JsonHelper.init();
+		}
+
 		configFile = event.getSuggestedConfigurationFile();
 		config = new Config(configFile);
 		config.launch();
