@@ -16,6 +16,7 @@ import ru.justagod.mineplugin.GradleSideOnly;
 import ru.will0376.xBlocker.common.CommonProxy;
 import ru.will0376.xBlocker.common.Config;
 import ru.will0376.xBlocker.common.ItemList;
+import ru.will0376.xBlocker.server.IO;
 import ru.will0376.xBlocker.server.comands.ComandsMain;
 
 import java.io.File;
@@ -48,6 +49,7 @@ public class Main {
 
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent event) {
+		IO.path = event.getModConfigurationDirectory();
 		Logger = event.getModLog();
 		configFile = event.getSuggestedConfigurationFile();
 		config = new Config(configFile);
