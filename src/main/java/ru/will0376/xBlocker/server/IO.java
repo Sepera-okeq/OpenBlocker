@@ -22,7 +22,10 @@ public class IO {
 				return;
 			}
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			gson.toJson(jo,new FileWriter(fileJson));
+			FileWriter fw = new FileWriter(fileJson);
+			gson.toJson(jo,fw);
+			fw.flush();
+			fw.close();
 		}catch (Exception e){e.printStackTrace();}
 	}
 

@@ -8,18 +8,23 @@ import ru.will0376.xBlocker.server.IO;
 public class JsonHelper {
 	public static JsonObject client;
 	public static JsonObject server;
+	public static final String BLOCKER = "blocker";
+	public static final String LIMIT = "limit";
+	public static final String MINCOST = "mincost";
+	public static final String ENCHANT = "enchant";
 
-	public static void addClient(JsonObject jo,String objectname){
-		client.getAsJsonArray(objectname).add(jo);
+
+	public static void addClient(JsonObject jo,String objectname,String subname){
+		client.getAsJsonObject(objectname).add(subname,jo);
 	}
 
-	public static void addServer(JsonObject jo,String objectname){
-			server.getAsJsonArray(objectname).add(jo);
+	public static void addServer(JsonObject jo,String objectname,String subname){
+			server.getAsJsonObject(objectname).add(subname,jo);
 			IO.write(server);
-	}
+}
 
-	public static void removeServer(String objectname,String blockname){
-			server.getAsJsonObject().getAsJsonObject(objectname).remove(blockname);
+	public static void removeFromServer(String objectname,String blockname){
+			server.getAsJsonObject(objectname).remove(blockname);
 			IO.write(server);
 	}
 

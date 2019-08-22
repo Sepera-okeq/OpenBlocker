@@ -5,6 +5,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
+import ru.will0376.xBlocker.common.JsonHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,7 @@ public class ComandsMain extends CommandBase {
 
 
 			case "perms": break;
-			case "reload": break;
+			case "reload": JsonHelper.init(); break;
 			default: sender.sendMessage(new TextComponentString(usage));
 		}
 	}
