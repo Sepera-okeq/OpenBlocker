@@ -54,6 +54,7 @@ public class IO {
 			jo.add("limit", new JsonObject());
 			jo.add("mincost", new JsonObject());
 			jo.add("enchant", new JsonObject());
+			jo.add("craft", new JsonObject());
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			FileWriter fw = new FileWriter(fileJson);
 			gson.toJson(jo,fw);

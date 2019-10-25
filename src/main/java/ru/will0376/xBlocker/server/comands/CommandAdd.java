@@ -10,12 +10,18 @@ import org.apache.commons.lang3.math.NumberUtils;
 import ru.will0376.xBlocker.common.ChatForm;
 import ru.will0376.xBlocker.common.JsonHelper;
 
+
 public class CommandAdd implements Base{
 	String usageadd = Base.usage+"add (or set) <reason> <meta>* <temp?(empty or true)> \n" +
 			"<meta> - Put 'all' if you want to get the meter out of the block \n" +
 			"ex: /xb add test add 1";
 	String usageremove = Base.usage+"remove(or delete) <meta>\n" +
 			"<meta> - Put 'all' if you want to get the meter out of the block";
+
+	public void help(ICommandSender sender) {
+		sender.sendMessage(new TextComponentString(usageadd+"\n"+usageremove));
+	}
+	@SuppressWarnings("deprecated")
 	public void add(MinecraftServer server, ICommandSender sender, String[] args) {
 		EntityPlayer player = (EntityPlayer) sender;
 		boolean allMeta = false;
@@ -31,25 +37,25 @@ public class CommandAdd implements Base{
 			end = args.length -2;
 		}
 
-		if(temp) {
-			if (args[args.length - 2].equalsIgnoreCase("all")) {
-				allMeta = true;
-				meta = 0;
-			}
-			else if (NumberUtils.isParsable(args[args.length - 2]) && !args[args.length - 2].equalsIgnoreCase("all"))
-				meta = Integer.parseInt(args[args.length-2]);
-		}
+				if(temp) {
+					if (args[args.length - 2].equalsIgnoreCase("all")) {
+						allMeta = true;
+						meta = 0;
+					}
+					else if (NumberUtils.isNumber(args[args.length - 2]) && !args[args.length - 2].equalsIgnoreCase("all"))
+						meta = Integer.parseInt(args[args.length-2]);
+				}
 		else {
 			if (args[args.length - 1].equalsIgnoreCase("all")) {
 				allMeta = true;
 				meta = 0;
 			}
-			else if (NumberUtils.isParsable(args[args.length - 1]) && !args[args.length -1].equalsIgnoreCase("0"))
+			else if (NumberUtils.isNumber(args[args.length - 1]) && !args[args.length -1].equalsIgnoreCase("0"))
 				meta = Integer.parseInt(args[args.length - 1]);
 		}
 
 		for(int i = 1;i<end;i++)
-			reason +=args[i]+" ";
+			reason += args[i]+" ";
 
 		JsonObject jo = new JsonObject();
 		if(allMeta)
@@ -58,10 +64,31 @@ public class CommandAdd implements Base{
 			jo.addProperty("boolTemp",true);
 		jo.addProperty("reason",reason.trim());
 		JsonHelper.addServer(jo,JsonHelper.BLOCKER,itemStack.getItem().getRegistryName().toString()+":"+meta);
-		sender.sendMessage(new TextComponentString(ChatForm.prefix+"Done!"));
+		sender.sendMessage(new TextComponentString(ChatForm.prefix+String.format("ItemStack: %s successfully added!",itemStack.getItem().getRegistryName().toString()+":"+meta)));
 	}
-
+	@SuppressWarnings("deprecated")
 	public void remove(MinecraftServer server, ICommandSender sender, String[] args) {
 		EntityPlayer player = (EntityPlayer) sender;
+		ItemStack itemStack = player.getHeldItemMainhand();
+		int meta = itemStack.getMetadata();
+		if(args.length >= 3 || (args.length > 1  &&args[1].equalsIgnoreCase("-h"))) {
+			sender.sendMessage(new TextComponentString(usageremove));
+			return;
+		}
+		if(contains(args,"all")) {
+			meta = 0;
+		}
+		else if(NumberUtils.isNumber(args[args.length - 1])){
+			meta = Integer.parseInt(args[args.length - 1]);
+		}
+		JsonHelper.removeFromServer(JsonHelper.BLOCKER,itemStack.getItem().getRegistryName().toString()+":"+meta);
+		sender.sendMessage(new TextComponentString(ChatForm.prefix+String.format("ItemStack: %s successfully deleted!",itemStack.getItem().getRegistryName().toString()+":"+meta)));
+	}
+	private boolean contains(String[] args,String text) {
+		for (int i = 0; i < args.length; i++) {
+			if(args[i].equalsIgnoreCase(text))
+				return true;
+		}
+		return false;
 	}
 }

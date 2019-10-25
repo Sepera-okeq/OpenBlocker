@@ -12,6 +12,7 @@ public class JsonHelper {
 	public static final String LIMIT = "limit";
 	public static final String MINCOST = "mincost";
 	public static final String ENCHANT = "enchant";
+	public static final String CRAFT = "craft";
 
 
 	public static void addClient(JsonObject jo,String objectname,String subname){
@@ -21,13 +22,16 @@ public class JsonHelper {
 	public static void addServer(JsonObject jo,String objectname,String subname){
 			server.getAsJsonObject(objectname).add(subname,jo);
 			IO.write(server);
-}
+	}
 
 	public static void removeFromServer(String objectname,String blockname){
 			server.getAsJsonObject(objectname).remove(blockname);
 			IO.write(server);
 	}
 
+	public static boolean contains(String objectname,String name) {
+		return server.getAsJsonObject(objectname).get(name) != null;
+	}
 	public static void init(){
 	JsonObject jo = IO.read();
 		if(jo != null)

@@ -1,6 +1,5 @@
 package ru.will0376.xBlocker.common.hooks;
 
-import com.google.common.collect.Lists;
 import gloomyfolken.hooklib.asm.Hook;
 import gloomyfolken.hooklib.asm.HookPriority;
 import gloomyfolken.hooklib.asm.ReturnCondition;
@@ -22,6 +21,7 @@ import net.minecraft.stats.RecipeBook;
 import net.minecraft.stats.RecipeBookServer;
 import net.minecraft.util.math.MathHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Hooks {
@@ -109,7 +109,7 @@ public class Hooks {
 	@Hook(priority = HookPriority.HIGHEST, returnCondition = ReturnCondition.ALWAYS)
 	public static void add(RecipeBookServer rbs, List<IRecipe> recipesIn, EntityPlayerMP player) {
 		try {
-			List<IRecipe> list = Lists.newArrayList();
+			List<IRecipe> list = new ArrayList<>();
 
 			for (IRecipe irecipe : recipesIn) {
 				if (!rbs.recipes.get(RecipeBook.getRecipeId(irecipe)) && !irecipe.isDynamic()) {

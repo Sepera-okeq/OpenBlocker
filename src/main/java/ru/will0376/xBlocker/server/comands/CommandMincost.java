@@ -7,4 +7,7 @@ public class CommandMincost {
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
 
 	}
+
+	public void help(ICommandSender sender) {
+	}
 }

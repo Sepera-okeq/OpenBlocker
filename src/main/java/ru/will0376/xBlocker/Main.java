@@ -1,8 +1,5 @@
 package ru.will0376.xBlocker;
 
-import com.google.common.collect.Lists;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -15,7 +12,6 @@ import ru.justagod.mineplugin.GradleSide;
 import ru.justagod.mineplugin.GradleSideOnly;
 import ru.will0376.xBlocker.common.CommonProxy;
 import ru.will0376.xBlocker.common.Config;
-import ru.will0376.xBlocker.common.ItemList;
 import ru.will0376.xBlocker.common.JsonHelper;
 import ru.will0376.xBlocker.server.IO;
 import ru.will0376.xBlocker.server.comands.ComandsMain;

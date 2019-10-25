@@ -4,6 +4,10 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 
 public class CommandLimit implements Base {
+	public void help(ICommandSender sender) {
+
+	}
+
 	public void add(MinecraftServer server, ICommandSender sender, String[] args) {
 
 	}

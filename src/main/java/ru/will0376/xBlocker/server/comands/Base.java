@@ -7,6 +7,7 @@ import ru.will0376.xBlocker.common.ChatForm;
 
 public interface Base {
 	String usage = ChatForm.prefix+"/xb ";
+	void help(ICommandSender sender);
 	 void add(MinecraftServer server, ICommandSender sender, String[] args);
 
 	void remove(MinecraftServer server, ICommandSender sender, String[] args);

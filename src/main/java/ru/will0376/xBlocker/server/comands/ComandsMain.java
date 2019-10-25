@@ -11,7 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ComandsMain extends CommandBase {
-	private String usage = "/xb <module>";
+	private String usage = "/xb <module>\n" +
+			"Helps:\n" +
+			"-> add-help\n" +
+			"-> mincost-help\n" +
+			"-> enchant-help\n" +
+			"-> limit-help\n" +
+			"-> craft-help\n" +
+			"\n" +
+			"Other modules:\n" +
+			"-> perms\n" +
+			"-> reload";
 	@Override
 	public String getName() {
 		return "xb";
@@ -37,21 +47,27 @@ public class ComandsMain extends CommandBase {
 			return;
 		}
 		switch (args[0].toLowerCase()){
+
 			case "add":
 			case "set": new CommandAdd().add(server, sender, args); break;
-			case "tempblock": new CommandTemp().add(server, sender, args); break;
-			case "mincost": new CommandMincost().execute(server, sender, args);break; //add & remove
-			case "enchant": new CommandEnchant().execute(server, sender, args);break; //add & remove
-			case "limit": new CommandLimit().add(server, sender, args); break;
-			case "craft": new CommandCraft().execute(server, sender, args); break; //add & remove
+			case "add-help": new CommandAdd().help(sender);
 
+			case "mincost": new CommandMincost().execute(server, sender, args);break; //add & remove
+			case "mincost-help": new CommandMincost().help(sender);
+
+			case "enchant": new CommandEnchant().execute(server, sender, args);break; //add & remove
+			case "enchant-help": new CommandEnchant().help(sender);break;
+
+			case "limit": new CommandLimit().add(server, sender, args); break;
+			case "limit-help": new CommandLimit().help(sender); break;
+
+			case "craft": new CommandCraft().execute(server, sender, args); break; //add & remove
+			case "craft-help": new CommandCraft().help(sender); break;
 
 			case "remove":
 			case "delete": new CommandAdd().remove(server, sender, args);break;
-			case "deletetempblock":
-			case "removetempblock":  new CommandTemp().remove(server, sender, args); break;
 			case "removelimit": new CommandLimit().remove(server, sender, args); break;
-
+			///
 
 			case "perms": break;
 			case "reload": JsonHelper.init(); break;
