@@ -1,4 +1,4 @@
-package ru.will0376.xBlocker.common;
+package ru.will0376.OpenBlocker.common;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -17,8 +17,8 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: ru.justagod.plugin.CutterPlugin
 version = "1.0.7"
-group = "ru.will0376.xBlocker"
-archivesBaseName = "XBlocker"
+group = "ru.will0376.OpenBlocker"
+archivesBaseName = "OpenBlocker"
 
 sourceCompatibility = targetCompatibility = '1.8'
 compileJava {
@@ -29,8 +29,8 @@ minecraft {
     version = "1.12.2-14.23.5.2784"
     runDir = "run"
     mappings = "snapshot_20180814"
-    clientJvmArgs += "-Dfml.coreMods.load=ru.will0376.xBlocker.common.Hookloader"
-    serverJvmArgs += "-Dfml.coreMods.load=ru.will0376.xBlocker.common.Hookloader"
+    clientJvmArgs += "-Dfml.coreMods.load=ru.will0376.OpenBlocker.common.Hookloader"
+    serverJvmArgs += "-Dfml.coreMods.load=ru.will0376.OpenBlocker.common.Hookloader"
 }
 configurations.all {
     transitive = false

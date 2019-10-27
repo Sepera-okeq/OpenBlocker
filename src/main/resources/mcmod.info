@@ -1,7 +1,7 @@
 [
 {
-  "modid": "xblocker",
-  "name": "xBlocker",
+  "modid": "OpenBlocker",
+  "name": "OpenBlocker",
   "description": "",
   "version": "${version}",
   "mcversion": "${mcversion}",

@@ -1,4 +1,4 @@
-package ru.will0376.xBlocker.common;
+package ru.will0376.OpenBlocker.common;
 
 public final class ItemData {
 	public final String name;

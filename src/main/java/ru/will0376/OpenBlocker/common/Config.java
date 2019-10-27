@@ -1,4 +1,4 @@
-package ru.will0376.xBlocker.common;
+package ru.will0376.OpenBlocker.common;
 
 import net.minecraftforge.common.config.Configuration;
 
@@ -17,12 +17,12 @@ public class Config {
 	private boolean LimitWarring;
 	private boolean deleteBlocked;
 
-	public boolean isDeleteBlocked() {
-		return deleteBlocked;
-	}
-
 	public Config(File file) {
 		this.configuration = new Configuration(file);
+	}
+
+	public boolean isDeleteBlocked() {
+		return deleteBlocked;
 	}
 
 	public void launch() {

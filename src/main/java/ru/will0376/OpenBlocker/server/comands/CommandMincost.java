@@ -1,4 +1,4 @@
-package ru.will0376.xBlocker.server.comands;
+package ru.will0376.OpenBlocker.server.comands;
 
 import com.google.gson.JsonObject;
 import net.minecraft.command.ICommandSender;
@@ -7,13 +7,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.lang3.math.NumberUtils;
-import ru.will0376.xBlocker.common.ChatForm;
-import ru.will0376.xBlocker.common.JsonHelper;
+import ru.will0376.OpenBlocker.common.ChatForm;
+import ru.will0376.OpenBlocker.common.JsonHelper;
 
 public class CommandMincost {
 	String usage = Base.usage + "mincost <cost> <meta>*\n" +
 			"<meta> - Put 'all' if you want to get the meter out of the block\n" +
 			"if enchant already blocked - it will be deleted";
+
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
 		EntityPlayer player = (EntityPlayer) sender;
 		ItemStack is = player.getHeldItemMainhand();

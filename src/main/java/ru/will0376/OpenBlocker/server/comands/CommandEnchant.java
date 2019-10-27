@@ -1,4 +1,4 @@
-package ru.will0376.xBlocker.server.comands;
+package ru.will0376.OpenBlocker.server.comands;
 
 import com.google.gson.JsonObject;
 import net.minecraft.command.ICommandSender;
@@ -9,12 +9,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
-import ru.will0376.xBlocker.common.ChatForm;
-import ru.will0376.xBlocker.common.JsonHelper;
+import ru.will0376.OpenBlocker.common.ChatForm;
+import ru.will0376.OpenBlocker.common.JsonHelper;
 
 public class CommandEnchant {
-	private String usage = Base.usage+"enchant <reason>\n" +
+	private String usage = Base.usage + "enchant <reason>\n" +
 			"if enchant already blocked - it will be deleted\n";
+
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
 		EntityPlayer player = (EntityPlayer) sender;
 		ItemStack is = player.getHeldItemMainhand();
@@ -24,18 +25,17 @@ public class CommandEnchant {
 				NBTTagCompound tmp = (NBTTagCompound) tgs;
 				int id = tmp.getShort("id");
 				int lvl = tmp.getShort("lvl");
-				if(JsonHelper.contains(JsonHelper.ENCHANT,id+":"+lvl)) {
-					JsonHelper.removeFromServer(JsonHelper.ENCHANT,id+":"+lvl);
-					player.sendMessage(new TextComponentString(ChatForm.prefix+"Enchant has UnBlocked!"));
-				}
-				else {
+				if (JsonHelper.contains(JsonHelper.ENCHANT, id + ":" + lvl)) {
+					JsonHelper.removeFromServer(JsonHelper.ENCHANT, id + ":" + lvl);
+					player.sendMessage(new TextComponentString(ChatForm.prefix + "Enchant has UnBlocked!"));
+				} else {
 					JsonObject jo = new JsonObject();
 					String reason = "";
 					for (int i = 1; i < args.length; i++)
-						reason+=args[i]+" ";
-					jo.addProperty("reason",reason);
-					JsonHelper.addServer(jo,JsonHelper.ENCHANT,id+":"+lvl);
-					player.sendMessage(new TextComponentString(ChatForm.prefix+"Enchant has Blocked!"));
+						reason += args[i] + " ";
+					jo.addProperty("reason", reason);
+					JsonHelper.addServer(jo, JsonHelper.ENCHANT, id + ":" + lvl);
+					player.sendMessage(new TextComponentString(ChatForm.prefix + "Enchant has Blocked!"));
 				}
 			}
 		}

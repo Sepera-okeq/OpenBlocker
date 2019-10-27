@@ -1,4 +1,4 @@
-package ru.will0376.xBlocker.common;
+package ru.will0376.OpenBlocker.common;
 
 import gloomyfolken.hooklib.minecraft.HookLoader;
 import gloomyfolken.hooklib.minecraft.PrimaryClassTransformer;
@@ -11,7 +11,7 @@ public class Hookloader extends HookLoader {
 
 	@Override
 	protected void registerHooks() {
-		registerHookContainer("ru.will0376.xBlocker.common.hooks.hooks");
-		registerHookContainer("ru.will0376.xBlocker.common.hooks.ItemsHooks");
+		registerHookContainer("ru.will0376.OpenBlocker.common.hooks.hooks");
+		registerHookContainer("ru.will0376.OpenBlocker.common.hooks.ItemsHooks");
 	}
 }

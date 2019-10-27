@@ -1,4 +1,4 @@
-package ru.will0376.xBlocker;
+package ru.will0376.OpenBlocker;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -10,14 +10,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import org.apache.logging.log4j.Logger;
 import ru.justagod.mineplugin.GradleSide;
 import ru.justagod.mineplugin.GradleSideOnly;
-import ru.will0376.xBlocker.common.CommonProxy;
-import ru.will0376.xBlocker.common.Config;
-import ru.will0376.xBlocker.common.JsonHelper;
-import ru.will0376.xBlocker.server.IO;
-import ru.will0376.xBlocker.server.comands.ComandsMain;
+import ru.will0376.OpenBlocker.common.CommonProxy;
+import ru.will0376.OpenBlocker.common.Config;
+import ru.will0376.OpenBlocker.common.JsonHelper;
+import ru.will0376.OpenBlocker.server.IO;
+import ru.will0376.OpenBlocker.server.comands.ComandsMain;
 
 import java.io.File;
-import java.util.ArrayList;
 
 @Mod(
 		modid = Main.MODID,
@@ -26,8 +25,8 @@ import java.util.ArrayList;
 		acceptedMinecraftVersions = "[1.12.2]"
 )
 public class Main {
-	public static final String MODID = "xblocker";
-	public static final String NAME = "xBlocker";
+	public static final String MODID = "OpenBlocker";
+	public static final String NAME = "OpenBlocker";
 	public static final String VERSION = "1.0.7";
 	public static boolean debug = true;
 	public static Config config;
@@ -35,20 +34,20 @@ public class Main {
 	public static SimpleNetworkWrapper network;
 	public static Logger Logger;
 	public static Main Instance;
-	@Mod.Instance
-	private static Main mod;
 	@SidedProxy(
-			clientSide = "ru.will0376.xBlocker.client.ClientProxy",
-			serverSide = "ru.will0376.xBlocker.server.ServerProxy"
+			clientSide = "ru.will0376.OpenBlocker.client.ClientProxy",
+			serverSide = "ru.will0376.OpenBlocker.server.ServerProxy"
 	)
 	public static CommonProxy proxy;
+	@Mod.Instance
+	private static Main mod;
 
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent event) {
 		Logger = event.getModLog();
-		if(event.getSide().isServer() || debug) {
-			IO.path = new File(event.getModConfigurationDirectory().getAbsolutePath().trim() +File.separator+ "xblocker");
-			IO.fileJson = new File(IO.path+File.separator+"config.json");
+		if (event.getSide().isServer() || debug) {
+			IO.path = new File(event.getModConfigurationDirectory().getAbsolutePath().trim() + File.separator + "OpenBlocker");
+			IO.fileJson = new File(IO.path + File.separator + "config.json");
 			JsonHelper.init();
 		}
 
@@ -70,13 +69,13 @@ public class Main {
 	}
 
 	@EventHandler
-	public void onServerStartingOnClient(FMLServerStartingEvent event){
+	public void onServerStartingOnClient(FMLServerStartingEvent event) {
 
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)
 	private void serverInit(FMLServerStartingEvent event) {
-	event.registerServerCommand(new ComandsMain());
+		event.registerServerCommand(new ComandsMain());
 	}
 
 }

@@ -1,4 +1,4 @@
-package ru.will0376.xBlocker.common;
+package ru.will0376.OpenBlocker.common;
 
 public class BaseUtils {
 	public static String lat2cyr(String s) {

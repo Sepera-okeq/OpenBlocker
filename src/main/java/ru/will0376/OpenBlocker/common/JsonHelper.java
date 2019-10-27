@@ -1,4 +1,4 @@
-package ru.will0376.xBlocker.common;
+package ru.will0376.OpenBlocker.common;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -6,26 +6,25 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import ru.will0376.xBlocker.Main;
-import ru.will0376.xBlocker.server.IO;
+import ru.will0376.OpenBlocker.Main;
+import ru.will0376.OpenBlocker.server.IO;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JsonHelper {
-	public static JsonObject client;
-	public static JsonObject server;
 	public static final String BLOCKER = "blocker";
 	public static final String LIMIT = "limit";
 	public static final String MINCOST = "mincost";
 	public static final String ENCHANT = "enchant";
 	public static final String CRAFT = "craft";
+	public static JsonObject client;
+	public static JsonObject server;
 
-
-	public static void addClient(JsonObject jo,String objectname,String subname){
-		client.getAsJsonObject(objectname).add(subname,jo);
+	public static void addClient(JsonObject jo, String objectname, String subname) {
+		client.getAsJsonObject(objectname).add(subname, jo);
 	}
 
-	public static void addServer(JsonObject jo,String objectname,String subname){
+	public static void addServer(JsonObject jo, String objectname, String subname) {
 		try {
 			if (containsItem(objectname, subname.split(":")[0] + ":" + subname.split(":")[1], Integer.parseInt(subname.split(":")[2])))
 				jo.getAsJsonArray("nbts").forEach(e -> server.getAsJsonObject(objectname).getAsJsonObject(subname).getAsJsonArray("nbts").add(e));
@@ -37,17 +36,18 @@ public class JsonHelper {
 		IO.write(server);
 	}
 
-	public static void removeFromServer(String objectname,String blockname){
-			server.getAsJsonObject(objectname).remove(blockname);
-			IO.write(server);
+	public static void removeFromServer(String objectname, String blockname) {
+		server.getAsJsonObject(objectname).remove(blockname);
+		IO.write(server);
 	}
 
-	public static boolean contains(String objectname,String name) {
+	public static boolean contains(String objectname, String name) {
 		return server.getAsJsonObject(objectname).get(name) != null;
 	}
-	public static void init(){
-	JsonObject jo = IO.read();
-		if(jo != null)
+
+	public static void init() {
+		JsonObject jo = IO.read();
+		if (jo != null)
 			server = jo;
 		else
 			Main.Logger.error("FileReader Error!");

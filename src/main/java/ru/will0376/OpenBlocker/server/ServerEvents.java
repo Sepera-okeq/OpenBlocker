@@ -1,4 +1,4 @@
-package ru.will0376.xBlocker.server;
+package ru.will0376.OpenBlocker.server;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,9 +12,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import ru.will0376.xBlocker.Main;
-import ru.will0376.xBlocker.common.ChatForm;
-import ru.will0376.xBlocker.common.JsonHelper;
+import ru.will0376.OpenBlocker.Main;
+import ru.will0376.OpenBlocker.common.ChatForm;
+import ru.will0376.OpenBlocker.common.JsonHelper;
 
 import java.util.HashMap;
 
