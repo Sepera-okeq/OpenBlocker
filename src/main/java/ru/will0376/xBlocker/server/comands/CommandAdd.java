@@ -1,9 +1,11 @@
 package ru.will0376.xBlocker.server.comands;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -13,7 +15,6 @@ import ru.will0376.xBlocker.common.JsonHelper;
 
 public class CommandAdd implements Base{
 	String usageadd = Base.usage+"add (or set) <reason> <meta>* <temp?(empty or true)> \n" +
-			"<meta> - Put 'all' if you want to get the meter out of the block \n" +
 			"ex: /xb add test add 1";
 	String usageremove = Base.usage+"remove(or delete) <meta>\n" +
 			"<meta> - Put 'all' if you want to get the meter out of the block";
@@ -62,6 +63,17 @@ public class CommandAdd implements Base{
 			jo.addProperty("boolBlockAllMeta",true);
 		if(temp)
 			jo.addProperty("boolTemp",true);
+
+
+		if (itemStack.getTagCompound() != null && !itemStack.getTagCompound().isEmpty()) {
+			NBTTagCompound nbtTagCompound = itemStack.getTagCompound();
+			JsonArray ja = new JsonArray();
+			for (String tgs : nbtTagCompound.getKeySet()) {
+				ja.add(nbtTagCompound.getTag(tgs).toString().replace("\"", ""));
+			}
+			jo.add("nbts", ja);
+		}
+
 		jo.addProperty("reason",reason.trim());
 		JsonHelper.addServer(jo,JsonHelper.BLOCKER,itemStack.getItem().getRegistryName().toString()+":"+meta);
 		sender.sendMessage(new TextComponentString(ChatForm.prefix+String.format("ItemStack: %s successfully added!",itemStack.getItem().getRegistryName().toString()+":"+meta)));

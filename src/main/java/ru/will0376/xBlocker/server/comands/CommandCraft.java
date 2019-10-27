@@ -44,6 +44,7 @@ public class CommandCraft {
 				if(args[1].equals(meta+"") || (all && i == 1))
 					continue;
 				reason+= args[i]+" ";
+
 			}
 			jo.addProperty("reason",reason);
 			JsonHelper.addServer(jo,JsonHelper.CRAFT,is.getItem().getRegistryName().toString()+":"+meta);
