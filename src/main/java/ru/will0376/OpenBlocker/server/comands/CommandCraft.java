@@ -1,9 +1,11 @@
 package ru.will0376.OpenBlocker.server.comands;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -44,6 +46,14 @@ public class CommandCraft {
 					continue;
 				reason += args[i] + " ";
 
+			}
+			if (is.getTagCompound() != null && !is.getTagCompound().isEmpty()) {
+				NBTTagCompound nbtTagCompound = is.getTagCompound();
+				JsonArray ja = new JsonArray();
+				for (String tgs : nbtTagCompound.getKeySet()) {
+					ja.add(nbtTagCompound.getTag(tgs).toString().replace("\"", ""));
+				}
+				jo.add("nbts", ja);
 			}
 			jo.addProperty("reason", reason);
 			JsonHelper.addServer(jo, JsonHelper.CRAFT, is.getItem().getRegistryName().toString() + ":" + meta);

@@ -1,9 +1,11 @@
 package ru.will0376.OpenBlocker.server.comands;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -45,6 +47,16 @@ public class CommandLimit implements Base {
 		if (all)
 			jo.addProperty("boolBlockAllMeta", true);
 		jo.addProperty("limit", args[1]);
+
+		if (is.getTagCompound() != null && !is.getTagCompound().isEmpty()) {
+			NBTTagCompound nbtTagCompound = is.getTagCompound();
+			JsonArray ja = new JsonArray();
+			for (String tgs : nbtTagCompound.getKeySet()) {
+				ja.add(nbtTagCompound.getTag(tgs).toString().replace("\"", ""));
+			}
+			jo.add("nbts", ja);
+		}
+
 		JsonHelper.addServer(jo, JsonHelper.LIMIT, is.getItem().getRegistryName().toString() + ":" + meta);
 		player.sendMessage(new TextComponentString(ChatForm.prefix + String.format("The limit for %s block is set to %s", is.getItem().getRegistryName().toString() + ":" + meta, args[1])));
 	}

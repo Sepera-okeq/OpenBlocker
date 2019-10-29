@@ -5,13 +5,14 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
+import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ComandsMain extends CommandBase {
-	private String usage = "/xb <module>\n" +
+	private String usage = "/ob <module>\n" +
 			"Helps:\n" +
 			"-> add-help\n" +
 			"-> mincost-help\n" +
@@ -25,7 +26,7 @@ public class ComandsMain extends CommandBase {
 
 	@Override
 	public String getName() {
-		return "xb";
+		return "ob";
 	}
 
 	@Override
@@ -38,6 +39,7 @@ public class ComandsMain extends CommandBase {
 		ArrayList<String> al = new ArrayList<>();
 		al.add("OpenBlocker");
 		al.add("xbl");
+		al.add("xb");
 		return al;
 	}
 
@@ -96,6 +98,7 @@ public class ComandsMain extends CommandBase {
 				break;
 			case "reload":
 				JsonHelper.init();
+				sender.sendMessage(new TextComponentString(ChatForm.prefix + "Reloaded!"));
 				break;
 			default:
 				sender.sendMessage(new TextComponentString(usage));

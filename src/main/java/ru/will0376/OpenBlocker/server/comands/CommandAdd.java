@@ -32,6 +32,8 @@ public class CommandAdd implements Base {
 		String reason = "";
 		int meta = itemStack.getMetadata();
 		int end = args.length - 1;
+
+
 		if (args.length < 2) {
 			sender.sendMessage(new TextComponentString(usageadd));
 			return;
@@ -40,6 +42,7 @@ public class CommandAdd implements Base {
 			sender.sendMessage(new TextComponentString(ChatForm.prefix_warring + "Take a subject in a hand"));
 			return;
 		}
+
 		if (args[args.length - 1].equalsIgnoreCase("true") || args[args.length - 1].equalsIgnoreCase("екгу")) {
 			temp = true;
 			end = args.length - 2;
@@ -58,6 +61,7 @@ public class CommandAdd implements Base {
 			} else if (NumberUtils.isNumber(args[args.length - 1]) && !args[args.length - 1].equalsIgnoreCase("0"))
 				meta = Integer.parseInt(args[args.length - 1]);
 		}
+
 
 		for (int i = 1; i < end; i++)
 			reason += args[i] + " ";
