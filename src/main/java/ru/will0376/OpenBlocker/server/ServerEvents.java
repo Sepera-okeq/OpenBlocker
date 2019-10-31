@@ -2,6 +2,7 @@ package ru.will0376.OpenBlocker.server;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -62,6 +63,10 @@ public class ServerEvents {
 		}
 	}
 
+	@SubscribeEvent
+	public static void login(PlayerEvent.PlayerLoggedInEvent e) {
+		JsonHelper.sendToPlayer((EntityPlayerMP) e.player);
+	}
 	public static void checkEnchant(EntityPlayer player, ItemStack is, int invStackSlot) {
 		try {
 			NBTTagList nbts = (NBTTagList) is.getTagCompound().getTag("StoredEnchantments");

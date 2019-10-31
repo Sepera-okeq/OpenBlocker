@@ -6,10 +6,13 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 import ru.justagod.mineplugin.GradleSide;
 import ru.justagod.mineplugin.GradleSideOnly;
+import ru.will0376.OpenBlocker.common.Blocker;
 import ru.will0376.OpenBlocker.common.CommonProxy;
 import ru.will0376.OpenBlocker.common.Config;
 import ru.will0376.OpenBlocker.common.JsonHelper;
@@ -54,11 +57,14 @@ public class Main {
 		configFile = event.getSuggestedConfigurationFile();
 		config = new Config(configFile);
 		config.launch();
+		proxy.preInit(event);
 	}
 
 	@EventHandler
 	public void Init(FMLInitializationEvent event) {
-		proxy.events(event);
+		network = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
+		Main.network.registerMessage(new Blocker(), Blocker.class, 1, Side.CLIENT);
+		proxy.init(event);
 		Instance = this;
 	}
 
