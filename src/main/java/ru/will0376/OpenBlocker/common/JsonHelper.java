@@ -11,7 +11,9 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.server.IO;
 
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class JsonHelper {
 	public static final String BLOCKER = "blocker";
@@ -74,9 +76,32 @@ public class JsonHelper {
 			return true;
 		return server.getAsJsonObject(objectname).get(itemname + ":" + meta) != null;
 	}
-
 	public static boolean containsItem(String objectname, ItemStack is) {
 		return containsItem(objectname, is.getItem().getRegistryName().toString(), is.getMetadata());
+	}
+
+	public static ArrayList<String> findAllNBT(String name, int meta, boolean client) {
+		ArrayList<String> list = new ArrayList<>();
+		finditem(name, meta, client).forEach(l -> {
+			if (l.has("nbts"))
+				list.add(String.valueOf(l.get("nbts")));
+		});
+		return list;
+	}
+
+	public static ArrayList<JsonObject> finditem(String name, int meta, boolean client) {
+		JsonObject jotemp;
+		if (client) jotemp = JsonHelper.client;
+		else jotemp = server;
+		ArrayList<JsonObject> jolist = new ArrayList<>();
+		AtomicInteger metaai = new AtomicInteger(meta);
+		jotemp.entrySet().forEach(l -> {
+			if (checkAllMetas(l.getKey(), name)) metaai.set(0);
+			if (contains(l.getKey(), name + ":" + metaai.get())) {
+				jolist.add(l.getValue().getAsJsonObject().getAsJsonObject(name + ":" + metaai.get()));
+			}
+		});
+		return jolist;
 	}
 
 	public static boolean checkAllMetas(String objectname, String is) {
@@ -114,7 +139,7 @@ public class JsonHelper {
 			if (is.getTagCompound() != null)
 				is.getTagCompound().getKeySet().forEach(s -> {
 					if (!ab.get())
-						ab.set(nbt.toString().replace("\"", "").contains(is.getTagCompound().getString(s)));
+						ab.set(nbt.toString().replace("\"", "").equals(is.getTagCompound().getCompoundTag(s).toString().replace("\"", "")));
 				});
 		});
 		return ab.get();

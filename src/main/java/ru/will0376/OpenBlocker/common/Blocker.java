@@ -2,10 +2,12 @@ package ru.will0376.OpenBlocker.common;
 
 import com.google.gson.JsonParser;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import ru.will0376.OpenBlocker.client.ItemsBlocks;
 
 public class Blocker implements IMessageHandler<Blocker, IMessage>, IMessage {
 	String text;
@@ -32,8 +34,13 @@ public class Blocker implements IMessageHandler<Blocker, IMessage>, IMessage {
 		try {
 			JsonParser parser = new JsonParser();
 			JsonHelper.client = parser.parse(message.text).getAsJsonObject();
+			ItemsBlocks.ib.clear();
+			JsonHelper.client.entrySet().forEach(l ->
+					l.getValue().getAsJsonObject().entrySet().forEach(t ->
+							new ItemsBlocks(t.getKey())));
 		} catch (Exception e) {
-			net.minecraft.client.Minecraft.getMinecraft().player.sendChatMessage(e.getMessage());
+			e.printStackTrace();
+			net.minecraft.client.Minecraft.getMinecraft().player.sendMessage(new TextComponentString("Error!"));
 		}
 		return null;
 	}

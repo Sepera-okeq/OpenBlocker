@@ -99,6 +99,8 @@ public class ServerEvents {
 	}
 
 	private static boolean checkNBT(EntityPlayer player, ItemStack is) {
+		if (!is.hasTagCompound())
+			return true;
 		return JsonHelper.checkNBT(JsonHelper.BLOCKER, is);
 	}
 

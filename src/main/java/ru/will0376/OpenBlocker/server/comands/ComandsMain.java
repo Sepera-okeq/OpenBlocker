@@ -1,9 +1,12 @@
 package ru.will0376.OpenBlocker.server.comands;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentString;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.JsonHelper;
@@ -93,11 +96,19 @@ public class ComandsMain extends CommandBase {
 				new CommandLimit().remove(server, sender, args);
 				break;
 			///
-
+			case "getnbt":
+				try {
+					NBTTagCompound tag = new NBTTagCompound();
+					Minecraft.getMinecraft().player.getHeldItem(EnumHand.MAIN_HAND).writeToNBT(tag);
+					sender.sendMessage(new TextComponentString(tag.toString()));
+				} catch (NullPointerException ignored) {
+				}
+				break;
 			case "perms":
 				break;
 			case "reload":
 				JsonHelper.init();
+				JsonHelper.resendToClient();
 				sender.sendMessage(new TextComponentString(ChatForm.prefix + "Reloaded!"));
 				break;
 			default:
