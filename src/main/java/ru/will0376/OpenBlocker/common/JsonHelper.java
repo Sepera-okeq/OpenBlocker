@@ -4,9 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.*;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.server.IO;
@@ -84,7 +82,7 @@ public class JsonHelper {
 		ArrayList<String> list = new ArrayList<>();
 		finditem(name, meta, client).forEach(l -> {
 			if (l.has("nbts"))
-				list.add(String.valueOf(l.get("nbts")));
+				l.get("nbts").getAsJsonArray().forEach(st -> list.add(st.getAsString()));
 		});
 		return list;
 	}
@@ -138,8 +136,19 @@ public class JsonHelper {
 		jsonArray.forEach(nbt -> {
 			if (is.getTagCompound() != null)
 				is.getTagCompound().getKeySet().forEach(s -> {
-					if (!ab.get())
-						ab.set(nbt.toString().replace("\"", "").equals(is.getTagCompound().getCompoundTag(s).toString().replace("\"", "")));
+					if (!ab.get()) {
+						NBTTagCompound nbtt = new NBTTagCompound();
+						try {
+							nbtt = JsonToNBT.getTagFromJson(B64.decode(nbt.getAsString()));
+						} catch (NBTException e) {
+							e.printStackTrace();
+						}
+						if (nbtt.hasKey("tag") && nbtt.getCompoundTag("tag").hasKey(s)) {
+							if (is.serializeNBT().hasKey("tag") && is.serializeNBT().getCompoundTag("tag").hasKey(s) &&
+									is.serializeNBT().getCompoundTag("tag").getCompoundTag(s).equals(nbtt.getCompoundTag("tag").getCompoundTag(s)))
+								ab.set(true);
+						}
+					}
 				});
 		});
 		return ab.get();

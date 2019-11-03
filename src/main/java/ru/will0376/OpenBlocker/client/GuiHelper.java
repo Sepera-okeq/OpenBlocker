@@ -73,12 +73,16 @@ public class GuiHelper {
 	}
 
 	public static void renderBlocks(int x, int y, ItemStack it, float scalledX, float scalledY) {
+		renderBlocks(x, y, it, scalledX, scalledY, 0);
+	}
+
+	public static void renderBlocks(int x, int y, ItemStack it, float scalledX, float scalledY, float Z) {
 		if (scalledX == 0)
 			scalledX = 1;
 		if (scalledY == 0)
 			scalledY = 1;
 		GL11.glPushMatrix();
-		GL11.glTranslatef(x, y, 0.0F);
+		GL11.glTranslatef(x, y, Z);
 		GL11.glScalef(scalledX, scalledY, 0.0F);
 		Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(it, 0, 0);
 		GL11.glPopMatrix();

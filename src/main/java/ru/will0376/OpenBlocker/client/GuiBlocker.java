@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,6 +22,7 @@ public class GuiBlocker extends GuiScreen {
 	private boolean isScrollPressed = false;
 	private int pane = 0;
 	private ArrayList<ItemsBlocks> list = new ArrayList<>();
+
 	public void initGui() {
 		list.clear();
 		buttonList.clear();
@@ -69,7 +71,6 @@ public class GuiBlocker extends GuiScreen {
 				break;
 			}
 		}
-		System.out.println(pane);
 	}
 
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
@@ -112,35 +113,26 @@ public class GuiBlocker extends GuiScreen {
 		}
 
 		AtomicInteger offset = new AtomicInteger(0);
-		RenderHelper.enableGUIStandardItemLighting();
 		RenderHelper.enableStandardItemLighting();
 		scrollMax = (list.size() / 4) * 39;
 		AtomicBoolean skip = new AtomicBoolean(false);
+		AtomicBoolean skipRow = new AtomicBoolean(false);
 		list.forEach(block -> {
 			int index = list.indexOf(block);
 			float numberlist = ((float) index / 4) - (index / 4);
 			int temp = offset.get() / 4;
-
-			if ((height / 2 - 80 - scrollPos + (temp * 39)) > 26 && (height / 2 - 80 - scrollPos + (temp * 39)) < 160) {
-				if (!skip.getAndSet(false)) {
+			if (list.size() < 15)
+				isScrollPressed = false;
+			if (((height / 2 - 80 - scrollPos + (temp * 39)) > 26 && (height / 2 - 80 - scrollPos + (temp * 39)) < 160) || list.size() < 15) {
+				if (!skip.getAndSet(false) && !skipRow.get()) {
 					ItemStack is = block.is.copy();
-					//TODO: NBT
-/*					NBTTagList nbt = new NBTTagList();
-					for(String tmp : block.nbt){
-						try {
-							System.out.println(tmp);
-							nbt.appendTag(JsonToNBT.getTagFromJson(tmp.replace("[\"","").replace("\"]","")));
-						} catch (NBTException e) {
-							e.printStackTrace();
-						}
+					if (!block.nbt.isEmpty()) {
+						is = new ItemStack(block.nbt);
 					}
-					System.out.println(nbt);*/
-					//nbt.
-					//	System.out.println(block.nbt);
-					//is.deserializeNBT();
-					GuiHelper.renderBlocks((int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - scrollPos + (temp * 39)), is, 1.8f, 1.8f);
+					GuiHelper.renderBlocks((int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - scrollPos + (temp * 39)), is, 1.8f, 1.8f, 0);
 				}
-
+				if (numberlist == 0.75)
+					skipRow.set(false);
 				if (isMouseOverArea(mouseX, mouseY, (int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - scrollPos + (temp * 39)), 25, 25)) {
 					ArrayList<String> list = new ArrayList<>();
 					list.add("-> " + block.is.getDisplayName());
@@ -152,19 +144,21 @@ public class GuiBlocker extends GuiScreen {
 					if (block.mincostb) list.add("Minimum cost: " + block.mincost);
 					if (block.craft) list.add("Block craft: true");
 
-
 					if (!block.nbt.isEmpty()) {
-						String tmp = String.join(",", block.nbt);
-						list.add("NBT: " + tmp);
+						list.add("NBT: " + block.nbt);
 					}
-					drawHoveringText(list, (int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - scrollPos + (temp * 39)));
+					int tmp = list.stream().mapToInt(String::length).filter(l -> l >= 0).max().orElse(0);
+					if (tmp > 80) {
+						skipRow.set(true);
+					}
+					renderTooltip((int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - scrollPos + (temp * 39)), list);
 					if (numberlist != 0.75)
 						skip.set(true);
 				}
 			}
 			offset.getAndIncrement();
 		});
-		GuiHelper.drawScalledString(width / 2 - 100, height / 2 - 90, 1.0f, 1.0f, ".", -1);
+		RenderHelper.disableStandardItemLighting();
 	}
 
 	private void drawGUIBackground() {
@@ -195,7 +189,7 @@ public class GuiBlocker extends GuiScreen {
 /*		if (button != 0)
 			return;*/
 		if (button == 0)
-		isScrollPressed = isMouseOverArea(mouseX, mouseY, width / 2 + 110, height / 2 - 80 + scrollPos, 12, 108);
+			isScrollPressed = isMouseOverArea(mouseX, mouseY, width / 2 + 110, height / 2 - 80 + scrollPos, 12, 108);
 		super.mouseClicked(mouseX, mouseY, button);
 	}
 
@@ -222,7 +216,7 @@ public class GuiBlocker extends GuiScreen {
 		}
 	}
 
-	@Override
+	/*@Override
 	protected void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
 		net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(textLines, x, y, width, height, -1, font);
 		if (false && !textLines.isEmpty()) {
@@ -256,7 +250,7 @@ public class GuiBlocker extends GuiScreen {
 				i2 = this.height - k - 6;
 			}
 
-			this.zLevel = 300.0F;
+			this.zLevel = 400.0F;
 			this.itemRender.zLevel = 299.0F;
 			int l = -267386864;
 			this.drawGradientRect(l1 - 3, i2 - 4, l1 + i + 3, i2 - 3, -267386864, -267386864);
@@ -282,12 +276,78 @@ public class GuiBlocker extends GuiScreen {
 				i2 += 10;
 			}
 
-			this.zLevel = 2.0F;
+			this.zLevel = 400.0F;
 			this.itemRender.zLevel = 0.0F;
 			GlStateManager.enableLighting();
 			GlStateManager.enableDepth();
 			RenderHelper.enableStandardItemLighting();
 			GlStateManager.enableRescaleNormal();
 		}
+	}*/
+	private void renderTooltip(int xCoord, int yCoord, List list) {
+		this.drawHoveringTexts(list, xCoord - 5, yCoord, fontRenderer);
 	}
+
+	protected void drawHoveringTexts(List list, int xCoord, int yCoord, FontRenderer font) {
+		if (!list.isEmpty()) {
+			GL11.glDisable(32826);
+			GL11.glDisable(2929);
+			int k = 0;
+			Iterator iterator = list.iterator();
+
+			int k2;
+			while (iterator.hasNext()) {
+				String j2 = (String) iterator.next();
+				k2 = font.getStringWidth(j2);
+				if (k2 > k) {
+					k = k2;
+				}
+			}
+
+			int var15 = xCoord + 12;
+			k2 = yCoord - 12;
+			int i1 = 8;
+			if (list.size() > 1) {
+				i1 += 2 + (list.size() - 1) * 10;
+			}
+
+			if (var15 + k > super.width) {
+				var15 -= 28 + k;
+			}
+
+			if (k2 + i1 + 6 > super.height) {
+				k2 = super.height - i1 - 6;
+			}
+
+			super.zLevel = 300.0F;
+			int j1 = -267386864;
+			this.drawGradientRect(var15 - 3, k2 - 4, var15 + k + 3, k2 - 3, j1, j1);
+			this.drawGradientRect(var15 - 3, k2 + i1 + 3, var15 + k + 3, k2 + i1 + 4, j1, j1);
+			this.drawGradientRect(var15 - 3, k2 - 3, var15 + k + 3, k2 + i1 + 3, j1, j1);
+			this.drawGradientRect(var15 - 4, k2 - 3, var15 - 3, k2 + i1 + 3, j1, j1);
+			this.drawGradientRect(var15 + k + 3, k2 - 3, var15 + k + 4, k2 + i1 + 3, j1, j1);
+			int k1 = 1347420415;
+			int l1 = (k1 & 16711422) >> 1 | k1 & -16777216;
+			this.drawGradientRect(var15 - 3, k2 - 3 + 1, var15 - 3 + 1, k2 + i1 + 3 - 1, k1, l1);
+			this.drawGradientRect(var15 + k + 2, k2 - 3 + 1, var15 + k + 3, k2 + i1 + 3 - 1, k1, l1);
+			this.drawGradientRect(var15 - 3, k2 - 3, var15 + k + 3, k2 - 3 + 1, k1, k1);
+			this.drawGradientRect(var15 - 3, k2 + i1 + 2, var15 + k + 3, k2 + i1 + 3, l1, l1);
+
+			for (int i2 = 0; i2 < list.size(); ++i2) {
+				String s1 = (String) list.get(i2);
+				font.drawStringWithShadow(s1, var15, k2, -1);
+				if (i2 == 0) {
+					k2 += 2;
+				}
+
+				k2 += 10;
+			}
+
+			super.zLevel = 0.0F;
+			GL11.glEnable(2929);
+			GL11.glEnable(32826);
+		}
+
+	}
+
 }

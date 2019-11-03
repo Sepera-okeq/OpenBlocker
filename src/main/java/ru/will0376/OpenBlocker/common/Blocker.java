@@ -40,6 +40,7 @@ public class Blocker implements IMessageHandler<Blocker, IMessage>, IMessage {
 							new ItemsBlocks(t.getKey())));
 		} catch (Exception e) {
 			e.printStackTrace();
+
 			net.minecraft.client.Minecraft.getMinecraft().player.sendMessage(new TextComponentString("Error!"));
 		}
 		return null;

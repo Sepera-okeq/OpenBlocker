@@ -5,10 +5,10 @@ import com.google.gson.JsonObject;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.lang3.math.NumberUtils;
+import ru.will0376.OpenBlocker.common.B64;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
@@ -74,11 +74,8 @@ public class CommandAdd implements Base {
 
 
 		if (itemStack.getTagCompound() != null && !itemStack.getTagCompound().isEmpty()) {
-			NBTTagCompound nbtTagCompound = itemStack.getTagCompound();
 			JsonArray ja = new JsonArray();
-			for (String tgs : nbtTagCompound.getKeySet()) {
-				ja.add(nbtTagCompound.getTag(tgs).toString().replace("\"", ""));
-			}
+			ja.add(B64.encode(itemStack.serializeNBT().toString()));
 			jo.add("nbts", ja);
 		}
 

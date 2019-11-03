@@ -4,11 +4,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentString;
 import ru.will0376.OpenBlocker.common.ChatForm;
+import ru.will0376.OpenBlocker.common.ItemHelper;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
 import java.util.ArrayList;
@@ -104,6 +106,12 @@ public class ComandsMain extends CommandBase {
 				} catch (NullPointerException ignored) {
 				}
 				break;
+			case "getmaxmeta": {
+				Item i = Minecraft.getMinecraft().player.getHeldItem(EnumHand.MAIN_HAND).copy().getItem();
+
+				sender.sendMessage(new TextComponentString(ItemHelper.getCountAllSubItems(i) + ""));
+			}
+			break;
 			case "perms":
 				break;
 			case "reload":
