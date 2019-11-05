@@ -5,7 +5,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import ru.will0376.OpenBlocker.common.B64;
+import ru.will0376.OpenBlocker.common.ItemHelper;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
 import java.util.ArrayList;
@@ -46,9 +48,20 @@ public class ItemsBlocks implements Cloneable {
 		ib.add(this);
 
 		compensationNBTS();
-
+		if (allmeta)
+			blockAllMeta();
 	}
 
+	private void blockAllMeta() {
+		NonNullList<ItemStack> list = ItemHelper.getAllSubItems(is.getItem());
+		for (ItemStack istemp : list) {
+			if (istemp.isItemEqual(this.is))
+				continue;
+			ItemsBlocks newib = this.clone();
+			newib.is = istemp;
+			ib.add(newib);
+		}
+	}
 	private void compensationNBTS() {
 		if (!nbts.isEmpty()) {
 			try {

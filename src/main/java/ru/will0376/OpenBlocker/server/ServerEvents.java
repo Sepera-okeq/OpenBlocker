@@ -1,13 +1,17 @@
 package ru.will0376.OpenBlocker.server;
 
+import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -23,13 +27,32 @@ import java.util.HashMap;
 public class ServerEvents {
 	private static HashMap<EntityPlayer, Long> cooldown = new HashMap<>();
 
+	public static ItemStack getPickBlock(World world, BlockPos pos) {
+		try {
+			Item item = Item.getItemFromBlock(world.getBlockState(pos).getBlock());
+			if (item == null)
+				return ItemStack.EMPTY;
+			else
+				return new ItemStack(item, 1, Block.getBlockFromItem(item).getMetaFromState(world.getBlockState(pos)));
+		} catch (Exception e) {
+			return ItemStack.EMPTY;
+		}
+	}
+
+	@SubscribeEvent
+	public static void checkBreackBlock(PlayerInteractEvent.LeftClickBlock e) {
+		EntityPlayer player = e.getEntityPlayer();
+		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
+		if (check(player, is, Main.config.isDeleteBlocked())) e.setCanceled(true);
+	}
+
 	@SubscribeEvent
 	public static void checkUseBlocker(PlayerInteractEvent e) {
 		if (e.getItemStack() != ItemStack.EMPTY)
 			return;
 		EntityPlayer player = e.getEntityPlayer();
 		ItemStack is = e.getItemStack();
-		if (check(player, is, false)) e.setCanceled(true);
+		if (check(player, is, Main.config.isDeleteBlocked())) e.setCanceled(true);
 	}
 
 	@SubscribeEvent

@@ -9,7 +9,6 @@ public class B64 {
 
 	public static String decode(String b64) {
 		try {
-			System.out.println(b64);
 			return new String(Base64.getDecoder().decode(b64));
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -2,7 +2,6 @@ package ru.will0376.OpenBlocker.common.hooks;
 
 import gloomyfolken.hooklib.asm.Hook;
 import gloomyfolken.hooklib.asm.HookPriority;
-import gloomyfolken.hooklib.asm.ReturnCondition;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -20,12 +19,28 @@ import net.minecraft.network.play.server.SPacketRecipeBook;
 import net.minecraft.stats.RecipeBook;
 import net.minecraft.stats.RecipeBookServer;
 import net.minecraft.util.math.MathHelper;
+import sun.misc.Unsafe;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import static gloomyfolken.hooklib.asm.ReturnCondition.ALWAYS;
+
 public class Hooks {
-	@Hook(priority = HookPriority.HIGHEST, returnCondition = ReturnCondition.ALWAYS)
+	private static final Unsafe unsafe;
+
+	static {
+		try {
+			Field field = Unsafe.class.getDeclaredField("theUnsafe");
+			field.setAccessible(true);
+			unsafe = (Unsafe) field.get(null);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Hook(priority = HookPriority.HIGHEST, returnCondition = ALWAYS)
 	public static int getRecipeId(RecipeBook rb, IRecipe recipe) {
 		try {
 			int ret = CraftingManager.REGISTRY.getIDForObject(recipe);
@@ -42,7 +57,7 @@ public class Hooks {
 		}
 	}
 
-	@Hook(priority = HookPriority.HIGHEST, returnCondition = ReturnCondition.ALWAYS)
+	@Hook(priority = HookPriority.HIGHEST, returnCondition = ALWAYS)
 	public static void drawButton(GuiButtonRecipe br, Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 		try {
 			if (br.visible) {
@@ -102,7 +117,7 @@ public class Hooks {
 
 	}
 
-	@Hook(priority = HookPriority.HIGHEST, returnCondition = ReturnCondition.ALWAYS)
+	@Hook(priority = HookPriority.HIGHEST, returnCondition = ALWAYS)
 	public static void add(RecipeBookServer rbs, List<IRecipe> recipesIn, EntityPlayerMP player) {
 		try {
 			List<IRecipe> list = new ArrayList<>();
@@ -121,7 +136,7 @@ public class Hooks {
 		}
 	}
 
-	@Hook(priority = HookPriority.HIGHEST, returnCondition = ReturnCondition.ALWAYS)
+	@Hook(priority = HookPriority.HIGHEST, returnCondition = ALWAYS)
 	public static NBTTagCompound write(RecipeBookServer rbs) {
 		try {
 			NBTTagCompound nbttagcompound = new NBTTagCompound();

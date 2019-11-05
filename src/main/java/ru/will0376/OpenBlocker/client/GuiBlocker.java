@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class GuiBlocker extends GuiScreen {
 	private static int scrollMax = 130;
+	private static int scrolloffset = 1;
 	private int scrollPos = 0; //up to 93
 	private boolean isScrollPressed = false;
 	private int pane = 0;
@@ -114,7 +115,8 @@ public class GuiBlocker extends GuiScreen {
 
 		AtomicInteger offset = new AtomicInteger(0);
 		RenderHelper.enableStandardItemLighting();
-		scrollMax = (list.size() / 4) * 39;
+		scrollMax = (list.size() / 4) + 10;
+		scrolloffset = (list.size() / 4) * 2;
 		AtomicBoolean skip = new AtomicBoolean(false);
 		AtomicBoolean skipRow = new AtomicBoolean(false);
 		list.forEach(block -> {
@@ -123,17 +125,19 @@ public class GuiBlocker extends GuiScreen {
 			int temp = offset.get() / 4;
 			if (list.size() < 15)
 				isScrollPressed = false;
-			if (((height / 2 - 80 - scrollPos + (temp * 39)) > 26 && (height / 2 - 80 - scrollPos + (temp * 39)) < 160) || list.size() < 15) {
+			if (((height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 39)) > (height / 2 - 100)
+					&& (height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 39)) < height / 2 + 50)
+					|| list.size() < 15) {
 				if (!skip.getAndSet(false) && !skipRow.get()) {
 					ItemStack is = block.is.copy();
 					if (!block.nbt.isEmpty()) {
 						is = new ItemStack(block.nbt);
 					}
-					GuiHelper.renderBlocks((int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - scrollPos + (temp * 39)), is, 1.8f, 1.8f, 0);
+					GuiHelper.renderBlocks((int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 39)), is, 1.8f, 1.8f, 0);
 				}
 				if (numberlist == 0.75)
 					skipRow.set(false);
-				if (isMouseOverArea(mouseX, mouseY, (int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - scrollPos + (temp * 39)), 25, 25)) {
+				if (isMouseOverArea(mouseX, mouseY, (int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 39)), 25, 25)) {
 					ArrayList<String> list = new ArrayList<>();
 					list.add("-> " + block.is.getDisplayName());
 					list.add("Full name: ");
