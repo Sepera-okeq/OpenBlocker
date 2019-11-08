@@ -19,16 +19,14 @@ import net.minecraft.network.play.server.SPacketRecipeBook;
 import net.minecraft.stats.RecipeBook;
 import net.minecraft.stats.RecipeBookServer;
 import net.minecraft.util.math.MathHelper;
-import sun.misc.Unsafe;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 import static gloomyfolken.hooklib.asm.ReturnCondition.ALWAYS;
 
 public class Hooks {
-	private static final Unsafe unsafe;
+	/*private static final Unsafe unsafe;
 
 	static {
 		try {
@@ -38,7 +36,7 @@ public class Hooks {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
+	}*/
 
 	@Hook(priority = HookPriority.HIGHEST, returnCondition = ALWAYS)
 	public static int getRecipeId(RecipeBook rb, IRecipe recipe) {

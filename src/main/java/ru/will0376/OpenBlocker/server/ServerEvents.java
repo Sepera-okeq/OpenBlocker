@@ -39,6 +39,7 @@ public class ServerEvents {
 		}
 	}
 
+
 	@SubscribeEvent
 	public static void checkBreackBlock(PlayerInteractEvent.LeftClickBlock e) {
 		EntityPlayer player = e.getEntityPlayer();
@@ -55,7 +56,7 @@ public class ServerEvents {
 		if (check(player, is, Main.config.isDeleteBlocked())) e.setCanceled(true);
 	}
 
-	@SubscribeEvent
+	/*@SubscribeEvent
 	public static void checkCraftBlocker(PlayerEvent.ItemCraftedEvent e) {
 		EntityPlayer player = e.player;
 		ItemStack is = e.crafting;
@@ -68,7 +69,7 @@ public class ServerEvents {
 		ItemStack is = e.smelting;
 		if (check(player, is, true)) e.setCanceled(true);
 	}
-
+*/
 	@SubscribeEvent
 	public static void checkPickupBlocker(PlayerEvent.ItemPickupEvent e) {
 		EntityPlayer player = e.player;
@@ -98,7 +99,7 @@ public class ServerEvents {
 					NBTTagCompound tmp = (NBTTagCompound) tgs;
 					int id = tmp.getShort("id");
 					int lvl = tmp.getShort("lvl");
-					if (JsonHelper.containsEnchant(is) && checkPlayer(player)) {
+					if (JsonHelper.containsEnchant(is) && !checkPlayer(player)) {
 						player.inventory.setInventorySlotContents(invStackSlot, removeEnchID(id, is));
 						sendToPlayerMessage(player, String.format("Enchantment: %s has been blocked! and removed from your item(s)", Enchantment.getEnchantmentByID(id).getTranslatedName(lvl)));
 					}
@@ -109,7 +110,7 @@ public class ServerEvents {
 	}
 
 	public static boolean check(EntityPlayer player, ItemStack is, boolean disable_del) {
-		if (JsonHelper.containsItem(JsonHelper.BLOCKER, is) && checkPlayer(player) && checkNBT(player, is)) {
+		if (JsonHelper.containsItem(JsonHelper.BLOCKER, is) && !checkPlayer(player) && checkNBT(player, is)) {
 			String text = String.format(ChatForm.prefix + "ItemStack %s has been blocked!", is.getItem().getRegistryName().toString());
 			if (Main.config.isDeleteBlocked() && !disable_del) {
 				text += (" and removed! =3");
@@ -128,9 +129,9 @@ public class ServerEvents {
 	}
 
 	private static boolean checkPlayer(EntityPlayer player) {
-		return true;/*(!Main.config.getWhiteList().contains(player.getName().toLowerCase())
-				|| (player.getServer().getPlayerList().getOppedPlayers().getEntry(player.getGameProfile()) == null
-				&& player.isCreative()));*/
+		return /*true;*/(!Main.config.getWhiteList().contains(player.getName().toLowerCase())
+				|| /*(player.getServer().getPlayerList().getOppedPlayers().getEntry(player.getGameProfile()) == null
+				&&*/ player.isCreative());
 	}
 
 	private static void sendToPlayerMessage(EntityPlayer player, String line) {

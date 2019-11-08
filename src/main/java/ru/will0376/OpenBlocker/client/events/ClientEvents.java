@@ -9,12 +9,14 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 import ru.will0376.OpenBlocker.client.ItemsBlocks;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Mod.EventBusSubscriber
 
@@ -39,18 +41,42 @@ public class ClientEvents {
 			if (e.getTarget() != null)
 				if (e.getPlayer().getEntityWorld().getBlockState(e.getTarget().getBlockPos()).getBlock() != Blocks.AIR) {
 					ItemStack is = getPickBlock(e.getPlayer().getEntityWorld(), e.getTarget().getBlockPos());
-					if (check(is))
+					if (check(is, false))
 						render(e);
 				}
 		} catch (Exception ignore) {
 		}
 	}
 
-	private static boolean check(ItemStack is) {
+	@SubscribeEvent
+	public static void dravToolTips(ItemTooltipEvent e) {
+		try {
+			ItemStack is = e.getItemStack();
+			if (check(is, true)) {
+				e.getToolTip().addAll(getIB(is).getLore());
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private static boolean check(ItemStack is, boolean checkNonBlocks) {
 		AtomicBoolean ret = new AtomicBoolean(false);
 		ItemsBlocks.ib.forEach(l -> {
-			if (l.is.isItemEqual(is) && !ret.get())
+			if (l.is.isItemEqual(is) && !ret.get() && l.blocked)
 				ret.set(true);
+			else if (checkNonBlocks && l.is.isItemEqual(is) && !ret.get())
+				ret.set(true);
+		});
+		return ret.get();
+	}
+
+	private static ItemsBlocks getIB(ItemStack is) {
+		AtomicReference<ItemsBlocks>
+				ret = new AtomicReference();
+		ItemsBlocks.ib.forEach(l -> {
+			if (l.is.isItemEqual(is) && ret.get() == null)
+				ret.set(l);
 		});
 		return ret.get();
 	}

@@ -83,6 +83,15 @@ public class ItemsBlocks implements Cloneable {
 		}
 	}
 
+	public ArrayList<String> getLore() {
+		ArrayList<String> ret = new ArrayList<>();
+		if (mincostb) ret.add("Minimal cost: " + mincost);
+		if (blocked) ret.add("Blocked!");
+		if (allmeta) ret.add("All meta blocked!");
+		if (limitb) ret.add("Limit on chunk: " + limit);
+		if (craft) ret.add("Craft disabled!");
+		return ret;
+	}
 	@Override
 	public ItemsBlocks clone() {
 		try {
