@@ -5,7 +5,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -13,8 +12,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class GuiBlocker extends GuiScreen {
 	private static int scrollMax = 130;
@@ -112,9 +109,9 @@ public class GuiBlocker extends GuiScreen {
 				GuiHelper.drawScalledString((int) (width / 2 - ("Craft".length() * 1.5f)), height / 2 - 98, 1.5f, 1.5f, "Craft", -1);
 				break;
 		}
-
-		AtomicInteger offset = new AtomicInteger(0);
 		RenderHelper.enableStandardItemLighting();
+/*			AtomicInteger offset = new AtomicInteger(0);
+
 		scrollMax = (list.size() / 4) + 10;
 		scrolloffset = (list.size() / 4) * 2;
 		AtomicBoolean skip = new AtomicBoolean(false);
@@ -135,7 +132,7 @@ public class GuiBlocker extends GuiScreen {
 					}
 					GuiHelper.renderBlocks((int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 39)), is, 1.8f, 1.8f, 0);
 				}
-/*				if (numberlist == 0.50)
+				*//*if (numberlist == 0.50)
 					skipRow.set(false);
 				if (isMouseOverArea(mouseX, mouseY, (int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 39)), 25, 25)) {
 					ArrayList<String> list = new ArrayList<>();
@@ -161,10 +158,10 @@ public class GuiBlocker extends GuiScreen {
 						skip.set(true);
 						System.out.println("skip");
 					}
-				}*/
+				}*//*
 			}
 			offset.getAndIncrement();
-		});
+		});*/
 		RenderHelper.disableStandardItemLighting();
 	}
 
