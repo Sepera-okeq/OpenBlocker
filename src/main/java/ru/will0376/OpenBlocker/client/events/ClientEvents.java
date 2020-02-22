@@ -72,8 +72,7 @@ public class ClientEvents {
 	}
 
 	private static ItemsBlocks getIB(ItemStack is) {
-		AtomicReference<ItemsBlocks>
-				ret = new AtomicReference();
+		AtomicReference<ItemsBlocks> ret = new AtomicReference();
 		ItemsBlocks.ib.forEach(l -> {
 			if (l.is.isItemEqual(is) && ret.get() == null)
 				ret.set(l);

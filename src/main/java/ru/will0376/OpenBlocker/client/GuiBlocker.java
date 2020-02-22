@@ -121,12 +121,12 @@ public class GuiBlocker extends GuiScreen {
 		AtomicBoolean skipRow = new AtomicBoolean(false);
 		list.forEach(block -> {
 			int index = list.indexOf(block);
-			float numberlist = ((float) index / 4) - (index / 4);
+			float numberlist = ((float) index / 4) - (float) (index / 4);
 			int temp = offset.get() / 4;
 			if (list.size() < 15)
 				isScrollPressed = false;
-			if (((height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 39)) > (height / 2 - 100)
-					&& (height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 39)) < height / 2 + 50)
+			if (((height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 38)) > (height / 2 - 100)
+					&& (height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 38)) < height / 2 + 50)
 					|| list.size() < 15) {
 				if (!skip.getAndSet(false) && !skipRow.get()) {
 					ItemStack is = block.is.copy();
@@ -135,7 +135,7 @@ public class GuiBlocker extends GuiScreen {
 					}
 					GuiHelper.renderBlocks((int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 39)), is, 1.8f, 1.8f, 0);
 				}
-				if (numberlist == 0.75)
+/*				if (numberlist == 0.50)
 					skipRow.set(false);
 				if (isMouseOverArea(mouseX, mouseY, (int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 39)), 25, 25)) {
 					ArrayList<String> list = new ArrayList<>();
@@ -149,16 +149,19 @@ public class GuiBlocker extends GuiScreen {
 					if (block.craft) list.add("Block craft: true");
 
 					if (!block.nbt.isEmpty()) {
-						list.add("NBT: " + block.nbt);
+						list.add("NBT: "+ block.nbt);
 					}
 					int tmp = list.stream().mapToInt(String::length).filter(l -> l >= 0).max().orElse(0);
 					if (tmp > 80) {
 						skipRow.set(true);
+						System.out.println("skipRow");
 					}
 					renderTooltip((int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - scrollPos + (temp * 39)), list);
-					if (numberlist != 0.75)
+					if (numberlist != 0.50) { //0.75
 						skip.set(true);
-				}
+						System.out.println("skip");
+					}
+				}*/
 			}
 			offset.getAndIncrement();
 		});
