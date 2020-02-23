@@ -11,6 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -45,10 +46,12 @@ public class ServerEvents {
 
 
 	@SubscribeEvent
-	public static void checkBreackBlock(PlayerInteractEvent.LeftClickBlock e) {
+	public static void checkBreakBlock(PlayerInteractEvent.LeftClickBlock e) {
 		EntityPlayer player = e.getEntityPlayer();
 		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
-		if (check(player, is, Main.config.isDeleteBlocked())) e.setCanceled(true);
+		if (check(player, is, Main.config.isDeleteBlocked(),
+				ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText()))
+			e.setCanceled(true);
 	}
 
 	@SubscribeEvent
@@ -57,7 +60,9 @@ public class ServerEvents {
 			return;
 		EntityPlayer player = e.getEntityPlayer();
 		ItemStack is = e.getItemStack();
-		if (check(player, is, Main.config.isDeleteBlocked())) e.setCanceled(true);
+		if (check(player, is, Main.config.isDeleteBlocked(),
+				ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText()))
+			e.setCanceled(true);
 	}
 
 	/*@SubscribeEvent
@@ -78,7 +83,10 @@ public class ServerEvents {
 	public static void checkPickupBlocker(PlayerEvent.ItemPickupEvent e) {
 		EntityPlayer player = e.player;
 		ItemStack is = e.pickedUp.getItem();
-		if (check(player, is, true)) e.setCanceled(true);
+		if (check(player, is, true,
+				ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText()))
+			e.setCanceled(true);
+
 	}
 
 	@SubscribeEvent
@@ -86,7 +94,8 @@ public class ServerEvents {
 		EntityPlayer player = e.player;
 		for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 			ItemStack is = player.inventory.getStackInSlot(i);
-			check(player, is, false);
+			check(player, is, false,
+					ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText());
 			checkEnchant(player, is, i);
 		}
 	}
@@ -106,7 +115,9 @@ public class ServerEvents {
 					int lvl = tmp.getShort("lvl");
 					if (JsonHelper.containsEnchant(is) && !checkPlayer(player)) {
 						player.inventory.setInventorySlotContents(invStackSlot, removeEnchID(id, is));
-						sendToPlayerMessage(player, String.format("Enchantment: %s has been blocked! and removed from your item(s)", Enchantment.getEnchantmentByID(id).getTranslatedName(lvl)));
+						sendToPlayerMessage(player,
+								ChatForm.prefix + new TextComponentTranslation("serverevent.blockenchant", Enchantment.getEnchantmentByID(id).getTranslatedName(lvl)).getFormattedText()
+						);
 					}
 				}
 			}
@@ -114,11 +125,10 @@ public class ServerEvents {
 		}
 	}
 
-	public static boolean check(EntityPlayer player, ItemStack is, boolean disable_del) {
+	public static boolean check(EntityPlayer player, ItemStack is, boolean disable_del, String text) {
 		if (JsonHelper.containsItem(JsonHelper.BLOCKER, is) && !checkPlayer(player) && checkNBT(player, is)) {
-			String text = String.format(ChatForm.prefix + "ItemStack %s has been blocked!", is.getItem().getRegistryName().toString());
 			if (Main.config.isDeleteBlocked() && !disable_del) {
-				text += (" and removed! =3");
+				new TextComponentTranslation("serverevent.interaction.remove").getFormattedText();
 				is.setCount(0);
 			}
 			sendToPlayerMessage(player, text);
@@ -134,7 +144,6 @@ public class ServerEvents {
 	}
 
 	private static boolean checkPlayer(EntityPlayer player) {
-		System.out.println(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getEntry(player.getGameProfile()) != null);
 		return (!Main.config.getWhiteList().contains(player.getName().toLowerCase()) ||
 				(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList() != null
 						&& FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers() != null

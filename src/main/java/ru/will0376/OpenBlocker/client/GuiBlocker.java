@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -277,8 +276,8 @@ public class GuiBlocker extends GuiScreen {
 
 	protected void drawHoveringTexts(List list, int xCoord, int yCoord, FontRenderer font) {
 		if (!list.isEmpty()) {
-			GL11.glDisable(32826);
-			GL11.glDisable(2929);
+			GlStateManager.disableRescaleNormal();
+			GlStateManager.disableDepth();
 			int k = 0;
 			Iterator iterator = list.iterator();
 
@@ -331,10 +330,9 @@ public class GuiBlocker extends GuiScreen {
 			}
 
 			super.zLevel = 0.0F;
-			GL11.glEnable(2929);
-			GL11.glEnable(32826);
+			GlStateManager.enableDepth();
+			GlStateManager.enableRescaleNormal();
 		}
-
 	}
 
 }

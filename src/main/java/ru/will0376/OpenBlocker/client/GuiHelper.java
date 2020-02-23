@@ -3,11 +3,11 @@ package ru.will0376.OpenBlocker.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
 import ru.will0376.OpenBlocker.Main;
 
 public class GuiHelper {
@@ -19,8 +19,8 @@ public class GuiHelper {
 	}
 
 	public static void bindTexture(String modId, String path) {
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glDisable(2896);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.disableLighting();
 		Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(modId + ":" + path));
 	}
 
@@ -65,11 +65,11 @@ public class GuiHelper {
 	public static void renderSkinHead(int x, int y) {
 		Minecraft mc = Minecraft.getMinecraft();
 		mc.getTextureManager().bindTexture(mc.player.getLocationSkin());
-		GL11.glPushMatrix();
-		GL11.glTranslatef(x, y, 0.0F);
-		GL11.glScalef(4.0F, 4.0F, 0.0F);
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(x, y, 0.0F);
+		GlStateManager.scale(4.0F, 4.0F, 0.0F);
 		Gui.drawScaledCustomSizeModalRect(0, 0, 8.0F, 8.0F, 8, 8, 8, 8, 64.0F, 64.0F);
-		GL11.glPopMatrix();
+		GlStateManager.popMatrix();
 	}
 
 	public static void renderBlocks(int x, int y, ItemStack it, float scalledX, float scalledY) {
@@ -81,22 +81,22 @@ public class GuiHelper {
 			scalledX = 1;
 		if (scalledY == 0)
 			scalledY = 1;
-		GL11.glPushMatrix();
-		GL11.glTranslatef(x, y, Z);
-		GL11.glScalef(scalledX, scalledY, 0.0F);
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(x, y, Z);
+		GlStateManager.scale(scalledX, scalledY, 0.0F);
 		Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(it, 0, 0);
-		GL11.glPopMatrix();
+		GlStateManager.popMatrix();
 	}
 
 	public static void drawScalledString(int x, int y, float scalledX, float scalledY, String string, int color) {
 		if (color == -1)
 			color = 16777215;
 		if (scalledX != 1.0f || scalledY != 1.0f) {
-			GL11.glPushMatrix();
-			GL11.glTranslatef(x, y, 0.0F);
-			GL11.glScalef(scalledX, scalledY, 0.0F);
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(x, y, 0.0F);
+			GlStateManager.scale(scalledX, scalledY, 0.0F);
 			new Gui().drawString(Minecraft.getMinecraft().fontRenderer, string, 0, 0, color); //price
-			GL11.glPopMatrix();
+			GlStateManager.popMatrix();
 		} else new Gui().drawString(Minecraft.getMinecraft().fontRenderer, string, x, y, color);
 	}
 }

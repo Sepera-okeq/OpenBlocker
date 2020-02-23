@@ -11,14 +11,16 @@ import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.lang3.math.NumberUtils;
 import ru.justagod.mineplugin.GradleSide;
 import ru.justagod.mineplugin.GradleSideOnly;
+import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
 @GradleSideOnly(GradleSide.SERVER)
 public class CommandCraft {
-	String usage = Base.usage + "craft <meta>* <reason>\n" +
+	String usage = Base.usage + "craft <meta>* <reason>**\n" +
 			"if item already blocked - it will be deleted\n" +
 			"<meta> - Put 'all' if you want to get the meter out of the block \n" +
+			"* If the reason consists of one space, the default value is used\n" +
 			"ex: /ob craft all lololo";
 
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
@@ -58,6 +60,8 @@ public class CommandCraft {
 				}
 				jo.add("nbts", ja);
 			}
+			if (reason.trim().isEmpty())
+				reason = Main.config.getDefRes();
 			jo.addProperty("reason", reason);
 			JsonHelper.addServer(jo, JsonHelper.CRAFT, is.getItem().getRegistryName().toString() + ":" + meta);
 			player.sendMessage(new TextComponentString(ChatForm.prefix + "Item/Block Blocked!"));

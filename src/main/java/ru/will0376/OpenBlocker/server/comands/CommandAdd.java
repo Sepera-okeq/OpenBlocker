@@ -10,14 +10,16 @@ import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.lang3.math.NumberUtils;
 import ru.justagod.mineplugin.GradleSide;
 import ru.justagod.mineplugin.GradleSideOnly;
+import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.B64;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
 @GradleSideOnly(GradleSide.SERVER)
 public class CommandAdd implements Base {
-	String usageadd = Base.usage + "add (or set) <reason> <meta>* <temp?(empty or true)> \n" +
-			"ex: /ob add test add 1";
+	String usageadd = Base.usage + "add (or set) <reason>* <meta> <temp?(empty or true)> \n" +
+			"ex: /ob add test add 1\n" +
+			"* If the reason consists of one space, the default value is used";
 	String usageremove = Base.usage + "remove(or delete) <meta>\n" +
 			"<meta> - Put 'all' if you want to get the meter out of the block";
 
@@ -80,7 +82,8 @@ public class CommandAdd implements Base {
 			ja.add(B64.encode(itemStack.serializeNBT().toString()));
 			jo.add("nbts", ja);
 		}
-
+		if (reason.trim().isEmpty())
+			reason = Main.config.getDefRes();
 		jo.addProperty("reason", reason.trim());
 		JsonHelper.addServer(jo, JsonHelper.BLOCKER, itemStack.getItem().getRegistryName().toString() + ":" + meta);
 		sender.sendMessage(new TextComponentString(ChatForm.prefix + String.format("ItemStack: %s successfully added!", itemStack.getItem().getRegistryName().toString() + ":" + meta)));
