@@ -5,10 +5,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
+import ru.justagod.mineplugin.GradleSide;
+import ru.justagod.mineplugin.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 
 import java.io.*;
 
+@GradleSideOnly(GradleSide.SERVER)
 public class IO {
 	public static File path;
 	public static File fileJson;

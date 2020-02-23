@@ -8,11 +8,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.lang3.math.NumberUtils;
+import ru.justagod.mineplugin.GradleSide;
+import ru.justagod.mineplugin.GradleSideOnly;
 import ru.will0376.OpenBlocker.common.B64;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
-
+@GradleSideOnly(GradleSide.SERVER)
 public class CommandAdd implements Base {
 	String usageadd = Base.usage + "add (or set) <reason> <meta>* <temp?(empty or true)> \n" +
 			"ex: /ob add test add 1";

@@ -30,8 +30,8 @@ import java.io.File;
 public class Main {
 	public static final String MODID = "openblocker";
 	public static final String NAME = "OpenBlocker";
-	public static final String VERSION = "1.0.7";
-	public static boolean debug = true;
+	public static final String VERSION = "1.0.8";
+	public static boolean debug = false, server = false;
 	public static Config config;
 	public static File configFile;
 	public static SimpleNetworkWrapper network;
@@ -42,22 +42,26 @@ public class Main {
 			serverSide = "ru.will0376.OpenBlocker.server.ServerProxy"
 	)
 	public static CommonProxy proxy;
-	@Mod.Instance
-	private static Main mod;
 
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent event) {
+		Instance = this;
 		Logger = event.getModLog();
-		if (event.getSide().isServer() || debug) {
-			IO.path = new File(event.getModConfigurationDirectory().getAbsolutePath().trim() + File.separator + "OpenBlocker");
-			IO.fileJson = new File(IO.path + File.separator + "config.json");
-			JsonHelper.init();
-		}
+		server = event.getSide().isServer();
+		if (server || debug)
+			serverPreInt(event);
 
+		proxy.preInit(event);
+	}
+
+	@GradleSideOnly(GradleSide.SERVER)
+	private void serverPreInt(FMLPreInitializationEvent event) {
+		IO.path = new File(event.getModConfigurationDirectory().getAbsolutePath().trim() + File.separator + "OpenBlocker");
+		IO.fileJson = new File(IO.path + File.separator + "config.json");
+		JsonHelper.init();
 		configFile = event.getSuggestedConfigurationFile();
 		config = new Config(configFile);
 		config.launch();
-		proxy.preInit(event);
 	}
 
 	@EventHandler
@@ -65,23 +69,11 @@ public class Main {
 		network = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 		Main.network.registerMessage(new Blocker(), Blocker.class, 1, Side.CLIENT);
 		proxy.init(event);
-		Instance = this;
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)
 	@EventHandler
 	public void onServerStarting(FMLServerStartingEvent event) {
-		serverInit(event);
-	}
-
-	@EventHandler
-	public void onServerStartingOnClient(FMLServerStartingEvent event) {
-
-	}
-
-	@GradleSideOnly(GradleSide.SERVER)
-	private void serverInit(FMLServerStartingEvent event) {
 		event.registerServerCommand(new ComandsMain());
 	}
-
 }

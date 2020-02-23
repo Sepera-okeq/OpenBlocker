@@ -9,6 +9,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentString;
+import ru.justagod.mineplugin.GradleSide;
+import ru.justagod.mineplugin.GradleSideOnly;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.ItemHelper;
 import ru.will0376.OpenBlocker.common.JsonHelper;
@@ -16,6 +18,7 @@ import ru.will0376.OpenBlocker.common.JsonHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+@GradleSideOnly(GradleSide.SERVER)
 public class ComandsMain extends CommandBase {
 	private String usage = "/ob <module>\n" +
 			"Helps:\n" +

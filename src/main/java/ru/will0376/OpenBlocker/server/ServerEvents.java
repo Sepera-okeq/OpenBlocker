@@ -18,12 +18,15 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import ru.justagod.mineplugin.GradleSide;
+import ru.justagod.mineplugin.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
 import java.util.HashMap;
 
+@GradleSideOnly(GradleSide.SERVER)
 @Mod.EventBusSubscriber
 public class ServerEvents {
 	private static HashMap<EntityPlayer, Long> cooldown = new HashMap<>();

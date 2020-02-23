@@ -9,9 +9,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.lang3.math.NumberUtils;
+import ru.justagod.mineplugin.GradleSide;
+import ru.justagod.mineplugin.GradleSideOnly;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
+@GradleSideOnly(GradleSide.SERVER)
 public class CommandMincost {
 	String usage = Base.usage + "mincost <cost> <meta>*\n" +
 			"<meta> - Put 'all' if you want to get the meter out of the block\n" +

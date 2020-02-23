@@ -9,9 +9,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
+import ru.justagod.mineplugin.GradleSide;
+import ru.justagod.mineplugin.GradleSideOnly;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
+@GradleSideOnly(GradleSide.SERVER)
 public class CommandEnchant {
 	private String usage = Base.usage + "enchant <reason>\n" +
 			"if enchant already blocked - it will be deleted\n";

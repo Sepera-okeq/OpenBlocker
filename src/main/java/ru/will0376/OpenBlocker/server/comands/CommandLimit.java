@@ -9,9 +9,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.lang3.math.NumberUtils;
+import ru.justagod.mineplugin.GradleSide;
+import ru.justagod.mineplugin.GradleSideOnly;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
+@GradleSideOnly(GradleSide.SERVER)
 public class CommandLimit implements Base {
 	String addusage = Base.usage + "limit <limit> <meta>*";
 	String removeusage = Base.usage + "removelimit <meta>*\n" +
