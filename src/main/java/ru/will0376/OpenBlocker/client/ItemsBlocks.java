@@ -62,6 +62,7 @@ public class ItemsBlocks implements Cloneable {
 			ib.add(newib);
 		}
 	}
+
 	private void compensationNBTS() {
 		if (!nbts.isEmpty()) {
 			try {
@@ -92,6 +93,7 @@ public class ItemsBlocks implements Cloneable {
 		if (craft) ret.add("Craft disabled!");
 		return ret;
 	}
+
 	@Override
 	public ItemsBlocks clone() {
 		try {

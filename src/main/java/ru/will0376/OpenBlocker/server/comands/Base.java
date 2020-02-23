@@ -5,7 +5,7 @@ import net.minecraft.server.MinecraftServer;
 import ru.will0376.OpenBlocker.common.ChatForm;
 
 public interface Base {
-	String usage = ChatForm.prefix + "/xb ";
+	String usage = ChatForm.prefix + "/ob ";
 
 	void help(ICommandSender sender);
 

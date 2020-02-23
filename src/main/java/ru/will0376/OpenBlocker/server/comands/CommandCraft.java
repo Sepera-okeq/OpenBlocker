@@ -16,7 +16,7 @@ public class CommandCraft {
 	String usage = Base.usage + "craft <meta>* <reason>\n" +
 			"if item already blocked - it will be deleted\n" +
 			"<meta> - Put 'all' if you want to get the meter out of the block \n" +
-			"ex: /xb craft all lololo";
+			"ex: /ob craft all lololo";
 
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
 		EntityPlayer player = (EntityPlayer) sender;

@@ -1,2 +1,4 @@
 tile.par=§
 tile.inf=∞
+guiblocker.blockname=%s
+guiblocker.page.of=Страница %s из %s

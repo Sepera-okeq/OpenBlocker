@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -91,6 +92,7 @@ public class ServerEvents {
 	public static void login(PlayerEvent.PlayerLoggedInEvent e) {
 		JsonHelper.sendToPlayer((EntityPlayerMP) e.player);
 	}
+
 	public static void checkEnchant(EntityPlayer player, ItemStack is, int invStackSlot) {
 		try {
 			NBTTagList nbts = (NBTTagList) is.getTagCompound().getTag("StoredEnchantments");
@@ -129,9 +131,11 @@ public class ServerEvents {
 	}
 
 	private static boolean checkPlayer(EntityPlayer player) {
-		return /*true;*/(!Main.config.getWhiteList().contains(player.getName().toLowerCase())
-				|| /*(player.getServer().getPlayerList().getOppedPlayers().getEntry(player.getGameProfile()) == null
-				&&*/ player.isCreative());
+		System.out.println(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getEntry(player.getGameProfile()) != null);
+		return (!Main.config.getWhiteList().contains(player.getName().toLowerCase()) ||
+				(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList() != null
+						&& FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers() != null
+						&& FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getEntry(player.getGameProfile()) != null) && player.isCreative());
 	}
 
 	private static void sendToPlayerMessage(EntityPlayer player, String line) {

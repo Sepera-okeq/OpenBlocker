@@ -3,221 +3,205 @@ package ru.will0376.OpenBlocker.client;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.RenderHelper;
-import org.lwjgl.input.Mouse;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class GuiBlocker extends GuiScreen {
-	private static int scrollMax = 130;
-	private static int scrolloffset = 1;
-	private int scrollPos = 0; //up to 93
-	private boolean isScrollPressed = false;
-	private int pane = 0;
-	private ArrayList<ItemsBlocks> list = new ArrayList<>();
+	private int page = 0, localpage = 1;
+	private int maxPages = 1;
+	private int xCoord = 0, yCoord = 38, scaledWidth = 0;
+
+	private ArrayList<ItemsBlocks> blockslist = new ArrayList<>();
 
 	public void initGui() {
-		list.clear();
+		blockslist.clear();
 		buttonList.clear();
-		buttonList.add(new GuiButton(0, width / 2 - 60, height / 2 + 70, 20, 20, "<"));
-		buttonList.add(new GuiButton(1, width / 2 + 50, height / 2 + 70, 20, 20, ">"));
+		localpage = 1;
+		buttonList.add(new GuiButton(1, super.width / 2 - 70, super.height - 45, 18, 20, "<"));
+		buttonList.add(new GuiButton(2, super.width / 2 + 50, super.height - 45, 18, 20, ">"));
 
-		scrollPos = 0;
+		buttonList.add(new GuiButton(3, super.width / 2 - 90, super.height - 45, 18, 20, "<<"));
+		buttonList.add(new GuiButton(4, super.width / 2 + 50 + 20, super.height - 45, 18, 20, ">>"));
+
+
 		if (ItemsBlocks.ib != null)
-			switch (pane) {
+			switch (page) {
 				case 0:
-					list = (ArrayList<ItemsBlocks>) ItemsBlocks.ib.clone();
+					blockslist = (ArrayList<ItemsBlocks>) ItemsBlocks.ib.clone();
 					break;
 				case 1:
-					ItemsBlocks.ib.stream().filter(i -> i.blocked).forEach(list::add);
+					ItemsBlocks.ib.stream().filter(i -> i.blocked).forEach(blockslist::add);
 					break;
 				case 2:
-					ItemsBlocks.ib.stream().filter(i -> i.allmeta).forEach(list::add);
+					ItemsBlocks.ib.stream().filter(i -> i.allmeta).forEach(blockslist::add);
 					break;
 				case 3:
-					ItemsBlocks.ib.stream().filter(i -> i.limitb).forEach(list::add);
+					ItemsBlocks.ib.stream().filter(i -> i.limitb).forEach(blockslist::add);
 					break;
 				case 4:
-					ItemsBlocks.ib.stream().filter(i -> i.mincostb).forEach(list::add);
+					ItemsBlocks.ib.stream().filter(i -> i.mincostb).forEach(blockslist::add);
 					break;
 				case 5:
-					ItemsBlocks.ib.stream().filter(i -> i.craft).forEach(list::add);
+					ItemsBlocks.ib.stream().filter(i -> i.craft).forEach(blockslist::add);
 					break;
 			}
+		ScaledResolution scaledResolution = new ScaledResolution(mc);
+		scaledWidth = scaledResolution.getScaledWidth();
 	}
 
 	protected void actionPerformed(GuiButton g) {
-
 		switch (g.id) {
-			case 0: {
-				if (pane != 0) {
-					pane -= 1;
+			case 1:
+				if (this.localpage != 1)
+					--this.localpage;
+				break;
+			case 2:
+				if (this.localpage != this.maxPages)
+					++this.localpage;
+				break;
+			case 3:
+				if (this.page != 0) {
+					--this.page;
 					mc.displayGuiScreen(this);
 				}
 				break;
-			}
-			case 1: {
-				if (pane != 5) {
-					pane += 1;
+			case 4:
+				if (this.page != 5) {
+					++this.page;
 					mc.displayGuiScreen(this);
 				}
 				break;
-			}
 		}
 	}
 
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawDefaultBackground();
-		drawGUIBackground();
-		drawScroll(mouseY);
 		drawBlocks(mouseX, mouseY);
-		GlStateManager.disableBlend();
-
-		if (!isMouseOverArea(mouseX, mouseY, width / 2 + 110, height / 2 - 80 + scrollPos, 12, 108))
-			isScrollPressed = false;
+		RenderHelper.enableGUIStandardItemLighting();
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 
 	private void drawBlocks(int mouseX, int mouseY) {
-		switch (pane) {
+		switch (page) {
 			case 0:
-				GuiHelper.drawScalledString((int) (width / 2 - ("All".length() * 1.5f)), height / 2 - 98, 1.5f, 1.5f, "All", -1);
+				GuiHelper.drawScalledString((int) (width / 2 - ("All".length() * 1.5f)), 13, 1.5f, 1.5f, "All", -1);
 				break;
 
 			case 1:
-				GuiHelper.drawScalledString((int) (width / 2 - ("Block".length() * 1.5f)), height / 2 - 98, 1.5f, 1.5f, "Block", -1);
+				GuiHelper.drawScalledString((int) (width / 2 - ("Block".length() * 1.5f)), 13, 1.5f, 1.5f, "Block", -1);
 				break;
 
 			case 2:
-				GuiHelper.drawScalledString((int) (width / 2 - ("All Meta".length() * 1.5f)), height / 2 - 98, 1.5f, 1.5f, "All Meta", -1);
+				GuiHelper.drawScalledString((int) (width / 2 - ("All Meta".length() * 1.5f)), 13, 1.5f, 1.5f, "All Meta", -1);
 				break;
 
 			case 3:
-				GuiHelper.drawScalledString((int) (width / 2 - ("Limit".length() * 1.5f)), height / 2 - 98, 1.5f, 1.5f, "Limit", -1);
+				GuiHelper.drawScalledString((int) (width / 2 - ("Limit".length() * 1.5f)), 13, 1.5f, 1.5f, "Limit", -1);
 				break;
 
 			case 4:
-				GuiHelper.drawScalledString((int) (width / 2 - ("Min Cost".length() * 1.5f)), height / 2 - 98, 1.5f, 1.5f, "Min Cost", -1);
+				GuiHelper.drawScalledString((int) (width / 2 - ("Min Cost".length() * 1.5f)), 13, 1.5f, 1.5f, "Min Cost", -1);
 				break;
 
 			case 5:
-				GuiHelper.drawScalledString((int) (width / 2 - ("Craft".length() * 1.5f)), height / 2 - 98, 1.5f, 1.5f, "Craft", -1);
+				GuiHelper.drawScalledString((int) (width / 2 - ("Craft".length() * 1.5f)), 13, 1.5f, 1.5f, "Craft", -1);
 				break;
 		}
-		RenderHelper.enableStandardItemLighting();
-/*			AtomicInteger offset = new AtomicInteger(0);
+		RenderHelper.enableGUIStandardItemLighting();
+		ItemsBlocks tmpib = null;
+		int itemsInPage = (this.scaledWidth - 35 - 35) * (byte) 115 / 1024;
+		int offset = 0;
+		ArrayList<String> list;
+		if (!blockslist.isEmpty()) {
+			for (ItemsBlocks ib : blockslist) {
+				for (int k = 1; k < 50; ++k) {
+					if (k == 1) {
+						this.maxPages = 1;
+						if (this.localpage == 1 && offset >= 0 && offset < itemsInPage) {
+							this.moveCoord();
+							if (mouseX >= this.xCoord && mouseX < this.xCoord + 30 && mouseY >= this.yCoord && mouseY < this.yCoord + 34) {
+								tmpib = ib;
+								RenderUtils.renderItemEnable(this.xCoord, this.yCoord, 32, 32);
+							}
+						}
+					} else {
+						if (offset >= itemsInPage * (k - 1) && offset < itemsInPage * k) {
+							this.maxPages = k;
+						}
 
-		scrollMax = (list.size() / 4) + 10;
-		scrolloffset = (list.size() / 4) * 2;
-		AtomicBoolean skip = new AtomicBoolean(false);
-		AtomicBoolean skipRow = new AtomicBoolean(false);
-		list.forEach(block -> {
-			int index = list.indexOf(block);
-			float numberlist = ((float) index / 4) - (float) (index / 4);
-			int temp = offset.get() / 4;
-			if (list.size() < 15)
-				isScrollPressed = false;
-			if (((height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 38)) > (height / 2 - 100)
-					&& (height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 38)) < height / 2 + 50)
-					|| list.size() < 15) {
-				if (!skip.getAndSet(false) && !skipRow.get()) {
-					ItemStack is = block.is.copy();
-					if (!block.nbt.isEmpty()) {
-						is = new ItemStack(block.nbt);
+						if (this.localpage == k && offset >= itemsInPage * (k - 1) && offset < itemsInPage * k) {
+							this.moveCoord();
+							if (mouseX >= this.xCoord && mouseX < this.xCoord + 30 && mouseY >= this.yCoord && mouseY < this.yCoord + 34) {
+								tmpib = ib;
+								RenderUtils.renderItemEnable(this.xCoord, this.yCoord, 32, 32);
+
+							}
+						}
 					}
-					GuiHelper.renderBlocks((int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 39)), is, 1.8f, 1.8f, 0);
 				}
-				*//*if (numberlist == 0.50)
-					skipRow.set(false);
-				if (isMouseOverArea(mouseX, mouseY, (int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - (scrollPos * scrolloffset) + (temp * 39)), 25, 25)) {
-					ArrayList<String> list = new ArrayList<>();
-					list.add("-> " + block.is.getDisplayName());
-					list.add("Full name: ");
-					list.add(block.is.getItem().getRegistryName().toString() + ":" + block.is.getMetadata());
-					if (block.blocked) list.add("Blocked: true");
-					if (block.allmeta) list.add("Block all meta: true");
-					if (block.limitb && block.limit != -1) list.add("Block limit on chunk: " + block.limit);
-					if (block.mincostb) list.add("Minimum cost: " + block.mincost);
-					if (block.craft) list.add("Block craft: true");
-
-					if (!block.nbt.isEmpty()) {
-						list.add("NBT: "+ block.nbt);
-					}
-					int tmp = list.stream().mapToInt(String::length).filter(l -> l >= 0).max().orElse(0);
-					if (tmp > 80) {
-						skipRow.set(true);
-						System.out.println("skipRow");
-					}
-					renderTooltip((int) (width / 2 - 100 + (numberlist * 230)), (height / 2 - 80 - scrollPos + (temp * 39)), list);
-					if (numberlist != 0.50) { //0.75
-						skip.set(true);
-						System.out.println("skip");
-					}
-				}*//*
+				test(itemsInPage, offset, ib.is);
+				offset++;
 			}
-			offset.getAndIncrement();
-		});*/
-		RenderHelper.disableStandardItemLighting();
-	}
-
-	private void drawGUIBackground() {
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GuiHelper.bindTexture("textures/gui/bg2.png");
-		GuiHelper.cleanRenderCentered(width / 2, height / 2, 250, 200, 0);
-		GuiHelper.bindTexture("textures/gui/bg2inside.png");
-		GuiHelper.cleanRenderCentered(width / 2, height / 2 - 8, 226, 160, 0);
-
-	}
-
-	private void drawScroll(int mouseY) {
-		if (isScrollPressed) {
-			scrollPos = mouseY - 7 - (height / 2 - 80);
-			handleScrollPos();
+			this.yCoord = 38;
+			this.xCoord = 0;
+			if (tmpib != null) {
+				list = new ArrayList<>();
+				list.add(I18n.format("guiblocker.blockname", tmpib.is.getDisplayName()));
+				list.addAll(tmpib.getLore());
+				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+					list.add("NBT: " + tmpib.nbt);
+				renderTooltip(mouseX + 3, mouseY - 8, list);
+			}
 		}
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GuiHelper.bindTexture("textures/gui/scroll.png");
-		drawTexturedModalRect(width / 2 + 110, height / 2 - 80 + scrollPos, 206, 0, 12, 15);
+		drawCenteredString(super.fontRenderer, I18n.format("guiblocker.page.of", localpage, maxPages), super.width / 2, super.height - 40, 16777215);
 	}
 
-	private boolean isMouseOverArea(int mouseX, int mouseY, int posX, int posY, int sizeX, int sizeY) {
-		return (mouseX >= posX && mouseX < posX + sizeX && mouseY >= posY && mouseY < posY + sizeY);
-	}
+	private void test(int itemsInPage, int bEnch1, ItemStack is) {
+		int k;
+		for (k = 1; k < 50; ++k) {
+			if (k == 1) {
+				this.maxPages = 1;
+				if (this.localpage == 1 && bEnch1 >= 0 && bEnch1 < itemsInPage) {
+					GL11.glPushMatrix();
+					GL11.glTranslatef((float) this.xCoord, (float) this.yCoord, 1.5F);
+					GL11.glScalef(2.0F, 2.0F, 1.5F);
+					this.itemRender.renderItemAndEffectIntoGUI(is, 0, 0);
+					GL11.glDisable(2896);
+					GL11.glPopMatrix();
+				}
+			} else {
+				if (bEnch1 >= itemsInPage * (k - 1) && bEnch1 < itemsInPage * k) {
+					this.maxPages = k;
+				}
 
-	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int button) throws IOException {
-/*		if (button != 0)
-			return;*/
-		if (button == 0)
-			isScrollPressed = isMouseOverArea(mouseX, mouseY, width / 2 + 110, height / 2 - 80 + scrollPos, 12, 108);
-		super.mouseClicked(mouseX, mouseY, button);
-	}
-
-	@Override
-	protected void mouseClickMove(int mouseX, int mouseY, int button, long timeSinceLastClick) {
-		if (!Mouse.isButtonDown(0))
-			isScrollPressed = false;
-	}
-
-	private void handleScrollPos() {
-		if (scrollPos < 0)
-			scrollPos = 0;
-		else if (scrollPos > scrollMax)
-			scrollPos = scrollMax;
-	}
-
-	@Override
-	public void handleMouseInput() throws IOException {
-		super.handleMouseInput();
-		int wheelState = Mouse.getEventDWheel();
-		if (wheelState != 0) {
-			scrollPos += wheelState > 0 ? -8 : 8;
-			handleScrollPos();
+				if (this.localpage == k && bEnch1 >= itemsInPage * (k - 1) && bEnch1 < itemsInPage * k) {
+					GL11.glPushMatrix();
+					GL11.glTranslatef((float) this.xCoord, (float) this.yCoord, 1.5F);
+					GL11.glScalef(2.0F, 2.0F, 1.5F);
+					this.itemRender.renderItemAndEffectIntoGUI(is, 0, 0);
+					GL11.glDisable(2896);
+					GL11.glPopMatrix();
+				}
+			}
 		}
+	}
+
+	public void moveCoord() {
+		if (this.xCoord + 70 >= scaledWidth - 35) {
+			this.xCoord = 35;
+			this.yCoord += 38;
+		} else {
+			this.xCoord += 35;
+		}
+
 	}
 
 	/*@Override

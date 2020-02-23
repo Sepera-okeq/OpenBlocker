@@ -5,11 +5,11 @@ package ru.justagod.mineplugin;
  */
 @SuppressWarnings("unused")
 public enum GradleSide {
-    SERVER("server"), CLIENT("client");
+	SERVER("server"), CLIENT("client");
 
-    final String postfix;
+	final String postfix;
 
-    GradleSide(String postfix) {
-        this.postfix = postfix;
-    }
+	GradleSide(String postfix) {
+		this.postfix = postfix;
+	}
 }

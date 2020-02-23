@@ -5,5 +5,5 @@ package ru.justagod.mineplugin;
  */
 @SuppressWarnings("unused")
 public @interface GradleSideOnly {
-    GradleSide value();
+	GradleSide value();
 }

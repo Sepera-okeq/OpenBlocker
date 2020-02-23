@@ -15,7 +15,7 @@ import ru.will0376.OpenBlocker.common.JsonHelper;
 
 public class CommandAdd implements Base {
 	String usageadd = Base.usage + "add (or set) <reason> <meta>* <temp?(empty or true)> \n" +
-			"ex: /xb add test add 1";
+			"ex: /ob add test add 1";
 	String usageremove = Base.usage + "remove(or delete) <meta>\n" +
 			"<meta> - Put 'all' if you want to get the meter out of the block";
 

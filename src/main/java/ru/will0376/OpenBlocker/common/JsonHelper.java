@@ -29,6 +29,7 @@ public class JsonHelper {
 	public static JsonObject getClient(String objectname, String name) {
 		return client.getAsJsonObject(objectname).getAsJsonObject(name);
 	}
+
 	public static void addServer(JsonObject jo, String objectname, String subname) {
 		try {
 			if (containsItem(objectname, subname.split(":")[0] + ":" + subname.split(":")[1], Integer.parseInt(subname.split(":")[2])))
@@ -74,6 +75,7 @@ public class JsonHelper {
 			return true;
 		return server.getAsJsonObject(objectname).get(itemname + ":" + meta) != null;
 	}
+
 	public static boolean containsItem(String objectname, ItemStack is) {
 		return containsItem(objectname, is.getItem().getRegistryName().toString(), is.getMetadata());
 	}
