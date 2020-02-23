@@ -1,0 +1,27 @@
+image: docker:latest
+services:
+  - docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay2
+  CI_VERSION: '6.6.$CI_PIPELINE_IID'
+
+stages:
+  - build
+
+build:
+  image: openjdk:8-alpine
+  stage: build
+  before_script:
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+    - chmod +x gradlew
+    - ./gradlew clientBuild
+  script:
+    - ./gradlew serverBuild
+  cache:
+    paths:
+      - .gradle
+  artifacts:
+    expire_in: 4 week
+    paths:
+      - build/libs/
