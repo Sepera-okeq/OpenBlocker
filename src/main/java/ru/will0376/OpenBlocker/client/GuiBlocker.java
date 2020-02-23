@@ -4,6 +4,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -170,12 +171,11 @@ public class GuiBlocker extends GuiScreen {
 			if (k == 1) {
 				this.maxPages = 1;
 				if (this.localpage == 1 && bEnch1 >= 0 && bEnch1 < itemsInPage) {
-					GL11.glPushMatrix();
-					GL11.glTranslatef((float) this.xCoord, (float) this.yCoord, 1.5F);
-					GL11.glScalef(2.0F, 2.0F, 1.5F);
-					this.itemRender.renderItemAndEffectIntoGUI(is, 0, 0);
-					GL11.glDisable(2896);
-					GL11.glPopMatrix();
+					GlStateManager.pushMatrix();
+					GlStateManager.translate((float) this.xCoord, (float) this.yCoord, 1.5F);
+					GlStateManager.scale(2.0F, 2.0F, 1.5F);
+					itemRender.renderItemAndEffectIntoGUI(is, 0, 0);
+					GlStateManager.popMatrix();
 				}
 			} else {
 				if (bEnch1 >= itemsInPage * (k - 1) && bEnch1 < itemsInPage * k) {
@@ -183,12 +183,11 @@ public class GuiBlocker extends GuiScreen {
 				}
 
 				if (this.localpage == k && bEnch1 >= itemsInPage * (k - 1) && bEnch1 < itemsInPage * k) {
-					GL11.glPushMatrix();
-					GL11.glTranslatef((float) this.xCoord, (float) this.yCoord, 1.5F);
-					GL11.glScalef(2.0F, 2.0F, 1.5F);
-					this.itemRender.renderItemAndEffectIntoGUI(is, 0, 0);
-					GL11.glDisable(2896);
-					GL11.glPopMatrix();
+					GlStateManager.pushMatrix();
+					GlStateManager.translate((float) this.xCoord, (float) this.yCoord, 1.5F);
+					GlStateManager.scale(2.0F, 2.0F, 1.5F);
+					itemRender.renderItemAndEffectIntoGUI(is, 0, 0);
+					GlStateManager.popMatrix();
 				}
 			}
 		}
