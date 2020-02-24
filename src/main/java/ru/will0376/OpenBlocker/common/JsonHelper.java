@@ -32,6 +32,10 @@ public class JsonHelper {
 		return client.getAsJsonObject(objectname).getAsJsonObject(name);
 	}
 
+	public static JsonObject getServer(String objectname, String name) {
+		return server.getAsJsonObject(objectname).getAsJsonObject(name);
+	}
+
 	@GradleSideOnly(GradleSide.SERVER)
 	public static void addServer(JsonObject jo, String objectname, String subname) {
 		try {

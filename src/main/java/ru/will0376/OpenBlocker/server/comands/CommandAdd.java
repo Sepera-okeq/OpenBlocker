@@ -17,9 +17,10 @@ import ru.will0376.OpenBlocker.common.JsonHelper;
 
 @GradleSideOnly(GradleSide.SERVER)
 public class CommandAdd implements Base {
-	String usageadd = Base.usage + "add (or set) <reason>* <meta> <temp?(empty or true)> \n" +
+	String usageadd = Base.usage + "add (or set) <reason>* <meta>** <temp?(empty or true)> \n" +
 			"ex: /ob add test add 1\n" +
-			"* If the reason consists of one space, the default value is used";
+			"* If the reason consists of one space, the default value is used\n" +
+			"<meta> - Put 'all' if you want to get the meter out of the block";
 	String usageremove = Base.usage + "remove(or delete) <meta>\n" +
 			"<meta> - Put 'all' if you want to get the meter out of the block";
 

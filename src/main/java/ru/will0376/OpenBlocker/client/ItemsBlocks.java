@@ -42,6 +42,8 @@ public class ItemsBlocks implements Cloneable {
 			limit = JsonHelper.getClient(JsonHelper.LIMIT, block).get("limit").getAsInt();
 
 		allmeta = JsonHelper.checkAllMetas(JsonHelper.BLOCKER, block.split(":")[0] + ":" + block.split(":")[1]);
+		if (limitb)
+			allmeta = JsonHelper.checkAllMetas(JsonHelper.LIMIT, block.split(":")[0] + ":" + block.split(":")[1]);
 		mincostb = JsonHelper.containsItem(JsonHelper.MINCOST, block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
 		if (mincostb)
 			mincost = Double.parseDouble(JsonHelper.getClient(JsonHelper.MINCOST, block).get("cost").getAsString());
