@@ -1,5 +1,6 @@
 package ru.will0376.OpenBlocker;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -31,7 +32,7 @@ public class Main {
 	public static final String MODID = "openblocker";
 	public static final String NAME = "OpenBlocker";
 	public static final String VERSION = "1.0.10";
-	public static boolean debug = false, server = false;
+	public static boolean debug = true, server = false;
 	public static Config config;
 	public static File configFile;
 	public static SimpleNetworkWrapper network;
@@ -45,6 +46,7 @@ public class Main {
 
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent event) {
+		if (debug) debug = (boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
 		Instance = this;
 		Logger = event.getModLog();
 		server = event.getSide().isServer();
