@@ -9,15 +9,12 @@ variables:
 stages:
   - build
 
-job 0:
-  stage: .pre
-  script: 
-    - export GRADLE_USER_HOME=`pwd`/.gradle
-    - chmod +x gradlew
-  
 build:
   image: openjdk:8-alpine
   stage: build
+  before_script:
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+    - chmod +x gradlew
   script:
     - ./gradlew serverBuild
   cache:
@@ -31,6 +28,9 @@ build:
 buildClient:
   image: openjdk:8-alpine
   stage: build
+  before_script:
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+    - chmod +x gradlew
   script:
     - ./gradlew clientBuild
   cache:
