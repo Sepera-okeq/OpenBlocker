@@ -13,13 +13,16 @@ import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import ru.will0376.OpenBlocker.KeyUtils;
+import ru.will0376.OpenBlocker.client.GuiBlocker;
 import ru.will0376.OpenBlocker.client.ItemsBlocks;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Mod.EventBusSubscriber
-
+@Mod.EventBusSubscriber(value = Side.CLIENT)
 public class ClientEvents {
 
 	public static ItemStack getPickBlock(World world, BlockPos pos) {
@@ -34,6 +37,13 @@ public class ClientEvents {
 		}
 	}
 
+	@SubscribeEvent
+	public static void actionOpenGui(TickEvent.PlayerTickEvent event) {
+		if (event.phase == TickEvent.Phase.START && event.side == Side.CLIENT) {
+			if (KeyUtils.key.isPressed())
+				Minecraft.getMinecraft().displayGuiScreen(new GuiBlocker());
+		}
+	}
 
 	@SubscribeEvent
 	public static void drawBlokced(DrawBlockHighlightEvent e) {
