@@ -55,8 +55,15 @@ public class JsonHelper {
 	}
 
 	public static boolean contains(String objectname, String name) {
-		if (client.getAsJsonObject(objectname).get(name) != null) return true;
-		return server.getAsJsonObject(objectname).get(name) != null;
+		try {
+			if (isServer) return server.getAsJsonObject(objectname).get(name) != null;
+			else return client.getAsJsonObject(objectname).get(name) != null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		//if (client.getAsJsonObject(objectname).get(name) != null) return true;
+		//return server.getAsJsonObject(objectname).get(name) != null;
 	}
 
 	public static void resendToClient() {
@@ -72,7 +79,7 @@ public class JsonHelper {
 		if (jo != null)
 			server = jo;
 		else
-			Main.Logger.error("FileReader Error!");
+			Main.Logger.error(ChatForm.prefix_error + "[JsonHelper_Init] FileReader Error!");
 	}
 
 	public static boolean containsItem(String objectname, String itemname, int meta) {
@@ -93,18 +100,18 @@ public class JsonHelper {
 		return containsItem(objectname, is.getItem().getRegistryName().toString(), is.getMetadata());
 	}
 
-	public static ArrayList<String> findAllNBT(String name, int meta, boolean client) {
+	public static ArrayList<String> findAllNBT(String name, int meta) {
 		ArrayList<String> list = new ArrayList<>();
-		finditem(name, meta, client).forEach(l -> {
+		finditem(name, meta).forEach(l -> {
 			if (l.has("nbts"))
 				l.get("nbts").getAsJsonArray().forEach(st -> list.add(st.getAsString()));
 		});
 		return list;
 	}
 
-	public static ArrayList<JsonObject> finditem(String name, int meta, boolean client) {
+	public static ArrayList<JsonObject> finditem(String name, int meta) {
 		JsonObject jotemp;
-		if (client) jotemp = JsonHelper.client;
+		if (!isServer) jotemp = client;
 		else jotemp = server;
 		ArrayList<JsonObject> jolist = new ArrayList<>();
 		AtomicInteger metaai = new AtomicInteger(meta);

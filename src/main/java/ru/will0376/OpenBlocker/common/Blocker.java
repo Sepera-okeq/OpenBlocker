@@ -40,7 +40,7 @@ public class Blocker implements IMessageHandler<Blocker, IMessage>, IMessage {
 							new ItemsBlocks(t.getKey())));
 		} catch (Exception e) {
 			e.printStackTrace();
-			net.minecraft.client.Minecraft.getMinecraft().player.sendMessage(new TextComponentString(ChatForm.prefix_error + "Error loading json from server!"));
+			net.minecraft.client.Minecraft.getMinecraft().player.sendMessage(new TextComponentString(ChatForm.prefix_error_client + "Error loading json from server!"));
 		}
 		return null;
 	}
