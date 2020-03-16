@@ -11,6 +11,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentString;
 import ru.justagod.mineplugin.GradleSide;
 import ru.justagod.mineplugin.GradleSideOnly;
+import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.ItemHelper;
 import ru.will0376.OpenBlocker.common.JsonHelper;
@@ -30,7 +31,8 @@ public class ComandsMain extends CommandBase {
 			"\n" +
 			"Other modules:\n" +
 			"-> perms\n" +
-			"-> reload";
+			"-> reload\n" +
+			"-> debug";
 
 	@Override
 	public String getName() {
@@ -111,16 +113,20 @@ public class ComandsMain extends CommandBase {
 				break;
 			case "getmaxmeta": {
 				Item i = Minecraft.getMinecraft().player.getHeldItem(EnumHand.MAIN_HAND).copy().getItem();
-
 				sender.sendMessage(new TextComponentString(ItemHelper.getCountAllSubItems(i) + ""));
 			}
 			break;
 			case "perms":
+				sender.sendMessage(new TextComponentString(ChatForm.prefix + "WIP!"));
 				break;
 			case "reload":
 				JsonHelper.init();
 				JsonHelper.resendToClient();
 				sender.sendMessage(new TextComponentString(ChatForm.prefix + "Reloaded!"));
+				break;
+			case "debug":
+				Main.debug = !Main.debug;
+				sender.sendMessage(new TextComponentString(ChatForm.prefix + "Done. Debug = " + Main.debug));
 				break;
 			default:
 				sender.sendMessage(new TextComponentString(usage));
