@@ -22,6 +22,7 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import ru.justagod.mineplugin.GradleSide;
 import ru.justagod.mineplugin.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
@@ -31,9 +32,10 @@ import ru.will0376.OpenBlocker.common.JsonHelper;
 import java.util.HashMap;
 
 @GradleSideOnly(GradleSide.SERVER)
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(Side.SERVER)
 public class ServerEvents {
 	private static HashMap<EntityPlayer, Long> cooldown = new HashMap<>();
+	private static HashMap<EntityPlayer, Long> cooldownDebug = new HashMap<>();
 
 	public static ItemStack getPickBlock(World world, BlockPos pos) {
 		try {
@@ -55,7 +57,8 @@ public class ServerEvents {
 		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
 		if (check(player, is, Main.config.isDeleteBlocked(),
 				ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText())) {
-			if (Main.debug) Main.Logger.info("[DEBUG_Break] Break check done. Canceled event.");
+			if (Main.debug) sendToPlayerDebugMessage(player, "[DEBUG_Break] Break check done. Canceled event.");
+			//if (Main.debug) sendToPlayerDebugMessage(player,"[DEBUG_Break] Break check done. Canceled event.");
 			e.setCanceled(true);
 		}
 
@@ -71,7 +74,8 @@ public class ServerEvents {
 			if (JsonHelper.containsItem(JsonHelper.BLOCKER, nameblock, meta)) {
 				sendToPlayerMessage(e.getEntityPlayer(), ChatForm.prefix +
 						new TextComponentTranslation("serverevent.interaction", nameblock, meta).getFormattedText());
-				if (Main.debug) Main.Logger.info("[DEBUG_Use1] Use check done. Canceled event.");
+				if (Main.debug)
+					sendToPlayerDebugMessage(e.getEntityPlayer(), "[DEBUG_Use1] Use check done. Canceled event.");
 				e.setCanceled(true);
 			}
 		} else {
@@ -79,7 +83,7 @@ public class ServerEvents {
 			ItemStack is = e.getItemStack();
 			if (check(player, is, Main.config.isDeleteBlocked(),
 					ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText())) {
-				if (Main.debug) Main.Logger.info("[DEBUG_Use2] Use check done. Canceled event.");
+				if (Main.debug) sendToPlayerDebugMessage(player, "[DEBUG_Use2] Use check done. Canceled event.");
 				e.setCanceled(true);
 			}
 		}
@@ -106,7 +110,7 @@ public class ServerEvents {
 		ItemStack is = e.pickedUp.getItem();
 		if (check(player, is, true,
 				ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText())) {
-			if (Main.debug) Main.Logger.info("[DEBUG_Pickup] pickup check done. Canceled event.");
+			if (Main.debug) sendToPlayerDebugMessage(player, "[DEBUG_Pickup] pickup check done. Canceled event.");
 			e.setCanceled(true);
 		}
 
@@ -147,11 +151,11 @@ public class ServerEvents {
 		} catch (Exception ignore) {
 		}
 	}
-
 	public static boolean check(EntityPlayer player, ItemStack is, boolean disable_del, String text) {
 		try {
 			if (Main.debug)
-				Main.Logger.info("[DEBUG] check itemstack: " + is.getDisplayName() + " for player: " + player.getName() + " disable_delete: " + disable_del);
+				if (!is.getDisplayName().contains("Air") && !is.getDisplayName().equals("Воздух"))
+					sendToPlayerMessage(player, "[DEBUG] check itemstack: " + is.getDisplayName() + " for player: " + player.getName() + " disable_delete: " + disable_del);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -183,7 +187,8 @@ public class ServerEvents {
 				int limit = JsonHelper.getServer(JsonHelper.LIMIT, nameblock + ":" + meta).get("limit").getAsInt();
 				if (getBlocksInChunk(event) > limit) {
 					sendToPlayerMessage(event.getPlayer(), ChatForm.prefix + new TextComponentTranslation("serverevent.limitevent.limitover", limit).getFormattedText());
-					if (Main.debug) Main.Logger.info("[DEBUG_limit] pickup check done. Canceled event.");
+					if (Main.debug)
+						sendToPlayerDebugMessage(event.getPlayer(), "[DEBUG_limit] pickup check done. Canceled event.");
 					//event.getPlayer().sendMessage(new TextComponentTranslation("serverevent.limitevent.limitover",ChatForm.prefix ,limit));
 					event.setCanceled(true);
 				} else {
@@ -211,6 +216,7 @@ public class ServerEvents {
 	}
 
 	private static boolean checkPlayer(EntityPlayer player) {
+		if (Main.debug) return false;
 		return (!Main.config.getWhiteList().contains(player.getName().toLowerCase()) ||
 				player.canUseCommand(4, "openblocker.bypasscheck") && player.isCreative());
 	}
@@ -225,6 +231,21 @@ public class ServerEvents {
 			}
 		} else {
 			cooldown.put(player, time + 2);
+			player.sendMessage(new TextComponentString(line));
+		}
+
+	}
+
+	private static void sendToPlayerDebugMessage(EntityPlayer player, String line) {
+		long time = System.currentTimeMillis() / 1000;
+		if (cooldownDebug.containsKey(player)) {
+			if (!(cooldownDebug.get(player) > time)) {
+				cooldownDebug.remove(player);
+				cooldownDebug.put(player, time + 1);
+				player.sendMessage(new TextComponentString(line));
+			}
+		} else {
+			cooldownDebug.put(player, time + 1);
 			player.sendMessage(new TextComponentString(line));
 		}
 
