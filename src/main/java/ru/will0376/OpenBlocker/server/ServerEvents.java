@@ -1,10 +1,10 @@
 package ru.will0376.OpenBlocker.server;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -22,7 +22,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
 import ru.justagod.mineplugin.GradleSide;
 import ru.justagod.mineplugin.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
@@ -32,7 +31,7 @@ import ru.will0376.OpenBlocker.common.JsonHelper;
 import java.util.HashMap;
 
 @GradleSideOnly(GradleSide.SERVER)
-@Mod.EventBusSubscriber(Side.SERVER)
+@Mod.EventBusSubscriber()
 public class ServerEvents {
 	private static HashMap<EntityPlayer, Long> cooldown = new HashMap<>();
 	private static HashMap<EntityPlayer, Long> cooldownDebug = new HashMap<>();
@@ -65,13 +64,13 @@ public class ServerEvents {
 	}
 
 	@SubscribeEvent
-	public static void checkUseBlocker(PlayerInteractEvent e) {
-		if (e.getItemStack().getItem() == Items.AIR) {
+	public static void checkPlayerInteract(PlayerInteractEvent e) {
+		if (e.getItemStack().isEmpty()) {
 			Block block = e.getWorld().getBlockState(e.getPos()).getBlock();
 			String nameblock = block.getRegistryName().toString();
 			int meta = block.getMetaFromState(e.getWorld().getBlockState(e.getPos()));
 			if (JsonHelper.checkAllMetas(JsonHelper.BLOCKER, nameblock)) meta = 0;
-			if (JsonHelper.containsItem(JsonHelper.BLOCKER, nameblock, meta)) {
+			if (JsonHelper.containsItemServer(JsonHelper.BLOCKER, nameblock, meta)) {
 				sendToPlayerMessage(e.getEntityPlayer(), ChatForm.prefix +
 						new TextComponentTranslation("serverevent.interaction", nameblock, meta).getFormattedText());
 				if (Main.debug)
@@ -80,12 +79,65 @@ public class ServerEvents {
 			}
 		} else {
 			EntityPlayer player = e.getEntityPlayer();
+
 			ItemStack is = e.getItemStack();
+			/*if(is.getItem() instanceof ItemBlock) {
+				System.out.println(e.getWorld().getBlockState(e.getPos()).getBlock().getRegistryName().toString());
+			}*/
 			if (check(player, is, Main.config.isDeleteBlocked(),
 					ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText())) {
 				if (Main.debug) sendToPlayerDebugMessage(player, "[DEBUG_Use2] Use check done. Canceled event.");
 				e.setCanceled(true);
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void placeBlock(BlockEvent.PlaceEvent e) {
+		EntityPlayer player = e.getPlayer();
+
+		IBlockState state = e.getPlacedBlock();
+		Block bl = state.getBlock();
+		ItemStack is = new ItemStack(bl, 1, state.getBlock().getMetaFromState(state));
+		if (check(player, is, Main.config.isDeleteBlocked(),
+				ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText())) {
+			if (Main.debug) sendToPlayerDebugMessage(player, "[DEBUG_BreakEvent] Use check done. Canceled event.");
+			e.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public static void checkBlock(BlockEvent.BreakEvent e) {
+		try {
+			EntityPlayer player = e.getPlayer();
+			IBlockState state = e.getState();
+			Block bl = state.getBlock();
+			ItemStack is = new ItemStack(bl, 1, state.getBlock().getMetaFromState(state));
+			if (check(player, is, Main.config.isDeleteBlocked(),
+					ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText())) {
+				if (Main.debug) sendToPlayerDebugMessage(player, "[DEBUG_BreakEvent] Use check done. Canceled event.");
+				e.setCanceled(true);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	@SubscribeEvent
+	public static void checkBlock(BlockEvent.MultiPlaceEvent e) {
+		try {
+			EntityPlayer player = e.getPlayer();
+			IBlockState state = e.getState();
+			Block bl = state.getBlock();
+			ItemStack is = new ItemStack(bl, 1, state.getBlock().getMetaFromState(state));
+			if (check(player, is, Main.config.isDeleteBlocked(),
+					ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText())) {
+				if (Main.debug)
+					sendToPlayerDebugMessage(player, "[DEBUG_MultiPlaceEvent] Use check done. Canceled event.");
+				e.setCanceled(true);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 
@@ -113,7 +165,6 @@ public class ServerEvents {
 			if (Main.debug) sendToPlayerDebugMessage(player, "[DEBUG_Pickup] pickup check done. Canceled event.");
 			e.setCanceled(true);
 		}
-
 	}
 
 	@SubscribeEvent
@@ -121,8 +172,8 @@ public class ServerEvents {
 		EntityPlayer player = e.player;
 		for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 			ItemStack is = player.inventory.getStackInSlot(i);
-			check(player, is, false,
-					ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText());
+			//check(player, is, false,
+			//		ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText());
 			checkEnchant(player, is, i);
 		}
 	}
@@ -140,7 +191,7 @@ public class ServerEvents {
 					NBTTagCompound tmp = (NBTTagCompound) tgs;
 					int id = tmp.getShort("id");
 					int lvl = tmp.getShort("lvl");
-					if (JsonHelper.containsEnchant(is) && !checkPlayer(player)) {
+					if (JsonHelper.containsEnchantServer(is) && !checkPlayer(player)) {
 						player.inventory.setInventorySlotContents(invStackSlot, removeEnchID(id, is));
 						sendToPlayerMessage(player,
 								ChatForm.prefix + new TextComponentTranslation("serverevent.blockenchant", Enchantment.getEnchantmentByID(id).getTranslatedName(lvl)).getFormattedText()
@@ -151,16 +202,17 @@ public class ServerEvents {
 		} catch (Exception ignore) {
 		}
 	}
-	public static boolean check(EntityPlayer player, ItemStack is, boolean disable_del, String text) {
+
+	public static boolean check(EntityPlayer player, ItemStack is, boolean delete, String text) {
 		try {
 			if (Main.debug)
 				if (!is.getDisplayName().contains("Air") && !is.getDisplayName().equals("Воздух"))
-					sendToPlayerMessage(player, "[DEBUG] check itemstack: " + is.getDisplayName() + " for player: " + player.getName() + " disable_delete: " + disable_del);
+					sendToPlayerMessage(player, "[DEBUG] check itemstack: " + is.getDisplayName() + " for player: " + player.getName() + " disable_delete: " + delete);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (JsonHelper.containsItem(JsonHelper.BLOCKER, is) && !checkPlayer(player) && checkNBT(player, is)) {
-			if (Main.config.isDeleteBlocked() && !disable_del) {
+		if (JsonHelper.containsItemServer(JsonHelper.BLOCKER, is) && !checkPlayer(player) && checkNBT(player, is)) {
+			if (delete) {
 				text += " " + new TextComponentTranslation("serverevent.interaction.remove", ChatForm.prefix).getFormattedText();
 				is.setCount(0);
 			}
@@ -178,7 +230,7 @@ public class ServerEvents {
 	public static void placeLimitBlock(BlockEvent.PlaceEvent event) {
 		if (Main.debug || !event.getWorld().isRemote) {
 			Block block = event.getWorld().getBlockState(event.getPos()).getBlock();
-			if (JsonHelper.containsItem(JsonHelper.LIMIT,
+			if (JsonHelper.containsItemServer(JsonHelper.LIMIT,
 					block.getRegistryName().toString(),
 					block.getMetaFromState(event.getWorld().getBlockState(event.getPos())))) {
 				String nameblock = block.getRegistryName().toString();

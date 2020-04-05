@@ -1,6 +1,7 @@
 package ru.will0376.OpenBlocker.common;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -37,7 +38,7 @@ public class JsonHelper {
 
 	public static void addServer(JsonObject jo, String objectname, String subname) {
 		try {
-			if (containsItem(objectname, subname.split(":")[0] + ":" + subname.split(":")[1], Integer.parseInt(subname.split(":")[2])))
+			if (containsItemServer(objectname, subname.split(":")[0] + ":" + subname.split(":")[1], Integer.parseInt(subname.split(":")[2])))
 				jo.getAsJsonArray("nbts").forEach(e -> server.getAsJsonObject(objectname).getAsJsonObject(subname).getAsJsonArray("nbts").add(e));
 			else
 				server.getAsJsonObject(objectname).add(subname, jo);
@@ -82,22 +83,28 @@ public class JsonHelper {
 			Main.Logger.error(ChatForm.prefix_error + "[JsonHelper_Init] FileReader Error!");
 	}
 
-	public static boolean containsItem(String objectname, String itemname, int meta) {
-		if (isServer) {
-			JsonObject jo = (JsonObject) server.getAsJsonObject(objectname).get(itemname + ":0");
-			if (jo != null && jo.has("boolBlockAllMeta"))
-				return true;
-			return server.getAsJsonObject(objectname).get(itemname + ":" + meta) != null;
-		} else {
-			JsonObject jo = (JsonObject) client.getAsJsonObject(objectname).get(itemname + ":0");
-			if (jo != null && jo.has("boolBlockAllMeta"))
-				return true;
-			return client.getAsJsonObject(objectname).get(itemname + ":" + meta) != null;
-		}
+	public static boolean containsItemServer(String objectname, String itemname, int meta) {
+		JsonObject jo = (JsonObject) server.getAsJsonObject(objectname).get(itemname + ":0");
+		if (jo != null && jo.has("boolBlockAllMeta"))
+			return true;
+		return server.getAsJsonObject(objectname).get(itemname + ":" + meta) != null;
 	}
 
-	public static boolean containsItem(String objectname, ItemStack is) {
-		return containsItem(objectname, is.getItem().getRegistryName().toString(), is.getMetadata());
+	public static boolean containsItemClient(String objectname, String itemname, int meta) {
+		JsonElement je = client.getAsJsonObject(objectname).get(itemname + ":0");
+		if (je == null) {
+			System.err.println("[JsonHelper_Init] Hey, JsonElement == null =\\");
+			return false;
+		}
+		JsonObject jo = (JsonObject) je;
+		if (jo != null && jo.has("boolBlockAllMeta"))
+			return true;
+		return client.getAsJsonObject(objectname).get(itemname + ":" + meta) != null;
+
+	}
+
+	public static boolean containsItemServer(String objectname, ItemStack is) {
+		return containsItemServer(objectname, is.getItem().getRegistryName().toString(), is.getMetadata());
 	}
 
 	public static ArrayList<String> findAllNBT(String name, int meta) {
@@ -138,14 +145,14 @@ public class JsonHelper {
 		return checkAllMetas(objectname, is.getItem().getRegistryName().toString());
 	}
 
-	public static boolean containsEnchant(ItemStack is) {
+	public static boolean containsEnchantServer(ItemStack is) {
 		NBTTagList nbts = (NBTTagList) is.getTagCompound().getTag("StoredEnchantments");
 		if (nbts != null) {
 			for (NBTBase tgs : nbts) {
 				NBTTagCompound tmp = (NBTTagCompound) tgs;
 				int id = tmp.getShort("id");
 				int lvl = tmp.getShort("lvl");
-				return containsItem(ENCHANT, String.valueOf(id), lvl);
+				return containsItemServer(ENCHANT, String.valueOf(id), lvl);
 			}
 		}
 		return false;

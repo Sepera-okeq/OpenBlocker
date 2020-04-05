@@ -30,6 +30,7 @@ public class CommandAdd implements Base {
 
 	@SuppressWarnings("deprecated")
 	public void add(MinecraftServer server, ICommandSender sender, String[] args) {
+
 		EntityPlayer player = (EntityPlayer) sender;
 		boolean allMeta = false;
 		boolean temp = false;

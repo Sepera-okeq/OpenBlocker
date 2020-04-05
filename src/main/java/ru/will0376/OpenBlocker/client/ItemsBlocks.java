@@ -31,24 +31,24 @@ public class ItemsBlocks implements Cloneable {
 
 	public ItemsBlocks(String block) {
 		name = block;
-		blocked = JsonHelper.containsItem(JsonHelper.BLOCKER, block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
+		blocked = JsonHelper.containsItemClient(JsonHelper.BLOCKER, block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
 		is = new ItemStack(Item.getByNameOrId(block.split(":")[0] + ":" + block.split(":")[1]), 1, Integer.parseInt(block.split(":")[2]));
 
 		nbts = JsonHelper.findAllNBT(block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
 		nbtsize = nbts.size();
 
-		limitb = JsonHelper.containsItem(JsonHelper.LIMIT, block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
+		limitb = JsonHelper.containsItemClient(JsonHelper.LIMIT, block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
 		if (limitb)
 			limit = JsonHelper.getClient(JsonHelper.LIMIT, block).get("limit").getAsInt();
 
 		allmeta = JsonHelper.checkAllMetas(JsonHelper.BLOCKER, block.split(":")[0] + ":" + block.split(":")[1]);
 		if (limitb)
 			allmeta = JsonHelper.checkAllMetas(JsonHelper.LIMIT, block.split(":")[0] + ":" + block.split(":")[1]);
-		mincostb = JsonHelper.containsItem(JsonHelper.MINCOST, block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
+		mincostb = JsonHelper.containsItemClient(JsonHelper.MINCOST, block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
 		if (mincostb)
 			mincost = Double.parseDouble(JsonHelper.getClient(JsonHelper.MINCOST, block).get("cost").getAsString());
 
-		craft = JsonHelper.containsItem(JsonHelper.CRAFT, block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
+		craft = JsonHelper.containsItemClient(JsonHelper.CRAFT, block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
 		if (blocked || craft) {
 			if (blocked && JsonHelper.getClient(JsonHelper.BLOCKER, block.split(":")[0] + ":" + block.split(":")[1] + ":" + Integer.parseInt(block.split(":")[2])).has("reason"))
 				reasonBlock = JsonHelper.getClient(JsonHelper.BLOCKER, is.getItem().getRegistryName() + ":" + is.getMetadata()).get("reason").getAsString();
