@@ -53,6 +53,14 @@ public class ComandsMain extends CommandBase {
 		return al;
 	}
 
+	public static String stringArrToString(String[] arr) {
+		StringBuilder sb = new StringBuilder();
+		for (String obj : arr)
+			sb.append(obj);
+		return sb.substring(0, sb.length() - 1);
+
+	}
+
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length == 0) {

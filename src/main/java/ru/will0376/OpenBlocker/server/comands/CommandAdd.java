@@ -15,12 +15,17 @@ import ru.will0376.OpenBlocker.common.B64;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
+import java.util.HashMap;
+
 @GradleSideOnly(GradleSide.SERVER)
 public class CommandAdd implements Base {
-	String usageadd = Base.usage + "add (or set) <reason>* <meta>** <temp?(empty or true)> \n" +
-			"ex: /ob add test add 1\n" +
-			"* If the reason consists of one space, the default value is used\n" +
-			"<meta> - Put 'all' if you want to get the meter out of the block";
+	String usageadd = Base.usage + "add <argumets>\n" +
+			"Arguments:\n" +
+			"text - reason(multi-string)\n" +
+			"temp(bool)\n" +
+			"allmeta(bool)\n" +
+			"e.x: /ob add text:Test reason; temp; allmeta\n" +
+			"(delimiter ';')";
 	String usageremove = Base.usage + "remove(or delete) <meta>\n" +
 			"<meta> - Put 'all' if you want to get the meter out of the block";
 
@@ -28,11 +33,45 @@ public class CommandAdd implements Base {
 		sender.sendMessage(new TextComponentString(usageadd + "\n" + usageremove));
 	}
 
-	@SuppressWarnings("deprecated")
+	/**
+	 * argumets: text,allmeta,temp;
+	 */
 	public void add(MinecraftServer server, ICommandSender sender, String[] args) {
+		try {
+			EntityPlayer player = (EntityPlayer) sender;
+			if (player.getHeldItemMainhand().isEmpty()) {
+				sender.sendMessage(new TextComponentString(ChatForm.prefix_warring + "Take a subject in a hand"));
+				return;
+			}
 
-		EntityPlayer player = (EntityPlayer) sender;
-		boolean allMeta = false;
+			ItemStack itemStack = player.getHeldItemMainhand();
+			int meta = itemStack.getMetadata();
+			HashMap<String, String> parsed = new HashMap<>();
+			if (args.length != 0) parsed = new CommandParser().commandParser(ComandsMain.stringArrToString(args));
+
+			String text = parsed.getOrDefault("text", Main.config.getDefRes());
+			boolean temp = Boolean.parseBoolean(parsed.getOrDefault("temp", "false"));
+			boolean allmeta = Boolean.parseBoolean(parsed.getOrDefault("allmeta", "false"));
+			if (allmeta) meta = 0;
+
+			JsonObject jo = new JsonObject();
+			if (allmeta)
+				jo.addProperty("boolBlockAllMeta", true);
+			if (temp)
+				jo.addProperty("boolTemp", true);
+			if (itemStack.getTagCompound() != null && !itemStack.getTagCompound().isEmpty()) {
+				JsonArray ja = new JsonArray();
+				ja.add(B64.encode(itemStack.serializeNBT().toString()));
+				jo.add("nbts", ja);
+			}
+
+			jo.addProperty("reason", text.trim());
+			JsonHelper.addServer(jo, JsonHelper.BLOCKER, itemStack.getItem().getRegistryName().toString() + ":" + meta);
+			sender.sendMessage(new TextComponentString(ChatForm.prefix + String.format("ItemStack: %s successfully added!", itemStack.getItem().getRegistryName().toString() + ":" + meta)));
+		} catch (Exception e) {
+			sender.sendMessage(new TextComponentString(ChatForm.prefix_error + e.getMessage()));
+		}
+		/*boolean allMeta = false;
 		boolean temp = false;
 		ItemStack itemStack = player.getHeldItemMainhand();
 		String reason = "";
@@ -88,7 +127,7 @@ public class CommandAdd implements Base {
 			reason = Main.config.getDefRes();
 		jo.addProperty("reason", reason.trim());
 		JsonHelper.addServer(jo, JsonHelper.BLOCKER, itemStack.getItem().getRegistryName().toString() + ":" + meta);
-		sender.sendMessage(new TextComponentString(ChatForm.prefix + String.format("ItemStack: %s successfully added!", itemStack.getItem().getRegistryName().toString() + ":" + meta)));
+		sender.sendMessage(new TextComponentString(ChatForm.prefix + String.format("ItemStack: %s successfully added!", itemStack.getItem().getRegistryName().toString() + ":" + meta)));*/
 	}
 
 	@SuppressWarnings("deprecated")
