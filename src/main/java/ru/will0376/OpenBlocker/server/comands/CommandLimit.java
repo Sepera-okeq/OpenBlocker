@@ -8,48 +8,52 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
-import org.apache.commons.lang3.math.NumberUtils;
 import ru.justagod.mineplugin.GradleSide;
 import ru.justagod.mineplugin.GradleSideOnly;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
+import java.util.HashMap;
+
 @GradleSideOnly(GradleSide.SERVER)
 public class CommandLimit implements Base {
-	String addusage = Base.usage + "limit <limit> <meta>*";
-	String removeusage = Base.usage + "removelimit <meta>*\n" +
-			"<meta>* - Put 'all' if you want to get the meter out of the block ";
+	String addusage = Base.usage + "limit <args>\n" +
+			"   Arguments:\n" +
+			"   -allmeta(bool)\n" +
+			"   -l(int)\n\n" +
+			"   e.x: /ob limit l:5; allmeta\n" +
+			"   (delimiter ';')";
+	String removeusage = Base.usage + "removelimit";
 
 	public void help(ICommandSender sender) {
 		sender.sendMessage(new TextComponentString(addusage + "\n" + removeusage));
 	}
 
+	/**
+	 * argumets: allmeta,l
+	 */
 	public void add(MinecraftServer server, ICommandSender sender, String[] args) {
 		EntityPlayer player = (EntityPlayer) sender;
 		ItemStack is = player.getHeldItemMainhand();
-		int meta = is.getMetadata();
-		boolean all = false;
 		if (is.isEmpty()) {
 			player.sendMessage(new TextComponentString("Hand is empty!"));
 			return;
 		}
-		if (args.length <= 1) {
-			help(sender);
-			return;
-		}
-
-		if (args.length > 2 && NumberUtils.isNumber(args[2]))
-			meta = Integer.parseInt(args[2]);
-
-		if (contains(args, "all")) {
-			all = true;
-			meta = 0;
-		}
+		int meta = is.getMetadata();
+		HashMap<String, String> parsed = new CommandParser().commandParser(ComandsMain.stringArrToString(args).replace("limit ", ""));
+		String limit = parsed.getOrDefault("l", "-1");
+		boolean allmeta = Boolean.parseBoolean(parsed.getOrDefault("allmeta", "false"));
 
 		JsonObject jo = new JsonObject();
-		if (all)
+		if (allmeta) {
 			jo.addProperty("boolBlockAllMeta", true);
-		jo.addProperty("limit", args[1]);
+			meta = 0;
+		}
+		if (limit.equals("-1")) {
+			sender.sendMessage(new TextComponentString("Hey, you forgot to enter a limit!"));
+			return;
+		}
+		jo.addProperty("limit", limit);
 
 		if (is.getTagCompound() != null && !is.getTagCompound().isEmpty()) {
 			NBTTagCompound nbtTagCompound = is.getTagCompound();
@@ -67,16 +71,11 @@ public class CommandLimit implements Base {
 	public void remove(MinecraftServer server, ICommandSender sender, String[] args) {
 		EntityPlayer player = (EntityPlayer) sender;
 		ItemStack is = player.getHeldItemMainhand();
-		int meta = is.getMetadata();
 		if (is.isEmpty()) {
 			player.sendMessage(new TextComponentString("Hand is empty!"));
 			return;
 		}
-		if (args.length > 1 && NumberUtils.isNumber(args[1]))
-			meta = Integer.parseInt(args[1]);
-
-		if (contains(args, "all"))
-			meta = 0;
+		int meta = is.getMetadata();
 		JsonHelper.removeFromServer(JsonHelper.LIMIT, is.getItem().getRegistryName().toString() + ":" + meta);
 		player.sendMessage(new TextComponentString(ChatForm.prefix + String.format("The limit for %s block removed", is.getItem().getRegistryName().toString() + ":" + meta)));
 	}

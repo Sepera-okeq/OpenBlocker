@@ -63,8 +63,6 @@ public class JsonHelper {
 			e.printStackTrace();
 			return false;
 		}
-		//if (client.getAsJsonObject(objectname).get(name) != null) return true;
-		//return server.getAsJsonObject(objectname).get(name) != null;
 	}
 
 	public static void resendToClient() {
@@ -92,14 +90,13 @@ public class JsonHelper {
 
 	public static boolean containsItemClient(String objectname, String itemname, int meta) {
 		JsonElement je = client.getAsJsonObject(objectname).get(itemname + ":0");
-		if (je == null) {
-			System.err.println("[JsonHelper_Init] Hey, JsonElement == null =\\");
-			return false;
+		if (je != null) {
+			JsonObject jo = (JsonObject) je;
+			if (jo != null && jo.has("boolBlockAllMeta"))
+				return true;
 		}
-		JsonObject jo = (JsonObject) je;
-		if (jo != null && jo.has("boolBlockAllMeta"))
-			return true;
-		return client.getAsJsonObject(objectname).get(itemname + ":" + meta) != null;
+		je = client.getAsJsonObject(objectname).get(itemname + ":" + meta);
+		return je != null;
 
 	}
 

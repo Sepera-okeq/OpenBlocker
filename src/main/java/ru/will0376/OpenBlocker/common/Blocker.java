@@ -33,6 +33,7 @@ public class Blocker implements IMessageHandler<Blocker, IMessage>, IMessage {
 	public IMessage onMessage(Blocker message, MessageContext ctx) {
 		try {
 			JsonParser parser = new JsonParser();
+			System.out.println(message.text);
 			JsonHelper.client = parser.parse(message.text).getAsJsonObject();
 			ItemsBlocks.ib.clear();
 			JsonHelper.client.entrySet().forEach(l ->

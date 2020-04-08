@@ -8,50 +8,48 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
-import org.apache.commons.lang3.math.NumberUtils;
 import ru.justagod.mineplugin.GradleSide;
 import ru.justagod.mineplugin.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
+import java.util.HashMap;
+
 @GradleSideOnly(GradleSide.SERVER)
 public class CommandCraft {
-	String usage = Base.usage + "craft <meta>* <reason>**\n" +
-			"if item already blocked - it will be deleted\n" +
-			"<meta> - Put 'all' if you want to get the meter out of the block \n" +
-			"* If the reason consists of one space, the default value is used\n" +
-			"ex: /ob craft all lololo";
+	String usage = Base.usage + "craft <args>\n" +
+			"   Arguments:\n" +
+			"   -text:reason(multi-string)\n" +
+			"   -allmeta(bool)\n\n" +
+			"   e.x: /ob craft text:Test reason; allmeta\n" +
+			"   (delimiter ';')";
 
+	/**
+	 * argumets: text,allmeta;
+	 */
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
 		EntityPlayer player = (EntityPlayer) sender;
 		ItemStack is = player.getHeldItemMainhand();
-		boolean all = false;
-		int meta = is.getMetadata();
 		if (is.isEmpty()) {
 			player.sendMessage(new TextComponentString("Take item/block into hand"));
 			return;
 		}
-		if (args.length > 1 && NumberUtils.isNumber(args[1]))
-			meta = Integer.parseInt(args[1]);
-		if (contains(args, "all")) {
-			meta = 0;
-			all = true;
-		}
+		int meta = is.getMetadata();
+
+		HashMap<String, String> parsed = new CommandParser().commandParser(ComandsMain.stringArrToString(args).replace("craft ", ""));
+
+		String text = parsed.getOrDefault("text", Main.config.getDefRes());
+		boolean allmeta = Boolean.parseBoolean(parsed.getOrDefault("allmeta", "false"));
+		if (allmeta) meta = 0;
 		if (JsonHelper.contains(JsonHelper.CRAFT, is.getItem().getRegistryName().toString() + ":" + meta)) {
 			JsonHelper.removeFromServer(JsonHelper.CRAFT, is.getItem().getRegistryName().toString() + ":" + meta);
 			player.sendMessage(new TextComponentString(ChatForm.prefix + "Item/Block the block will be available for JEI immediately after rebooting the client!"));
 		} else {
 			JsonObject jo = new JsonObject();
-			if (all)
+			if (allmeta)
 				jo.addProperty("boolBlockAllMeta", true);
-			String reason = "";
-			for (int i = 1; i < args.length; i++) {
-				if (args[1].equals(meta + "") || (all && i == 1))
-					continue;
-				reason += args[i] + " ";
 
-			}
 			if (is.getTagCompound() != null && !is.getTagCompound().isEmpty()) {
 				NBTTagCompound nbtTagCompound = is.getTagCompound();
 				JsonArray ja = new JsonArray();
@@ -60,9 +58,8 @@ public class CommandCraft {
 				}
 				jo.add("nbts", ja);
 			}
-			if (reason.trim().isEmpty())
-				reason = Main.config.getDefRes();
-			jo.addProperty("reason", reason);
+
+			jo.addProperty("reason", text);
 			JsonHelper.addServer(jo, JsonHelper.CRAFT, is.getItem().getRegistryName().toString() + ":" + meta);
 			player.sendMessage(new TextComponentString(ChatForm.prefix + "Item/Block Blocked!"));
 		}

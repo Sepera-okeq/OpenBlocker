@@ -34,6 +34,14 @@ public class ComandsMain extends CommandBase {
 			"-> reload\n" +
 			"-> debug";
 
+	public static String stringArrToString(String[] arr) {
+		StringBuilder sb = new StringBuilder();
+		for (String obj : arr)
+			sb.append(obj).append(" ");
+		return sb.substring(0, sb.length() - 1);
+
+	}
+
 	@Override
 	public String getName() {
 		return "ob";
@@ -53,14 +61,6 @@ public class ComandsMain extends CommandBase {
 		return al;
 	}
 
-	public static String stringArrToString(String[] arr) {
-		StringBuilder sb = new StringBuilder();
-		for (String obj : arr)
-			sb.append(obj);
-		return sb.substring(0, sb.length() - 1);
-
-	}
-
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length == 0) {
@@ -75,13 +75,19 @@ public class ComandsMain extends CommandBase {
 				break;
 			case "add-help":
 				new CommandAdd().help(sender);
-
+				break;
 			case "mincost":
-				new CommandMincost().execute(server, sender, args);
+				if (Main.config.isEnabledMinCost())
+					new CommandMincost().execute(server, sender, args);
+				else sender.sendMessage(new TextComponentString(ChatForm.prefix_warring + "Module disabled"));
+
 				break; //add & remove
 			case "mincost-help":
-				new CommandMincost().help(sender);
+				if (Main.config.isEnabledMinCost())
+					new CommandMincost().help(sender);
+				else sender.sendMessage(new TextComponentString(ChatForm.prefix_warring + "Module disabled"));
 
+				break;
 			case "enchant":
 				new CommandEnchant().execute(server, sender, args);
 				break; //add & remove

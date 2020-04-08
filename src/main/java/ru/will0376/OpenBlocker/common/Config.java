@@ -18,6 +18,7 @@ public class Config {
 	private List<String> whiteList;
 	private boolean LimitWarring;
 	private boolean deleteBlocked;
+	private boolean enabledMinCost;
 
 	public Config(File file) {
 		this.configuration = new Configuration(file);
@@ -53,6 +54,7 @@ public class Config {
 		this.defSign = this.configuration.getString("defSign", "general", "$", "Default Sign");
 		this.LimitWarring = this.configuration.getBoolean("limitwarring", "general", true, "");
 		this.deleteBlocked = this.configuration.getBoolean("deleteBlocked", "general", true, "Remove blocked items from inventory");
+		this.enabledMinCost = this.configuration.getBoolean("enabledMinCost", "general", false, "Enable module?");
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)
@@ -78,5 +80,10 @@ public class Config {
 	@GradleSideOnly(GradleSide.SERVER)
 	public List<String> getWhiteList() {
 		return whiteList;
+	}
+
+	@GradleSideOnly(GradleSide.SERVER)
+	public boolean isEnabledMinCost() {
+		return enabledMinCost;
 	}
 }
