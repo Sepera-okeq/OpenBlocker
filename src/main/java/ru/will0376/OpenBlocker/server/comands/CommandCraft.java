@@ -8,10 +8,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
-import ru.justagod.mineplugin.GradleSide;
-import ru.justagod.mineplugin.GradleSideOnly;
+import ru.justagod.cutter.GradleSide;
+import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.ChatForm;
+import ru.will0376.OpenBlocker.common.CraftManager;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
 import java.util.HashMap;
@@ -43,8 +44,9 @@ public class CommandCraft {
 		boolean allmeta = Boolean.parseBoolean(parsed.getOrDefault("allmeta", "false"));
 		if (allmeta) meta = 0;
 		if (JsonHelper.contains(JsonHelper.CRAFT, is.getItem().getRegistryName().toString() + ":" + meta)) {
+			CraftManager.removeCraftingRecipe(is);
 			JsonHelper.removeFromServer(JsonHelper.CRAFT, is.getItem().getRegistryName().toString() + ":" + meta);
-			player.sendMessage(new TextComponentString(ChatForm.prefix + "Item/Block the block will be available for JEI immediately after rebooting the client!"));
+			player.sendMessage(new TextComponentString(ChatForm.prefix + "Item/Block available"));
 		} else {
 			JsonObject jo = new JsonObject();
 			if (allmeta)
@@ -60,6 +62,7 @@ public class CommandCraft {
 			}
 
 			jo.addProperty("reason", text);
+			CraftManager.bringBack(is);
 			JsonHelper.addServer(jo, JsonHelper.CRAFT, is.getItem().getRegistryName().toString() + ":" + meta);
 			player.sendMessage(new TextComponentString(ChatForm.prefix + "Item/Block Blocked!"));
 		}

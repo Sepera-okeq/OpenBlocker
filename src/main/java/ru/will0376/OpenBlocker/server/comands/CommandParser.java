@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class CommandParser {
 	/*
 	 *  /command <boolArg(string); Strings:bla bla bla;>
-	 * return - hashmap
+	 * 	return - hashmap
 	 * */
 	public HashMap<String, String> commandParser(String args) {
 		HashMap<String, String> ret = new HashMap<>();

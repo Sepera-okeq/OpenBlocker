@@ -16,26 +16,7 @@ build:
     - export GRADLE_USER_HOME=`pwd`/.gradle
     - chmod +x gradlew
   script:
-    - ./gradlew serverBuild
-  cache:
-    paths:
-      - .gradle
-  artifacts:
-    expire_in: 4 week
-    paths:
-      - build/libs/
-
-buildClient:
-  image: openjdk:8-alpine
-  stage: build
-  before_script:
-    - export GRADLE_USER_HOME=`pwd`/.gradle
-    - chmod +x gradlew
-  script:
-    - ./gradlew clientBuild
-  cache:
-    paths:
-      - .gradle
+    - ./gradlew buildAll
   artifacts:
     expire_in: 4 week
     paths:

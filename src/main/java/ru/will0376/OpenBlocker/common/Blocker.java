@@ -33,12 +33,15 @@ public class Blocker implements IMessageHandler<Blocker, IMessage>, IMessage {
 	public IMessage onMessage(Blocker message, MessageContext ctx) {
 		try {
 			JsonParser parser = new JsonParser();
-			System.out.println(message.text);
 			JsonHelper.client = parser.parse(message.text).getAsJsonObject();
 			ItemsBlocks.ib.clear();
 			JsonHelper.client.entrySet().forEach(l ->
 					l.getValue().getAsJsonObject().entrySet().forEach(t ->
 							new ItemsBlocks(t.getKey())));
+			CraftManager.removedRecipe.forEach(rem -> {
+				if (!ItemsBlocks.containStack(rem.getIs())) CraftManager.bringBack(rem.getIs());
+			});
+			CraftManager.removedRecipe.removeIf(CraftPOJO::getDelete);
 		} catch (Exception e) {
 			e.printStackTrace();
 			net.minecraft.client.Minecraft.getMinecraft().player.sendMessage(new TextComponentString(ChatForm.prefix_error_client + "Error loading json from server!"));

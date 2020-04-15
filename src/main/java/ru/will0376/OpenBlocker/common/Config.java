@@ -1,8 +1,8 @@
 package ru.will0376.OpenBlocker.common;
 
 import net.minecraftforge.common.config.Configuration;
-import ru.justagod.mineplugin.GradleSide;
-import ru.justagod.mineplugin.GradleSideOnly;
+import ru.justagod.cutter.GradleSide;
+import ru.justagod.cutter.GradleSideOnly;
 
 import java.io.File;
 import java.util.Arrays;

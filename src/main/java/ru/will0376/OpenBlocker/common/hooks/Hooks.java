@@ -19,8 +19,8 @@ import net.minecraft.network.play.server.SPacketRecipeBook;
 import net.minecraft.stats.RecipeBook;
 import net.minecraft.stats.RecipeBookServer;
 import net.minecraft.util.math.MathHelper;
-import ru.justagod.mineplugin.GradleSide;
-import ru.justagod.mineplugin.GradleSideOnly;
+import ru.justagod.cutter.GradleSide;
+import ru.justagod.cutter.GradleSideOnly;
 
 import java.util.ArrayList;
 import java.util.List;

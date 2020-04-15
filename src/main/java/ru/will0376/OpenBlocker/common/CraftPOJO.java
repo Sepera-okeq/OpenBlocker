@@ -1,0 +1,44 @@
+package ru.will0376.OpenBlocker.common;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.ResourceLocation;
+
+public class CraftPOJO {
+	private ResourceLocation location;
+	private IRecipe recipe;
+	private int id;
+	private ItemStack is;
+	private boolean delete = false;
+
+	public CraftPOJO(ResourceLocation location, IRecipe recipe, int id) {
+		this.location = location;
+		this.recipe = recipe;
+		this.id = id;
+		this.is = recipe.getRecipeOutput();
+	}
+
+	public ItemStack getIs() {
+		return is;
+	}
+
+	public ResourceLocation getLocation() {
+		return location;
+	}
+
+	public IRecipe getRecipe() {
+		return recipe;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setDelete() {
+		delete = true;
+	}
+
+	public boolean getDelete() {
+		return delete;
+	}
+}

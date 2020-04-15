@@ -8,17 +8,19 @@ import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import ru.will0376.OpenBlocker.common.B64;
+import ru.will0376.OpenBlocker.common.CraftManager;
 import ru.will0376.OpenBlocker.common.ItemHelper;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ItemsBlocks implements Cloneable {
 	public static ArrayList<ItemsBlocks> ib = new ArrayList<>();
 	public String name;
 	public String reasonBlock, reasonCraft;
 	public ItemStack is;
-	public ArrayList<String> nbts = new ArrayList<>();
+	public ArrayList<String> nbts;
 	public NBTTagCompound nbt = new NBTTagCompound();
 	public int nbtsize = 0;
 	public int limit = -1;
@@ -55,6 +57,8 @@ public class ItemsBlocks implements Cloneable {
 			if (craft && JsonHelper.getClient(JsonHelper.CRAFT, block.split(":")[0] + ":" + block.split(":")[1] + ":" + Integer.parseInt(block.split(":")[2])).has("reason"))
 				reasonCraft = JsonHelper.getClient(JsonHelper.CRAFT, is.getItem().getRegistryName() + ":" + is.getMetadata()).get("reason").getAsString();
 		}
+		if (craft) CraftManager.removeCraftingRecipe(is);
+
 		ib.add(this);
 
 		compensationNBTS();
@@ -111,5 +115,18 @@ public class ItemsBlocks implements Cloneable {
 		} catch (CloneNotSupportedException ex) {
 			throw new InternalError();
 		}
+	}
+
+	public static boolean containStack(ItemStack is) {
+		AtomicBoolean ab = new AtomicBoolean(false);
+		ib.forEach(e -> {
+			if (e.is.isItemEqual(is)) ab.set(true);
+		});
+		return ab.get();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return is.isItemEqual((ItemStack) obj);
 	}
 }
