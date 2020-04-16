@@ -7,6 +7,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import ru.justagod.cutter.GradleSide;
+import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.server.IO;
 
@@ -32,10 +34,12 @@ public class JsonHelper {
 		return client.getAsJsonObject(objectname).getAsJsonObject(name);
 	}
 
+	@GradleSideOnly(GradleSide.SERVER)
 	public static JsonObject getServer(String objectname, String name) {
 		return server.getAsJsonObject(objectname).getAsJsonObject(name);
 	}
 
+	@GradleSideOnly(GradleSide.SERVER)
 	public static void addServer(JsonObject jo, String objectname, String subname) {
 		try {
 			if (containsItemServer(objectname, subname.split(":")[0] + ":" + subname.split(":")[1], Integer.parseInt(subname.split(":")[2])))
@@ -49,6 +53,7 @@ public class JsonHelper {
 		resendToClient();
 	}
 
+	@GradleSideOnly(GradleSide.SERVER)
 	public static void removeFromServer(String objectname, String blockname) {
 		server.getAsJsonObject(objectname).remove(blockname);
 		IO.write(server);
@@ -65,14 +70,17 @@ public class JsonHelper {
 		}
 	}
 
+	@GradleSideOnly(GradleSide.SERVER)
 	public static void resendToClient() {
 		FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers().forEach(JsonHelper::sendToPlayer);
 	}
 
+	@GradleSideOnly(GradleSide.SERVER)
 	public static void sendToPlayer(EntityPlayerMP p) {
 		Main.network.sendTo(new Blocker(server.toString()), p);
 	}
 
+	@GradleSideOnly(GradleSide.SERVER)
 	public static void init() {
 		JsonObject jo = IO.read();
 		if (jo != null)
@@ -81,6 +89,7 @@ public class JsonHelper {
 			Main.Logger.error(ChatForm.prefix_error + "[JsonHelper_Init] FileReader Error!");
 	}
 
+	@GradleSideOnly(GradleSide.SERVER)
 	public static boolean containsItemServer(String objectname, String itemname, int meta) {
 		JsonObject jo = (JsonObject) server.getAsJsonObject(objectname).get(itemname + ":0");
 		if (jo != null && jo.has("boolBlockAllMeta"))
@@ -100,6 +109,7 @@ public class JsonHelper {
 
 	}
 
+	@GradleSideOnly(GradleSide.SERVER)
 	public static boolean containsItemServer(String objectname, ItemStack is) {
 		return containsItemServer(objectname, is.getItem().getRegistryName().toString(), is.getMetadata());
 	}
@@ -142,6 +152,7 @@ public class JsonHelper {
 		return checkAllMetas(objectname, is.getItem().getRegistryName().toString());
 	}
 
+	@GradleSideOnly(GradleSide.SERVER)
 	public static boolean containsEnchantServer(ItemStack is) {
 		NBTTagList nbts = (NBTTagList) is.getTagCompound().getTag("StoredEnchantments");
 		if (nbts != null) {
@@ -155,6 +166,7 @@ public class JsonHelper {
 		return false;
 	}
 
+	@GradleSideOnly(GradleSide.SERVER)
 	public static boolean checkNBT(String objectname, ItemStack is) {
 		JsonObject jo;
 		if (checkAllMetas(objectname, is))

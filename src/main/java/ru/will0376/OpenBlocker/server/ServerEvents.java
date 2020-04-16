@@ -261,6 +261,7 @@ public class ServerEvents {
 		}
 	}
 
+	@GradleSideOnly(GradleSide.SERVER)
 	private static boolean checkNBT(EntityPlayer player, ItemStack is) {
 		if (!is.hasTagCompound())
 			return true;

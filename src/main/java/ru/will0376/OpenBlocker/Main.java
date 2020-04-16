@@ -13,6 +13,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
+import ru.justagod.cutter.invoke.Invoke;
 import ru.will0376.OpenBlocker.common.Blocker;
 import ru.will0376.OpenBlocker.common.CommonProxy;
 import ru.will0376.OpenBlocker.common.Config;
@@ -51,7 +52,7 @@ public class Main {
 		Logger = event.getModLog();
 		server = event.getSide().isServer();
 		if (server || debug)
-			serverPreInt(event);
+			Invoke.server(() -> serverPreInt(event));
 
 		proxy.preInit(event);
 	}
