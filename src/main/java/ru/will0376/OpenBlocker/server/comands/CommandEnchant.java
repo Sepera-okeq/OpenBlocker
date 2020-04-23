@@ -16,7 +16,7 @@ import ru.will0376.OpenBlocker.common.JsonHelper;
 
 @GradleSideOnly(GradleSide.SERVER)
 public class CommandEnchant {
-	private String usage = Base.usage + "enchant <reason>\n" +
+	private final String usage = Base.usage + "enchant <reason>\n" +
 			"if enchant already blocked - it will be deleted\n";
 
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) {

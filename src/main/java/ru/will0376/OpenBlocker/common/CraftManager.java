@@ -37,7 +37,7 @@ public class CraftManager {
 
 	public static void bringBack(ItemStack is) {
 		try {
-			if (!is.isEmpty() && contains(is)) { //TODO: TESTME
+			if (!is.isEmpty() && contains(is)) {
 				ForgeRegistry<IRecipe> recipeRegistry = (ForgeRegistry<IRecipe>) ForgeRegistries.RECIPES;
 				CraftPOJO pojo = get(is);
 				if (pojo == null) {

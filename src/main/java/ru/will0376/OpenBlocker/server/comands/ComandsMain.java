@@ -21,7 +21,7 @@ import java.util.List;
 
 @GradleSideOnly(GradleSide.SERVER)
 public class ComandsMain extends CommandBase {
-	private String usage = "/ob <module>\n" +
+	private final String usage = "/ob <module>\n" +
 			"Helps:\n" +
 			"-> add-help\n" +
 			"-> mincost-help\n" +

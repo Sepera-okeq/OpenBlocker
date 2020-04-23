@@ -22,7 +22,7 @@ public class ItemsBlocks implements Cloneable {
 	public ItemStack is;
 	public ArrayList<String> nbts;
 	public NBTTagCompound nbt = new NBTTagCompound();
-	public int nbtsize = 0;
+	public int nbtsize;
 	public int limit = -1;
 	public double mincost = -1;
 	public boolean blocked;
@@ -33,8 +33,9 @@ public class ItemsBlocks implements Cloneable {
 
 	public ItemsBlocks(String block) {
 		name = block;
-		blocked = JsonHelper.containsItemClient(JsonHelper.BLOCKER, block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
 		is = new ItemStack(Item.getByNameOrId(block.split(":")[0] + ":" + block.split(":")[1]), 1, Integer.parseInt(block.split(":")[2]));
+
+		blocked = JsonHelper.containsItemClient(JsonHelper.BLOCKER, block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
 
 		nbts = JsonHelper.findAllNBT(block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
 		nbtsize = nbts.size();
@@ -58,12 +59,31 @@ public class ItemsBlocks implements Cloneable {
 				reasonCraft = JsonHelper.getClient(JsonHelper.CRAFT, is.getItem().getRegistryName() + ":" + is.getMetadata()).get("reason").getAsString();
 		}
 		if (craft) CraftManager.removeCraftingRecipe(is);
-
+		if (containStack(is)) {
+			ItemsBlocks.ib.forEach(e -> {
+				if (e.is.isItemEqual(is)) {
+					e.allmeta = Boolean.logicalOr(e.allmeta, allmeta);
+					e.blocked = Boolean.logicalOr(e.blocked, blocked);
+					e.limitb = Boolean.logicalOr(e.limitb, limitb);
+					e.mincostb = Boolean.logicalOr(e.mincostb, mincostb);
+					e.craft = Boolean.logicalOr(e.craft, craft);
+				}
+			});
+			return;
+		}
 		ib.add(this);
 
 		compensationNBTS();
 		if (allmeta)
 			blockAllMeta();
+	}
+
+	public static boolean containStack(ItemStack is) {
+		AtomicBoolean ab = new AtomicBoolean(false);
+		ib.forEach(e -> {
+			if (e.is.isItemEqual(is)) ab.set(true);
+		});
+		return ab.get();
 	}
 
 	private void blockAllMeta() {
@@ -115,14 +135,6 @@ public class ItemsBlocks implements Cloneable {
 		} catch (CloneNotSupportedException ex) {
 			throw new InternalError();
 		}
-	}
-
-	public static boolean containStack(ItemStack is) {
-		AtomicBoolean ab = new AtomicBoolean(false);
-		ib.forEach(e -> {
-			if (e.is.isItemEqual(is)) ab.set(true);
-		});
-		return ab.get();
 	}
 
 	@Override

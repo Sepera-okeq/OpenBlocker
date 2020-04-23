@@ -53,7 +53,6 @@ public class Main {
 		server = event.getSide().isServer();
 		if (server || debug)
 			Invoke.server(() -> serverPreInt(event));
-
 		proxy.preInit(event);
 	}
 

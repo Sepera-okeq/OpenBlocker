@@ -5,10 +5,11 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 
 public class CraftPOJO {
-	private ResourceLocation location;
-	private IRecipe recipe;
-	private int id;
-	private ItemStack is;
+
+	private final ResourceLocation location;
+	private final IRecipe recipe;
+	private final int id;
+	private final ItemStack is;
 	private boolean delete = false;
 
 	public CraftPOJO(ResourceLocation location, IRecipe recipe, int id) {

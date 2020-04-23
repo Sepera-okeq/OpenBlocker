@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Config {
 
-	private Configuration configuration;
+	private final Configuration configuration;
 	private String serverName;
 	private String defRes;
 	private String defSign;
