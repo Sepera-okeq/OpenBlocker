@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
@@ -156,8 +157,11 @@ public class GuiBlocker extends GuiScreen {
 				list = new ArrayList<>();
 				list.add(I18n.format("guiblocker.blockname", tmpib.is.getDisplayName()));
 				list.addAll(tmpib.getLore());
-				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+					list.add(TextFormatting.BOLD + "_______________");
+					if (tmpib.disableBox) list.add(I18n.format("ib.lore.disableBox"));
 					list.add("NBT: " + tmpib.nbt);
+				}
 				renderTooltip(mouseX + 3, mouseY - 8, list);
 			}
 		}

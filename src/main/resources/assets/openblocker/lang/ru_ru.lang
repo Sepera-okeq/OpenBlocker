@@ -7,6 +7,7 @@ ib.rore.mincost=Минимальная цена: %s
 ib.lore.allmeta=Учитываются все меты!
 ib.lore.limit=Лимит на чанк: %s
 ib.lore.craft=Крафт отключён! Причина: %s
+ib.lore.disableBox=Выделение блока отключено
 serverevent.interaction=ItemStack %s:%s был заблокирован для взаимодействия!
 serverevent.interaction.remove=И удален!
 serverevent.blockenchant=Зачарование: %s было заблокировано! И убрано с вашего предмета

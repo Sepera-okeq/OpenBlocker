@@ -44,7 +44,7 @@ repositories {
 	maven { url "http://dvs1.progwml6.com/files/maven" } //JEI
 }
 
-cutter.initializeDefault()
+cutter.initializeDefault(true,false)
 
 dependencies {
     compile fileTree(dir: 'lib', include: ['*.jar'])

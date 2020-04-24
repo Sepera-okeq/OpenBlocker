@@ -51,7 +51,7 @@ public class ClientEvents {
 			if (e.getTarget() != null)
 				if (e.getPlayer().getEntityWorld().getBlockState(e.getTarget().getBlockPos()).getBlock() != Blocks.AIR) {
 					ItemStack is = getPickBlock(e.getPlayer().getEntityWorld(), e.getTarget().getBlockPos());
-					if (check(is, false))
+					if (check(is, false) && !ItemsBlocks.get(is).disableBox)
 						render(e);
 				}
 		} catch (Exception ignore) {
@@ -76,6 +76,8 @@ public class ClientEvents {
 			if (l.is.isItemEqual(is) && !ret.get() && l.blocked)
 				ret.set(true);
 			else if (checkNonBlocks && l.is.isItemEqual(is) && !ret.get())
+				ret.set(true);
+			else if (l.allmeta && l.blocked && !ret.get() && l.is.getItem().equals(is.getItem()))
 				ret.set(true);
 		});
 		return ret.get();

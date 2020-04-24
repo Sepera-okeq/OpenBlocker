@@ -26,6 +26,10 @@ public class CommandCraft {
 			"   e.x: /ob craft text:Test reason; allmeta\n" +
 			"   (delimiter ';')";
 
+	public static String[] getArgs() {
+		return new String[]{"text", "allmeta"};
+	}
+
 	/**
 	 * argumets: text,allmeta;
 	 */

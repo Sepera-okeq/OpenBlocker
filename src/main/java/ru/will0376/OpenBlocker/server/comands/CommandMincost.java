@@ -24,6 +24,10 @@ public class CommandMincost {
 			"   e.x: /ob mincost cost:10; allmeta\n" +
 			"   (delimiter ';')";
 
+	public static String[] getArgs() {
+		return new String[]{"cost", "allmeta"};
+	}
+
 	/**
 	 * argumets: cost, allmeta
 	 */

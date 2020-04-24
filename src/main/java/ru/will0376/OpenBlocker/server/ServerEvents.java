@@ -220,18 +220,19 @@ public class ServerEvents {
 	}
 
 	private static void sendToPlayerDebugMessage(EntityPlayer player, String line) {
-		long time = System.currentTimeMillis() / 1000;
-		if (cooldownDebug.containsKey(player)) {
-			if (!(cooldownDebug.get(player) > time)) {
-				cooldownDebug.remove(player);
+		if (player.canUseCommand(4, "ob.debug.messages")) {
+			long time = System.currentTimeMillis() / 1000;
+			if (cooldownDebug.containsKey(player)) {
+				if (!(cooldownDebug.get(player) > time)) {
+					cooldownDebug.remove(player);
+					cooldownDebug.put(player, time + 1);
+					player.sendMessage(new TextComponentString(line));
+				}
+			} else {
 				cooldownDebug.put(player, time + 1);
 				player.sendMessage(new TextComponentString(line));
 			}
-		} else {
-			cooldownDebug.put(player, time + 1);
-			player.sendMessage(new TextComponentString(line));
 		}
-
 	}
 
 	private static boolean findEnchID(int findID, ItemStack is) {

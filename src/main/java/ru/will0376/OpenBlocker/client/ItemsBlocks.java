@@ -14,6 +14,7 @@ import ru.will0376.OpenBlocker.common.JsonHelper;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ItemsBlocks implements Cloneable {
 	public static ArrayList<ItemsBlocks> ib = new ArrayList<>();
@@ -30,12 +31,14 @@ public class ItemsBlocks implements Cloneable {
 	public boolean limitb;
 	public boolean mincostb;
 	public boolean allmeta;
+	public boolean disableBox;
 
 	public ItemsBlocks(String block) {
 		name = block;
 		is = new ItemStack(Item.getByNameOrId(block.split(":")[0] + ":" + block.split(":")[1]), 1, Integer.parseInt(block.split(":")[2]));
 
 		blocked = JsonHelper.containsItemClient(JsonHelper.BLOCKER, block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
+		if (blocked) disableBox = JsonHelper.getClient(JsonHelper.BLOCKER, block).has("disableBox");
 
 		nbts = JsonHelper.findAllNBT(block.split(":")[0] + ":" + block.split(":")[1], Integer.parseInt(block.split(":")[2]));
 		nbtsize = nbts.size();
@@ -79,9 +82,23 @@ public class ItemsBlocks implements Cloneable {
 	}
 
 	public static boolean containStack(ItemStack is) {
-		AtomicBoolean ab = new AtomicBoolean(false);
+		AtomicBoolean ret = new AtomicBoolean(false);
 		ib.forEach(e -> {
-			if (e.is.isItemEqual(is)) ab.set(true);
+			if (e.is.isItemEqual(is))
+				ret.set(true);
+			else if (e.allmeta && e.is.getItem().equals(is.getItem()))
+				ret.set(true);
+		});
+		return ret.get();
+	}
+
+	public static ItemsBlocks get(ItemStack is) {
+		AtomicReference<ItemsBlocks> ab = new AtomicReference<>();
+		ib.forEach(e -> {
+			if (e.is.isItemEqual(is))
+				ab.set(e);
+			else if (e.allmeta && e.is.getItem().equals(is.getItem()))
+				ab.set(e);
 		});
 		return ab.get();
 	}

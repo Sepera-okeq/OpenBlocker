@@ -22,19 +22,28 @@ public class CommandAdd implements Base {
 			"   Arguments:\n" +
 			"   -text:reason(multi-string)\n" +
 			"   -temp(bool)\n" +
-			"   -allmeta(bool)\n\n" +
-			"   e.x: /ob add text:Test reason; temp; allmeta\n" +
+			"   -allmeta(bool)\n" +
+			"	-disableBox\n\n" +
+			"   e.x: /ob add text:Test reason; temp; allmeta; disableBox\n" +
 			"   (delimiter ';')";
 	String usageremove = Base.usage + "remove(or delete) <agrs>\n" +
 			"   Arguments:\n" +
 			"   -allmeta(bool)";
+
+	public static String[] getArgs(int mode) {
+		if (mode == 0) //add
+			return new String[]{"text", "allmeta", "temp", "disableBox"};
+		else if (mode == 1) //remode
+			return new String[]{"allmeta"};
+		return new String[]{""};
+	}
 
 	public void help(ICommandSender sender) {
 		sender.sendMessage(new TextComponentString(usageadd + "\n" + usageremove));
 	}
 
 	/**
-	 * argumets: text,allmeta,temp;
+	 * argumets: text,allmeta,temp,disableBox;
 	 */
 	public void add(MinecraftServer server, ICommandSender sender, String[] args) {
 		try {
@@ -52,6 +61,7 @@ public class CommandAdd implements Base {
 			String text = parsed.getOrDefault("text", Main.config.getDefRes());
 			boolean temp = Boolean.parseBoolean(parsed.getOrDefault("temp", "false"));
 			boolean allmeta = Boolean.parseBoolean(parsed.getOrDefault("allmeta", "false"));
+			boolean disableBox = Boolean.parseBoolean(parsed.getOrDefault("disableBox", "false"));
 
 			JsonObject jo = new JsonObject();
 			if (allmeta) {
@@ -67,6 +77,8 @@ public class CommandAdd implements Base {
 			}
 
 			jo.addProperty("reason", text.trim());
+			if (disableBox)
+				jo.addProperty("disableBox", true);
 			JsonHelper.addServer(jo, JsonHelper.BLOCKER, itemStack.getItem().getRegistryName().toString() + ":" + meta);
 			sender.sendMessage(new TextComponentString(ChatForm.prefix + String.format("ItemStack: %s successfully added!", itemStack.getItem().getRegistryName().toString() + ":" + meta)));
 		} catch (Exception e) {

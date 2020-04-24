@@ -25,6 +25,12 @@ public class CommandLimit implements Base {
 			"   (delimiter ';')";
 	String removeusage = Base.usage + "removelimit";
 
+	public static String[] getArgs(int mode) {
+		if (mode == 0) //add
+			return new String[]{"allmeta", "l"};
+		return new String[]{""};
+	}
+
 	public void help(ICommandSender sender) {
 		sender.sendMessage(new TextComponentString(addusage + "\n" + removeusage));
 	}
