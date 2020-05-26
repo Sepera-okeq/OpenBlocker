@@ -1,6 +1,5 @@
 package ru.will0376.OpenBlocker.server.comands;
 
-import com.sun.istack.internal.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -76,7 +75,7 @@ public class ComandsMain extends CommandBase {
 	}
 
 	@Override
-	public List getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+	public List getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
 
 		if (args.length == 1)
 			return getListOfStringsMatchingLastWord(args, "add", "add-help", "mincost", "mincost-help", "enchant", "enchant-help",
