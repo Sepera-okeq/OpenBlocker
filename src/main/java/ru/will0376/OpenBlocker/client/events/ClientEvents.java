@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -28,7 +29,7 @@ public class ClientEvents {
 	public static ItemStack getPickBlock(World world, BlockPos pos) {
 		try {
 			Item item = Item.getItemFromBlock(world.getBlockState(pos).getBlock());
-			if (item == null)
+			if (item == Items.AIR)
 				return ItemStack.EMPTY;
 			else
 				return new ItemStack(item, 1, Block.getBlockFromItem(item).getMetaFromState(world.getBlockState(pos)));
@@ -84,7 +85,7 @@ public class ClientEvents {
 	}
 
 	private static ItemsBlocks getIB(ItemStack is) {
-		AtomicReference<ItemsBlocks> ret = new AtomicReference();
+		AtomicReference<ItemsBlocks> ret = new AtomicReference<>();
 		ItemsBlocks.ib.forEach(l -> {
 			if (l.is.isItemEqual(is) && ret.get() == null)
 				ret.set(l);

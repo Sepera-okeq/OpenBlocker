@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -38,7 +39,7 @@ public class ServerEvents {
 	public static ItemStack getPickBlock(World world, BlockPos pos) {
 		try {
 			Item item = Item.getItemFromBlock(world.getBlockState(pos).getBlock());
-			if (item == null) {
+			if (item == Items.AIR) {
 				return ItemStack.EMPTY;
 			} else {
 				return new ItemStack(item, 1, Block.getBlockFromItem(item).getMetaFromState(world.getBlockState(pos)));
@@ -255,7 +256,7 @@ public class ServerEvents {
 	private static ItemStack removeEnchID(int findID, ItemStack is) {
 		NBTTagList nbttaglist = is.getEnchantmentTagList();
 		NBTTagList newnbttaglist = new NBTTagList();
-		if (nbttaglist == null) {
+		if (nbttaglist.isEmpty()) {
 			return is;
 		} else if (nbttaglist.tagCount() <= 1) {
 			is.getTagCompound().removeTag("StoredEnchantments");

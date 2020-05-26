@@ -121,7 +121,7 @@ public class GuiBlocker extends GuiScreen {
 		int itemsInPage = (this.scaledWidth - 35 - 35) * (byte) 115 / 1024;
 		int offset = 0;
 		ArrayList<String> list;
-		if (!blockslist.isEmpty()) {
+		if (!blockslist.isEmpty()) { //TODO: убрать говно с класса.
 			for (ItemsBlocks ib : blockslist) {
 				for (int k = 1; k < 50; ++k) {
 					if (k == 1) {

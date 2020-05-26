@@ -1,5 +1,6 @@
 package ru.will0376.OpenBlocker.server.comands;
 
+import com.sun.istack.internal.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -17,7 +18,6 @@ import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.ItemHelper;
 import ru.will0376.OpenBlocker.common.JsonHelper;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
