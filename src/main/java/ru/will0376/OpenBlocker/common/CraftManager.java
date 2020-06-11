@@ -20,14 +20,13 @@ public class CraftManager {
 
 	public static void removeCraftingRecipe(ItemStack removed) {
 		try {
-			ForgeRegistry<IRecipe> recipeRegistry = (ForgeRegistry<IRecipe>) ForgeRegistries.RECIPES;
-			ArrayList<IRecipe> recipes = Lists.newArrayList(recipeRegistry.getValues());
+			ArrayList<IRecipe> recipes = Lists.newArrayList(ForgeRegistries.RECIPES.getValues());
 			for (IRecipe tmp : recipes) {
 				if (tmp.getRecipeOutput().getItem() != Items.AIR
 						&& !removed.isEmpty()
 						&& removed.getItem() == tmp.getRecipeOutput().getItem()
 						&& tmp.getRecipeOutput().getMetadata() == removed.getMetadata()) {
-					removeCrafting(tmp, recipeRegistry);
+					removeCrafting(tmp);
 				}
 			}
 		} catch (Exception e) {
@@ -54,7 +53,7 @@ public class CraftManager {
 				recipeRegistry.unfreeze();
 				names.put(pojo.getLocation(), pojo.getRecipe());
 				ids.put(pojo.getId(), pojo.getRecipe());
-				recipeRegistry.unfreeze();
+				recipeRegistry.freeze();
 				pojo.setDelete();
 			}
 		} catch (Exception e) {
@@ -78,13 +77,12 @@ public class CraftManager {
 		return ab.get();
 	}
 
-	public static void removeCrafting(IRecipe recipe, ForgeRegistry<IRecipe> recipeRegistry) {
+	public static void removeCrafting(IRecipe recipe) {
 		try {
+			ForgeRegistry<IRecipe> recipeRegistry = (ForgeRegistry<IRecipe>) ForgeRegistries.RECIPES;
 			recipeRegistry.unfreeze();
 			removedRecipe.add(new CraftPOJO(recipe.getRegistryName(), recipe, recipeRegistry.getID(recipe)));
-			System.out.println(recipe.getRegistryName());
 			recipeRegistry.remove(recipe.getRegistryName());
-
 			recipeRegistry.freeze();
 			Main.Logger.info(ChatForm.prefix + "Removed recipe: " + recipe.getRecipeOutput().getDisplayName() + ":" + recipe.getRecipeOutput().getMetadata());
 		} catch (Exception e) {
