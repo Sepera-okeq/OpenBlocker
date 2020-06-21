@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-FMLCorePlugin: ru.will0376.OpenBlocker.common.Hookloader
-FMLCorePluginContainsFMLMod: true
-Created-By: 1.7.0 (Oracle Corporation)
