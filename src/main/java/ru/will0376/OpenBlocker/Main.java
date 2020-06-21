@@ -38,6 +38,7 @@ public class Main {
 	public static File configFile;
 	public static SimpleNetworkWrapper network;
 	public static Logger Logger;
+	@Mod.Instance
 	public static Main Instance;
 	@SidedProxy(
 			clientSide = "ru.will0376.OpenBlocker.client.ClientProxy",
@@ -48,7 +49,6 @@ public class Main {
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent event) {
 		if (debug) debug = (boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
-		Instance = this;
 		Logger = event.getModLog();
 		server = event.getSide().isServer();
 		if (server || debug)

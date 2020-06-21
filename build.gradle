@@ -55,8 +55,8 @@ dependencies {
     //compile group: 'net.minecraft', name: 'launchwrapper', version: '1.2'
     compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
     compile group: 'org.apache.logging.log4j', name: 'log4j', version: '2.12.1', ext: 'pom'
-    compile group: 'com.google.common', name: 'google-collect', version: '1.0-rc1'
-
+    //compile group: 'com.google.common', name: 'google-collect', version: '1.0-rc1'
+    compile group: 'com.google.guava', name: 'guava', version: '21.0'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     compile group: 'org.ow2.asm', name: 'asm-all', version: '5.2'
     compile group: 'commons-io', name: 'commons-io', version: '2.7'

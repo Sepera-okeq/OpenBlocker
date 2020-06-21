@@ -28,18 +28,6 @@ import java.util.List;
 import static gloomyfolken.hooklib.asm.ReturnCondition.ALWAYS;
 
 public class Hooks {
-	/*private static final Unsafe unsafe;
-
-	static {
-		try {
-			Field field = Unsafe.class.getDeclaredField("theUnsafe");
-			field.setAccessible(true);
-			unsafe = (Unsafe) field.get(null);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}*/
-
 	@Hook(priority = HookPriority.HIGHEST, returnCondition = ALWAYS)
 	public static int getRecipeId(RecipeBook rb, IRecipe recipe) {
 		try {
@@ -48,7 +36,6 @@ public class Hooks {
 				ret = ((net.minecraftforge.registries.ForgeRegistry<IRecipe>) net.minecraftforge.fml.common.registry.ForgeRegistries.RECIPES).getID(recipe.getRegistryName());
 				if (ret == -1) {
 					return 1;
-
 				}
 			}
 			return ret;
@@ -176,6 +163,4 @@ public class Hooks {
 			return new NBTTagCompound();
 		}
 	}
-
-
 }
