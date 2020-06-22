@@ -19,6 +19,10 @@ public class CraftPOJO {
 		this.is = recipe.getRecipeOutput();
 	}
 
+	public boolean contains(IRecipe recipeIn) {
+		return recipeIn.equals(recipe);
+	}
+
 	public ItemStack getIs() {
 		return is;
 	}

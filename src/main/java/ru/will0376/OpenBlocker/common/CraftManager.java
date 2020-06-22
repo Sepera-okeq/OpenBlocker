@@ -81,10 +81,18 @@ public class CraftManager {
 		try {
 			ForgeRegistry<IRecipe> recipeRegistry = (ForgeRegistry<IRecipe>) ForgeRegistries.RECIPES;
 			recipeRegistry.unfreeze();
-			removedRecipe.add(new CraftPOJO(recipe.getRegistryName(), recipe, recipeRegistry.getID(recipe)));
+			AtomicBoolean ab = new AtomicBoolean(false);
+			removedRecipe.forEach(e -> {
+				if (e.contains(recipe) && !ab.get()) ab.set(true);
+			});
+			if (!ab.get())
+				removedRecipe.add(new CraftPOJO(recipe.getRegistryName(), recipe, recipeRegistry.getID(recipe)));
 			recipeRegistry.remove(recipe.getRegistryName());
 			recipeRegistry.freeze();
-			Main.Logger.info(ChatForm.prefix + "Removed recipe: " + recipe.getRecipeOutput().getDisplayName() + ":" + recipe.getRecipeOutput().getMetadata());
+			if (!ab.get())
+				Main.Logger.info(ChatForm.prefix + "Removed recipe: " + recipe.getRecipeOutput().getDisplayName() + ":" + recipe.getRecipeOutput().getMetadata());
+			else
+				Main.Logger.info(ChatForm.prefix + "Removed recipe: " + recipe.getRecipeOutput().getDisplayName() + ":" + recipe.getRecipeOutput().getMetadata() + " (again)");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

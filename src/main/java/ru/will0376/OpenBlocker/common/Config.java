@@ -19,6 +19,7 @@ public class Config {
 	private boolean LimitWarring;
 	private boolean deleteBlocked;
 	private boolean enabledMinCost;
+	private boolean enableCraftTickChecker;
 
 	public Config(File file) {
 		this.configuration = new Configuration(file);
@@ -49,12 +50,11 @@ public class Config {
 	@GradleSideOnly(GradleSide.SERVER)
 	private void setConfigs() {
 		this.whiteList = Arrays.asList(this.configuration.getStringList("Whitelist", "general", new String[]{"will0376"}, "whitelist"));
-		this.serverName = this.configuration.getString("serverName", "general", "", "");
 		this.defRes = this.configuration.getString("defRes", "general", "Потому-что!", "Default Reason");
-		this.defSign = this.configuration.getString("defSign", "general", "$", "Default Sign");
 		this.LimitWarring = this.configuration.getBoolean("limitwarring", "general", true, "");
 		this.deleteBlocked = this.configuration.getBoolean("deleteBlocked", "general", true, "Remove blocked items from inventory");
 		this.enabledMinCost = this.configuration.getBoolean("enabledMinCost", "general", false, "Enable module?");
+		this.enableCraftTickChecker = this.configuration.getBoolean("enableCraftTickChecker", "general", false, "");
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)
@@ -65,11 +65,6 @@ public class Config {
 	@GradleSideOnly(GradleSide.SERVER)
 	public String getDefRes() {
 		return defRes;
-	}
-
-	@GradleSideOnly(GradleSide.SERVER)
-	public String getDefSign() {
-		return defSign;
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)
@@ -85,5 +80,10 @@ public class Config {
 	@GradleSideOnly(GradleSide.SERVER)
 	public boolean isEnabledMinCost() {
 		return enabledMinCost;
+	}
+
+	@GradleSideOnly(GradleSide.SERVER)
+	public boolean isEnableCraftTickChecker() {
+		return enableCraftTickChecker;
 	}
 }
