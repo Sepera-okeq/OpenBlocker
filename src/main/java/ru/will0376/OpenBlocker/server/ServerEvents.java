@@ -190,9 +190,13 @@ public class ServerEvents {
 		return JsonHelper.checkNBT(JsonHelper.BLOCKER, is);
 	}
 
+	/**
+	 * @param player - player
+	 * @return false, if blocked.
+	 */
 	private static boolean checkPlayer(EntityPlayer player) {
 		if (Main.debug) return false;
-		return (!Main.config.getWhiteList().contains(player.getName().toLowerCase()) ||
+		return (Main.config.getWhiteList().contains(player.getName().toLowerCase()) ||
 				player.canUseCommand(4, "openblocker.bypasscheck") && player.isCreative());
 	}
 
