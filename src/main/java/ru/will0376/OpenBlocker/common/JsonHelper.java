@@ -139,13 +139,13 @@ public class JsonHelper {
 	}
 
 	public static boolean checkAllMetas(String objectname, String is) {
+		JsonObject jo;
 		if (isServer) {
-			JsonObject jo = (JsonObject) server.getAsJsonObject(objectname).get(is + ":0");
-			return jo != null && jo.has("boolBlockAllMeta");
+			jo = (JsonObject) server.getAsJsonObject(objectname).get(is + ":0");
 		} else {
-			JsonObject jo = (JsonObject) client.getAsJsonObject(objectname).get(is + ":0");
-			return jo != null && jo.has("boolBlockAllMeta");
+			jo = (JsonObject) client.getAsJsonObject(objectname).get(is + ":0");
 		}
+		return jo != null && jo.has("boolBlockAllMeta");
 	}
 
 	public static boolean checkAllMetas(String objectname, ItemStack is) {

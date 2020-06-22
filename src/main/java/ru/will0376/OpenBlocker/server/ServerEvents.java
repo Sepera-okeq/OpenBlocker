@@ -49,28 +49,28 @@ public class ServerEvents {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void checkBreakBlock(BlockEvent.BreakEvent e) {
 		EntityPlayer player = e.getPlayer();
 		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
 		e.setCanceled(checkBlock(player, is, "serverevent.interaction", "BlockEvent.BreakEvent"));
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void checkPlaceBlock(BlockEvent.PlaceEvent e) {
 		EntityPlayer player = e.getPlayer();
 		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
 		e.setCanceled(checkBlock(player, is, "serverevent.interaction", "BlockEvent.PlaceEvent"));
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void checkPlaceBlock(BlockEvent.MultiPlaceEvent e) {
 		EntityPlayer player = e.getPlayer();
 		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
 		e.setCanceled(checkBlock(player, is, "serverevent.interaction", "BlockEvent.MultiPlaceEvent"));
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void playerCheckInteract(PlayerInteractEvent.RightClickBlock e) {
 		EntityPlayer player = e.getEntityPlayer();
 		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
@@ -78,7 +78,7 @@ public class ServerEvents {
 	}
 
 	public static boolean checkBlock(EntityPlayer player, ItemStack is, String translation, String debug) {
-		if (check(player, is, Main.config.isDeleteBlocked(),
+		if (check(player, is, Main.config.isDeleteBlocked() && (!debug.contains("RightClickBlock") && !debug.contains("BreakEvent")),
 				ChatForm.prefix + new TextComponentTranslation(translation, is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText())) {
 			if (Main.debug) sendToPlayerDebugMessage(player, "[DEBUG_" + debug + "] Canceled event.");
 			return true;
@@ -86,22 +86,8 @@ public class ServerEvents {
 		return false;
 	}
 
-	/*@SubscribeEvent
-	public static void checkCraftBlocker(PlayerEvent.ItemCraftedEvent e) {
-		EntityPlayer player = e.player;
-		ItemStack is = e.crafting;
-		if (check(player, is, true)) e.setCanceled(true);
-	}
-
-	@SubscribeEvent
-	public static void checkSmeltBlocker(PlayerEvent.ItemSmeltedEvent e) {
-		EntityPlayer player = e.player;
-		ItemStack is = e.smelting;
-		if (check(player, is, true)) e.setCanceled(true);
-	}
-*/
-	@SuppressWarnings("deprecation")
-	@SubscribeEvent
+	//@SuppressWarnings("deprecation")
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void checkPickupBlocker(PlayerEvent.ItemPickupEvent e) {
 		EntityPlayer player = e.player;
 		ItemStack is = e.pickedUp.getItem();
@@ -112,7 +98,7 @@ public class ServerEvents {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void everyTickRemover(TickEvent.PlayerTickEvent e) {
 		EntityPlayer player = e.player;
 		for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
