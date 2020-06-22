@@ -74,12 +74,4 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
-    jar {
-        manifest {
-            attributes 'FMLAT': 'forge_at.cfg'
-            attributes 'FMLCorePlugin': 'ru.will0376.OpenBlocker.common.Hookloader'
-            attributes 'FMLCorePluginContainsFMLMod': 'true'
-        }
-    }
-
 }
