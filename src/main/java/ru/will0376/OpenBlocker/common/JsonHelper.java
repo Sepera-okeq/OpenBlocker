@@ -77,7 +77,7 @@ public class JsonHelper {
 
 	@GradleSideOnly(GradleSide.SERVER)
 	public static void sendToPlayer(EntityPlayerMP p) {
-		Main.network.sendTo(new Blocker(server.toString()), p);
+		Main.network.sendTo(new Blocker(server.toString(), Main.config.isEnableCraftTickChecker()), p);
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)

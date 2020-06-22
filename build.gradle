@@ -18,7 +18,7 @@ buildscript {
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: 'cutter'
 
-version = "1.1.1"
+version = "1.1.2"
 group = "ru.will0376.OpenBlocker"
 archivesBaseName = "OpenBlocker"
 
@@ -74,12 +74,4 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
-    jar {
-        manifest {
-            attributes 'FMLAT': 'forge_at.cfg'
-            attributes 'FMLCorePlugin': 'ru.will0376.OpenBlocker.common.Hookloader'
-            attributes 'FMLCorePluginContainsFMLMod': 'true'
-        }
-    }
-
 }

@@ -1,0 +1,3 @@
+FMLAT: forge_at.cfg
+FMLCorePlugin: ru.will0376.OpenBlocker.common.Hookloader
+FMLCorePluginContainsFMLMod: true

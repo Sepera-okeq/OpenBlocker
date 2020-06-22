@@ -8,30 +8,36 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import ru.will0376.OpenBlocker.client.ItemsBlocks;
+import ru.will0376.OpenBlocker.client.events.ClientEvents;
 
 public class Blocker implements IMessageHandler<Blocker, IMessage>, IMessage {
 	String text;
+	boolean tick;
 
 	public Blocker() {
 	}
 
-	public Blocker(String text) {
+	public Blocker(String text, boolean tick) {
 		this.text = text;
+		this.tick = tick;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		this.text = ByteBufUtils.readUTF8String(buf);
+		this.tick = buf.readBoolean();
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
 		ByteBufUtils.writeUTF8String(buf, this.text);
+		buf.writeBoolean(tick);
 	}
 
 	@Override
 	public IMessage onMessage(Blocker message, MessageContext ctx) {
 		try {
+			ClientEvents.tickremover = message.tick;
 			JsonParser parser = new JsonParser();
 			JsonHelper.client = parser.parse(message.text).getAsJsonObject();
 			ItemsBlocks.ib.clear();

@@ -1,5 +1,6 @@
 package ru.will0376.OpenBlocker.client.events;
 
+import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -7,6 +8,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -15,16 +17,35 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import ru.will0376.OpenBlocker.KeyUtils;
 import ru.will0376.OpenBlocker.client.GuiBlocker;
 import ru.will0376.OpenBlocker.client.ItemsBlocks;
+import ru.will0376.OpenBlocker.common.CraftManager;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Mod.EventBusSubscriber(value = Side.CLIENT)
 public class ClientEvents {
+	public static int deleteTicks = (20 * 60) * 2; //каждые 2 минуты
+	public static boolean tickremover = false;
+
+	@SubscribeEvent
+	public static void tickChecker(TickEvent.PlayerTickEvent event) {
+		if (event.phase == TickEvent.Phase.END && tickremover) {
+			if (deleteTicks == 0) {
+				List<IRecipe> list = Lists.newArrayList(ForgeRegistries.RECIPES.getValues());
+				CraftManager.removedRecipe.forEach(rem -> {
+					if (list.contains(rem.getRecipe()))
+						CraftManager.removeCraftingRecipe(rem.getIs());
+				});
+			}
+			if (deleteTicks > 0) deleteTicks--;
+		}
+	}
 
 	public static ItemStack getPickBlock(World world, BlockPos pos) {
 		try {
