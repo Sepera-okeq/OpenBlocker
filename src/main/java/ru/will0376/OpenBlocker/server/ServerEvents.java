@@ -27,6 +27,8 @@ import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.ChatForm;
 import ru.will0376.OpenBlocker.common.JsonHelper;
+import ru.will0376.OpenBlocker.server.tileentity.TEBase;
+import ru.will0376.OpenBlocker.server.tileentity.TileEntityChecker;
 
 import java.util.HashMap;
 
@@ -74,7 +76,9 @@ public class ServerEvents {
 	public static void playerCheckInteract(PlayerInteractEvent.RightClickBlock e) {
 		EntityPlayer player = e.getEntityPlayer();
 		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
-		e.setCanceled(checkBlock(player, is, "serverevent.interaction", "PlayerInteractEvent.RightClickBlock"));
+		e.setCanceled(TileEntityChecker.checkBlock(is.getItem().getRegistryName().toString(), e.getWorld(), e.getPos()));
+		if (!e.isCanceled() && !TEBase.isTileEntity(e.getWorld(), e.getPos()))
+			e.setCanceled(checkBlock(player, is, "serverevent.interaction", "PlayerInteractEvent.RightClickBlock"));
 	}
 
 	public static boolean checkBlock(EntityPlayer player, ItemStack is, String translation, String debug) {
@@ -142,6 +146,7 @@ public class ServerEvents {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 		if (JsonHelper.containsItemServer(JsonHelper.BLOCKER, is) && !checkPlayer(player) && checkNBT(player, is)) {
 			if (delete) {
 				text += " " + new TextComponentTranslation("serverevent.interaction.remove", ChatForm.prefix).getFormattedText();

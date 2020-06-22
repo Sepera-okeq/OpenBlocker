@@ -5,7 +5,9 @@ import com.google.gson.JsonObject;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.TextComponentString;
 import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
@@ -43,7 +45,7 @@ public class CommandAdd implements Base {
 	}
 
 	/**
-	 * argumets: text,allmeta,temp,disableBox;
+	 * argumets: text,allmeta,temp,disableBox,tile;
 	 */
 	public void add(MinecraftServer server, ICommandSender sender, String[] args) {
 		try {
@@ -62,6 +64,7 @@ public class CommandAdd implements Base {
 			boolean temp = Boolean.parseBoolean(parsed.getOrDefault("temp", "false"));
 			boolean allmeta = Boolean.parseBoolean(parsed.getOrDefault("allmeta", "false"));
 			boolean disableBox = Boolean.parseBoolean(parsed.getOrDefault("disableBox", "false"));
+			boolean tile = Boolean.parseBoolean(parsed.getOrDefault("tile", "false"));
 
 			JsonObject jo = new JsonObject();
 			if (allmeta) {
@@ -79,8 +82,23 @@ public class CommandAdd implements Base {
 			jo.addProperty("reason", text.trim());
 			if (disableBox)
 				jo.addProperty("disableBox", true);
-			JsonHelper.addServer(jo, JsonHelper.BLOCKER, itemStack.getItem().getRegistryName().toString() + ":" + meta);
-			sender.sendMessage(new TextComponentString(ChatForm.prefix + String.format("ItemStack: %s successfully added!", itemStack.getItem().getRegistryName().toString() + ":" + meta)));
+			if (tile) {
+				try {
+					jo.addProperty("tile", true);
+//					player.getHeldItemMainhand();
+					TileEntity.REGISTRY.getObject(itemStack.getItem().getRegistryName());
+					NBTTagCompound nbt = new NBTTagCompound();
+					itemStack.writeToNBT(nbt);
+					System.out.println(nbt.toString()); //TODO: removeme!
+					//JsonHelper.addServer(jo, JsonHelper.BLOCKER, nbt.getString("id") + ":" + 0);
+					//sender.sendMessage(new TextComponentString(ChatForm.prefix + String.format("ItemStack: %s successfully added!", nbt.getString("id") + ":" + meta)));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				JsonHelper.addServer(jo, JsonHelper.BLOCKER, itemStack.getItem().getRegistryName().toString() + ":" + meta);
+				sender.sendMessage(new TextComponentString(ChatForm.prefix + String.format("ItemStack: %s successfully added!", itemStack.getItem().getRegistryName().toString() + ":" + meta)));
+			}
 		} catch (Exception e) {
 			sender.sendMessage(new TextComponentString(ChatForm.prefix_error + e.getMessage()));
 		}
