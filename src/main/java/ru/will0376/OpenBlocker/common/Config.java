@@ -11,15 +11,12 @@ import java.util.List;
 public class Config {
 
 	private final Configuration configuration;
-	private String serverName;
 	private String defRes;
-	private String defSign;
 
 	private List<String> whiteList;
 	private boolean LimitWarring;
 	private boolean deleteBlocked;
 	private boolean enabledMinCost;
-	private boolean enableCraftTickChecker;
 
 	public Config(File file) {
 		this.configuration = new Configuration(file);
@@ -54,12 +51,6 @@ public class Config {
 		this.LimitWarring = this.configuration.getBoolean("limitwarring", "general", true, "");
 		this.deleteBlocked = this.configuration.getBoolean("deleteBlocked", "general", true, "Remove blocked items from inventory");
 		this.enabledMinCost = this.configuration.getBoolean("enabledMinCost", "general", false, "Enable module?");
-		this.enableCraftTickChecker = this.configuration.getBoolean("enableCraftTickChecker", "general", false, "");
-	}
-
-	@GradleSideOnly(GradleSide.SERVER)
-	public String getServerName() {
-		return serverName;
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)
@@ -82,8 +73,4 @@ public class Config {
 		return enabledMinCost;
 	}
 
-	@GradleSideOnly(GradleSide.SERVER)
-	public boolean isEnableCraftTickChecker() {
-		return enableCraftTickChecker;
-	}
 }
