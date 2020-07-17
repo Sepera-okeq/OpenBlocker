@@ -12,6 +12,9 @@ stages:
 build:
   image: openjdk:8-alpine
   stage: build
+  except:
+    variables:
+      - $CI_COMMIT_REF_NAME =~ dev*
   before_script:
     - export GRADLE_USER_HOME=`pwd`/.gradle
     - chmod +x gradlew
