@@ -36,15 +36,23 @@ public class Blocker implements IMessageHandler<Blocker, IMessage>, IMessage {
 			JsonHelper.client = parser.parse(message.text).getAsJsonObject();
 			ItemsBlocks.ib.clear();
 			JsonHelper.client.entrySet().forEach(l ->
-					l.getValue().getAsJsonObject().entrySet().forEach(t ->
-							new ItemsBlocks(t.getKey())));
+					l.getValue().getAsJsonObject().entrySet().forEach(t -> {
+						try {
+							new ItemsBlocks(t.getKey());
+						} catch (Exception e) {
+							net.minecraft.client.Minecraft.getMinecraft().player.sendMessage(new TextComponentString(ChatForm.prefix_error_client + "Error loading json from server!"));
+							net.minecraft.client.Minecraft.getMinecraft().player.sendMessage(new TextComponentString(
+									ChatForm.prefix_error_client + "Item: " + t.getKey().split(":")[0] + ":" + t.getKey().split(":")[1]));
+							net.minecraft.client.Minecraft.getMinecraft().player.sendMessage(new TextComponentString(ChatForm.prefix_error_client + e.getMessage()));
+						}
+					}));
 			CraftManager.removedRecipe.forEach(rem -> {
 				if (!ItemsBlocks.containStack(rem.getIs())) CraftManager.bringBack(rem.getIs());
 			});
 			CraftManager.removedRecipe.removeIf(CraftPOJO::getDelete);
 		} catch (Exception e) {
 			e.printStackTrace();
-			net.minecraft.client.Minecraft.getMinecraft().player.sendMessage(new TextComponentString(ChatForm.prefix_error_client + "Error loading json from server!"));
+			net.minecraft.client.Minecraft.getMinecraft().player.sendMessage(new TextComponentString(ChatForm.prefix_error_client + "Error loading json from server! " + e.getMessage()));
 		}
 		return null;
 	}
