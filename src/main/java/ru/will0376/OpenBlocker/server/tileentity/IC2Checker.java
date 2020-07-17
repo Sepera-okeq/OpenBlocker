@@ -8,10 +8,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import ru.justagod.cutter.GradleSide;
+import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.server.ServerEvents;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+@GradleSideOnly(GradleSide.SERVER)
 public class IC2Checker extends TEBase {
 	@Override
 	public boolean handler(EntityPlayer player, String inputReg, World world, BlockPos pos) {
