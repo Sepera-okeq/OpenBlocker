@@ -1,54 +1,39 @@
 package ru.will0376.OpenBlocker.server.tileentity;
 
-import net.minecraft.nbt.NBTTagCompound;
+import ic2.core.ref.MetaTeBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import ru.will0376.OpenBlocker.server.ServerEvents;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class IC2Checker extends TEBase {
 	@Override
-	public boolean handler(String inputReg, World world, BlockPos pos) {
+	public boolean handler(EntityPlayer player, String inputReg, World world, BlockPos pos) {
 		try {
 			TileEntity entity = world.getTileEntity(pos);
-			NBTTagCompound nbt = new NBTTagCompound();
-			try {
-				entity.writeToNBT(nbt);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return false;
+			Block block = entity.getBlockType();
+			IBlockState state = block.getDefaultState().getActualState(world, pos);
+
+			AtomicReference<Comparable<MetaTeBlock>> ar = new AtomicReference<>();
+			state.getProperties().forEach((key, value) -> {
+				if (ar.get() == null && key.getName().equals("type")) {
+					ar.set((Comparable<MetaTeBlock>) value);
+				}
+			});
+			if (ar.get() != null) {
+				MetaTeBlock meta = (MetaTeBlock) ar.get();
+				boolean ret = ServerEvents.checkBlock(player, new ItemStack(block, 1, meta.teBlock.getId()), "serverevent.interaction", "PlayerInteractEvent.RightClickBlock");
+				return ret;
 			}
-			if (nbt.hasKey("id")) {
-				String id = nbt.getString("id");
-				world.getBlockState(pos).getProperties().forEach((iProperty, comparable) -> {
-					System.out.println("i:" + iProperty + " c:" + comparable);
-				});
-
-//				System.out.println("state:"+world.getBlockState(pos).getBlock().getMetaFromState(world.getBlockState(pos)));
-//				System.out.println("id:"+id);
-//				Items.DYE.getDamage(new ItemStack(world.getBlockState(pos).getBlock()));			//ResourceLocation resourceLocation = new ResourceLocation(id);
-//				if (TileEntity.REGISTRY.getKeys().contains(resourceLocation)) {
-//					TileEntity.REGISTRY.getKeys().forEach(e -> {
-//						//e.toString();
-//						if(e.toString().equals(id)) {
-//							Class<? extends TileEntity> clazz = TileEntity.REGISTRY.getObject(e);
-//							//System.out.println(clazz.);
-//						}
-//					});
-//				}//Class<? extends TileEntity> entity1 = TileEntity.REGISTRY.getObject(new ResourceLocation(id));
-
-				//Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(id));
-				//System.out.println(nbt.toString());
-				//Item item = Item.getByNameOrId(id);
-				//Block block = Block.getBlockFromName(id);
-
-
-				//if (JsonHelper.containsItemServer(JsonHelper.BLOCKER, world.getBlockState(pos).getBlock().getRegistryName().toString(), block.getMetaFromState(block.getDefaultState())))
-				//	return true;
-			}
-			return false;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
 		}
+		return false;
 	}
 }

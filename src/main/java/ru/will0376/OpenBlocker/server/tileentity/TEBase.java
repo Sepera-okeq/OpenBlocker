@@ -1,5 +1,6 @@
 package ru.will0376.OpenBlocker.server.tileentity;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -10,5 +11,5 @@ public abstract class TEBase {
 		return entity != null;
 	}
 
-	public abstract boolean handler(String inputReg, World world, BlockPos pos);
+	public abstract boolean handler(EntityPlayer player, String inputReg, World world, BlockPos pos);
 }

@@ -55,28 +55,35 @@ public class ServerEvents {
 	public static void checkBreakBlock(BlockEvent.BreakEvent e) {
 		EntityPlayer player = e.getPlayer();
 		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
-		e.setCanceled(checkBlock(player, is, "serverevent.interaction", "BlockEvent.BreakEvent"));
+		boolean canceled = TileEntityChecker.checkBlock(player, is.getItem().getRegistryName().toString(), e.getWorld(), e.getPos());
+		e.setCanceled(canceled);
+		if (!e.isCanceled() && !TEBase.isTileEntity(e.getWorld(), e.getPos()))
+			e.setCanceled(checkBlock(player, is, "serverevent.interaction", "BlockEvent.BreakEvent"));
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void checkPlaceBlock(BlockEvent.PlaceEvent e) {
 		EntityPlayer player = e.getPlayer();
 		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
-		e.setCanceled(checkBlock(player, is, "serverevent.interaction", "BlockEvent.PlaceEvent"));
+		e.setCanceled(TileEntityChecker.checkBlock(player, is.getItem().getRegistryName().toString(), e.getWorld(), e.getPos()));
+		if (!e.isCanceled() && !TEBase.isTileEntity(e.getWorld(), e.getPos()))
+			e.setCanceled(checkBlock(player, is, "serverevent.interaction", "BlockEvent.PlaceEvent"));
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void checkPlaceBlock(BlockEvent.MultiPlaceEvent e) {
 		EntityPlayer player = e.getPlayer();
 		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
-		e.setCanceled(checkBlock(player, is, "serverevent.interaction", "BlockEvent.MultiPlaceEvent"));
+		e.setCanceled(TileEntityChecker.checkBlock(player, is.getItem().getRegistryName().toString(), e.getWorld(), e.getPos()));
+		if (!e.isCanceled() && !TEBase.isTileEntity(e.getWorld(), e.getPos()))
+			e.setCanceled(checkBlock(player, is, "serverevent.interaction", "BlockEvent.MultiPlaceEvent"));
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void playerCheckInteract(PlayerInteractEvent.RightClickBlock e) {
 		EntityPlayer player = e.getEntityPlayer();
 		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
-		e.setCanceled(TileEntityChecker.checkBlock(is.getItem().getRegistryName().toString(), e.getWorld(), e.getPos()));
+		e.setCanceled(TileEntityChecker.checkBlock(player, is.getItem().getRegistryName().toString(), e.getWorld(), e.getPos()));
 		if (!e.isCanceled() && !TEBase.isTileEntity(e.getWorld(), e.getPos()))
 			e.setCanceled(checkBlock(player, is, "serverevent.interaction", "PlayerInteractEvent.RightClickBlock"));
 	}
@@ -90,7 +97,7 @@ public class ServerEvents {
 		return false;
 	}
 
-	//@SuppressWarnings("deprecation")
+	@SuppressWarnings("deprecation")
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void checkPickupBlocker(PlayerEvent.ItemPickupEvent e) {
 		EntityPlayer player = e.player;
@@ -140,9 +147,9 @@ public class ServerEvents {
 
 	public static boolean check(EntityPlayer player, ItemStack is, boolean delete, String text) {
 		try {
-			if (Main.debug)
-				if (!is.getDisplayName().contains("Air") && !is.getDisplayName().equals("Воздух"))
-					sendToPlayerMessage(player, "[DEBUG] check itemstack: " + is.getDisplayName() + " for player: " + player.getName() + " disable_delete: " + delete);
+//			if (Main.debug)
+//				if (!is.getDisplayName().contains("Air") && !is.getDisplayName().equals("Воздух"))
+//					sendToPlayerMessage(player, "[DEBUG] check itemstack: " + is.getDisplayName() + " for player: " + player.getName() + " disable_delete: " + delete);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
