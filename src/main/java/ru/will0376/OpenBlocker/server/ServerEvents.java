@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -89,34 +90,33 @@ public class ServerEvents {
 	}
 
 	public static boolean checkBlock(EntityPlayer player, ItemStack is, String translation, String debug) {
-		if (check(player, is, Main.config.isDeleteBlocked() && (!debug.contains("RightClickBlock") && !debug.contains("BreakEvent")),
-				ChatForm.prefix + new TextComponentTranslation(translation, is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText())) {
+		if (check(player, is, Main.config.isDeleteBlocked() && (!debug.contains("RightClickBlock") && !debug.contains("BreakEvent")), ChatForm.prefix + new TextComponentTranslation(translation, is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText())) {
 			if (Main.debug) sendToPlayerDebugMessage(player, "[DEBUG_" + debug + "] Canceled event.");
 			return true;
 		}
 		return false;
 	}
 
-	@SuppressWarnings("deprecation")
+	/*@SuppressWarnings("deprecation")
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void checkPickupBlocker(PlayerEvent.ItemPickupEvent e) {
 		EntityPlayer player = e.player;
 		ItemStack is = e.pickedUp.getItem();
-		if (check(player, is, true,
-				ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText())) {
+		if (check(player, is, true, ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText())) {
 			if (Main.debug) sendToPlayerDebugMessage(player, "[DEBUG_Pickup] pickup check done. Canceled event.");
 			e.setCanceled(true);
 		}
-	}
+	}*/
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void everyTickRemover(TickEvent.PlayerTickEvent e) {
-		EntityPlayer player = e.player;
-		for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-			ItemStack is = player.inventory.getStackInSlot(i);
-			check(player, is, Main.config.isDeleteBlocked(),
-					ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText());
-			checkEnchant(player, is, i);
+		if (FMLCommonHandler.instance().getMinecraftServerInstance().getTickCounter() % 60 == 0) {
+			EntityPlayer player = e.player;
+			for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+				ItemStack is = player.inventory.getStackInSlot(i);
+				check(player, is, Main.config.isDeleteBlocked(), ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText());
+				checkEnchant(player, is, i);
+			}
 		}
 	}
 
@@ -135,9 +135,7 @@ public class ServerEvents {
 					int lvl = tmp.getShort("lvl");
 					if (JsonHelper.containsEnchantServer(is) && !checkPlayer(player)) {
 						player.inventory.setInventorySlotContents(invStackSlot, removeEnchID(id, is));
-						sendToPlayerMessage(player,
-								ChatForm.prefix + new TextComponentTranslation("serverevent.blockenchant", Enchantment.getEnchantmentByID(id).getTranslatedName(lvl)).getFormattedText()
-						);
+						sendToPlayerMessage(player, ChatForm.prefix + new TextComponentTranslation("serverevent.blockenchant", Enchantment.getEnchantmentByID(id).getTranslatedName(lvl)).getFormattedText());
 					}
 				}
 			}
@@ -169,9 +167,7 @@ public class ServerEvents {
 	public static void placeLimitBlock(BlockEvent.PlaceEvent event) {
 		if (Main.debug || !event.getWorld().isRemote) {
 			Block block = event.getWorld().getBlockState(event.getPos()).getBlock();
-			if (JsonHelper.containsItemServer(JsonHelper.LIMIT,
-					block.getRegistryName().toString(),
-					block.getMetaFromState(event.getWorld().getBlockState(event.getPos())))) {
+			if (JsonHelper.containsItemServer(JsonHelper.LIMIT, block.getRegistryName().toString(), block.getMetaFromState(event.getWorld().getBlockState(event.getPos())))) {
 				String nameblock = block.getRegistryName().toString();
 				int meta = block.getMetaFromState(event.getWorld().getBlockState(event.getPos()));
 				if (JsonHelper.checkAllMetas(JsonHelper.LIMIT, nameblock)) meta = 0;
@@ -192,8 +188,7 @@ public class ServerEvents {
 
 	@GradleSideOnly(GradleSide.SERVER)
 	private static boolean checkNBT(EntityPlayer player, ItemStack is) {
-		if (!is.hasTagCompound())
-			return true;
+		if (!is.hasTagCompound()) return true;
 		return JsonHelper.checkNBT(JsonHelper.BLOCKER, is);
 	}
 
@@ -203,8 +198,7 @@ public class ServerEvents {
 	 */
 	private static boolean checkPlayer(EntityPlayer player) {
 		if (Main.debug) return false;
-		return (Main.config.getWhiteList().contains(player.getName().toLowerCase()) ||
-				player.canUseCommand(4, "openblocker.bypasscheck") && player.isCreative());
+		return (Main.config.getWhiteList().contains(player.getName().toLowerCase()) || player.canUseCommand(4, "openblocker.bypasscheck") && player.isCreative());
 	}
 
 	private static void sendToPlayerMessage(EntityPlayer player, String line) {
@@ -288,8 +282,7 @@ public class ServerEvents {
 			for (int z = 0; z <= 15; z++)
 				for (int y = 0; y <= 255; y++) {
 					BlockPos bp = new BlockPos(ch.getPos().getXStart() + x, y, ch.getPos().getZStart() + z);
-					if (event.getWorld().getBlockState(bp).equals(event.getPlacedBlock()))
-						count = count + 1;
+					if (event.getWorld().getBlockState(bp).equals(event.getPlacedBlock())) count = count + 1;
 				}
 		return count;
 	}

@@ -57,7 +57,7 @@ public class ComandsMain extends CommandBase {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return null;
+		return "";
 	}
 
 	@Override

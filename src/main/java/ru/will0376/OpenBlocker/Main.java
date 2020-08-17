@@ -23,27 +23,19 @@ import ru.will0376.OpenBlocker.server.comands.ComandsMain;
 
 import java.io.File;
 
-@Mod(
-		modid = Main.MODID,
-		name = Main.NAME,
-		version = Main.VERSION,
-		acceptedMinecraftVersions = "[1.12.2]"
-)
+@Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION, acceptedMinecraftVersions = "[1.12.2]")
 public class Main {
 	public static final String MODID = "openblocker";
 	public static final String NAME = "OpenBlocker";
-	public static final String VERSION = "1.1.3";
-	public static boolean debug = true, server = false;
+	public static final String VERSION = "1.1.4";
+	public static boolean debug = true, server = true;
 	public static Config config;
 	public static File configFile;
 	public static SimpleNetworkWrapper network;
 	public static Logger Logger;
 	@Mod.Instance
 	public static Main Instance;
-	@SidedProxy(
-			clientSide = "ru.will0376.OpenBlocker.client.ClientProxy",
-			serverSide = "ru.will0376.OpenBlocker.server.ServerProxy"
-	)
+	@SidedProxy(clientSide = "ru.will0376.OpenBlocker.client.ClientProxy", serverSide = "ru.will0376.OpenBlocker.server.ServerProxy")
 	public static CommonProxy proxy;
 
 	@EventHandler
