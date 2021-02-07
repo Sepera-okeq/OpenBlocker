@@ -21,6 +21,6 @@ build:
   script:
     - ./gradlew buildAll
   artifacts:
-    expire_in: 4 week
+    expire_in: never
     paths:
       - build/libs/

@@ -110,11 +110,14 @@ public class ServerEvents {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void everyTickRemover(TickEvent.PlayerTickEvent e) {
-		if (FMLCommonHandler.instance().getMinecraftServerInstance().getTickCounter() % 60 == 0) {
+		if (FMLCommonHandler.instance().getMinecraftServerInstance().getTickCounter() % 20 == 0) {
 			EntityPlayer player = e.player;
 			for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 				ItemStack is = player.inventory.getStackInSlot(i);
-				check(player, is, Main.config.isDeleteBlocked(), ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText());
+				check(player, is, Main.config.isDeleteBlocked(), ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is
+						.getItem()
+						.getRegistryName()
+						.toString(), is.getMetadata()).getFormattedText());
 				checkEnchant(player, is, i);
 			}
 		}
@@ -198,7 +201,11 @@ public class ServerEvents {
 	 */
 	private static boolean checkPlayer(EntityPlayer player) {
 		if (Main.debug) return false;
+		return player.isCreative();
+/*
+		if (Main.debug) return false;
 		return (Main.config.getWhiteList().contains(player.getName().toLowerCase()) || player.canUseCommand(4, "openblocker.bypasscheck") && player.isCreative());
+*/
 	}
 
 	private static void sendToPlayerMessage(EntityPlayer player, String line) {

@@ -2,6 +2,7 @@ package ru.will0376.OpenBlocker.common.hooks;
 
 import gloomyfolken.hooklib.asm.Hook;
 import gloomyfolken.hooklib.asm.HookPriority;
+import gloomyfolken.hooklib.asm.ReturnCondition;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -9,9 +10,12 @@ import net.minecraft.client.gui.recipebook.GuiButtonRecipe;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
@@ -19,8 +23,11 @@ import net.minecraft.network.play.server.SPacketRecipeBook;
 import net.minecraft.stats.RecipeBook;
 import net.minecraft.stats.RecipeBookServer;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
+import ru.justagod.cutter.invoke.Invoke;
+import ru.will0376.OpenBlocker.common.JsonHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +50,19 @@ public class Hooks {
 			return 1;
 		}
 	}
+
+	@GradleSideOnly(GradleSide.SERVER)
+	@Hook(injectOnExit = true, returnCondition = ReturnCondition.ALWAYS)
+	public static boolean matches(ShapelessRecipes recipes, InventoryCrafting inv, World worldIn, @Hook.ReturnValue boolean returnValue) {
+		return Invoke.serverValue(() -> !JsonHelper.containsItemServer(JsonHelper.CRAFT, recipes.getRecipeOutput()) && returnValue);
+	}
+
+	@GradleSideOnly(GradleSide.SERVER)
+	@Hook(injectOnExit = true, returnCondition = ReturnCondition.ALWAYS)
+	public static boolean matches(ShapedRecipes recipes, InventoryCrafting inv, World worldIn, @Hook.ReturnValue boolean returnValue) {
+		return Invoke.serverValue(() -> !JsonHelper.containsItemServer(JsonHelper.CRAFT, recipes.getRecipeOutput()) && returnValue);
+	}
+
 
 	@GradleSideOnly(GradleSide.CLIENT)
 	@Hook(priority = HookPriority.HIGHEST, returnCondition = ALWAYS)

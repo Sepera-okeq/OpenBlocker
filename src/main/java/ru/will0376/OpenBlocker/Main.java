@@ -27,7 +27,7 @@ import java.io.File;
 public class Main {
 	public static final String MODID = "openblocker";
 	public static final String NAME = "OpenBlocker";
-	public static final String VERSION = "1.1.4";
+	public static final String VERSION = "1.1.6";
 	public static boolean debug = true, server = true;
 	public static Config config;
 	public static File configFile;
