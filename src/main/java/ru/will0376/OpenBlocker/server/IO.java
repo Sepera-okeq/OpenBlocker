@@ -3,73 +3,75 @@ package ru.will0376.OpenBlocker.server;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
+import com.google.gson.reflect.TypeToken;
+import lombok.extern.log4j.Log4j2;
 import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
+import ru.will0376.OpenBlocker.common.Blocked;
 
 import java.io.*;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 @GradleSideOnly(GradleSide.SERVER)
+@Log4j2
 public class IO {
 	public static File path;
 	public static File fileJson;
+	public static Type type = new TypeToken<List<Blocked>>() {
+	}.getType();
 
-	public static void write(JsonObject jo) {
+	public static void write(List<Blocked> blockedList) {
 		try {
 			if (path == null || fileJson == null) {
-				Main.Logger.error("Path to cfg folder = null");
+				log.error("Path to cfg folder = null");
 				return;
 			}
 			if (!checkFile()) {
-				Main.Logger.error("IO error!");
+				log.error("IO error!");
 				return;
 			}
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			FileWriter fw = new FileWriter(fileJson);
-			gson.toJson(jo, fw);
-			fw.flush();
-			fw.close();
+
+			try (Writer writer = new FileWriter(fileJson)) {
+				Main.gson.toJson(blockedList, writer);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static JsonObject read() {
+	public static List<Blocked> read() {
 		try {
 			if (path == null || fileJson == null) {
-				Main.Logger.error("Path to cfg folder = null");
+				log.error("Path to cfg folder = null");
 				return null;
 			}
 			if (!checkFile()) {
-				Main.Logger.error("IO error!");
+				log.error("IO error!");
 				return null;
 			}
-			if (fileEmpty() || !fileIsJson()) {
+			if (fileEmpty()) {
 				writeNewJson();
+				return new ArrayList<>();
 			}
-
-			JsonParser jp = new JsonParser();
-			return jp.parse(new JsonReader(new FileReader(fileJson))).getAsJsonObject();
+			List<Blocked> blockeds = Main.gson.fromJson(new FileReader(fileJson), type);
+			return blockeds;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
 		}
+		return null;
 	}
 
 	private static void writeNewJson() throws IOException {
-		JsonObject jo = new JsonObject();
-		jo.add("blocker", new JsonObject());
-		jo.add("limit", new JsonObject());
-		jo.add("mincost", new JsonObject());
-		jo.add("enchant", new JsonObject());
-		jo.add("craft", new JsonObject());
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		FileWriter fw = new FileWriter(fileJson);
-		gson.toJson(jo, fw);
+		gson.toJson(new JsonObject(), fw);
 		fw.flush();
 		fw.close();
+		log.info("Created new file: {}", fileJson.getAbsolutePath());
 	}
 
 	private static boolean checkFile() {
@@ -92,17 +94,6 @@ public class IO {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return true;
-		}
-	}
-
-	private static boolean fileIsJson() {
-		try {
-			JsonParser jp = new JsonParser();
-			jp.parse(new JsonReader(new FileReader(fileJson))).getAsJsonObject();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
 		}
 	}
 }

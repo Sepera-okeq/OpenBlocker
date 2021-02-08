@@ -1,20 +1,19 @@
 package ru.will0376.OpenBlocker.server.comands;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.TextComponentString;
 import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
-import ru.will0376.OpenBlocker.common.B64;
-import ru.will0376.OpenBlocker.common.ChatForm;
-import ru.will0376.OpenBlocker.common.JsonHelper;
+import ru.will0376.OpenBlocker.common.BlockHelper;
+import ru.will0376.OpenBlocker.common.Blocked;
+import ru.will0376.OpenBlocker.common.utils.B64;
+import ru.will0376.OpenBlocker.common.utils.ChatForm;
+import ru.will0376.OpenBlocker.common.utils.FlagData;
 
 import java.util.HashMap;
 
@@ -35,7 +34,7 @@ public class CommandAdd implements Base {
 	public static String[] getArgs(int mode) {
 		if (mode == 0) //add
 			return new String[]{"text", "allmeta", "temp", "disableBox"};
-		else if (mode == 1) //remode
+		else if (mode == 1) //remove
 			return new String[]{"allmeta"};
 		return new String[]{""};
 	}
@@ -45,7 +44,7 @@ public class CommandAdd implements Base {
 	}
 
 	/**
-	 * argumets: text,allmeta,temp,disableBox,tile;
+	 * argumets: text,allmeta,temp,disableBox,tile,nbt;
 	 */
 	public void add(MinecraftServer server, ICommandSender sender, String[] args) {
 		try {
@@ -56,57 +55,45 @@ public class CommandAdd implements Base {
 			}
 
 			ItemStack itemStack = player.getHeldItemMainhand();
-			int meta = itemStack.getMetadata();
 
-			HashMap<String, String> parsed = new CommandParser().commandParser(ComandsMain.stringArrToString(args).replace("add ", ""));
+			HashMap<String, String> parsed = new CommandParser().commandParser(ComandsMain.stringArrToString(args)
+					.replace("add ", ""));
 
 			String text = parsed.getOrDefault("text", Main.config.getDefRes());
 			boolean temp = Boolean.parseBoolean(parsed.getOrDefault("temp", "false"));
 			boolean allmeta = Boolean.parseBoolean(parsed.getOrDefault("allmeta", "false"));
 			boolean disableBox = Boolean.parseBoolean(parsed.getOrDefault("disableBox", "false"));
 			boolean tile = Boolean.parseBoolean(parsed.getOrDefault("tile", "false"));
+			boolean usenbt = Boolean.parseBoolean(parsed.getOrDefault("nbt", "false"));
 
-			JsonObject jo = new JsonObject();
-			if (allmeta) {
-				meta = 0;
-				jo.addProperty("boolBlockAllMeta", true);
-			}
-			if (temp)
-				jo.addProperty("boolTemp", true);
-			if (itemStack.getTagCompound() != null && !itemStack.getTagCompound().isEmpty()) {
-				JsonArray ja = new JsonArray();
-				ja.add(B64.encode(itemStack.serializeNBT().toString()));
-				jo.add("nbts", ja);
+			Blocked blockedByStack = BlockHelper.findBlockedByStack(itemStack);
+			if (blockedByStack == null) blockedByStack = Blocked.builder()
+					.stack(itemStack)
+					.reason(text)
+					.build()
+					.addStatus(Blocked.Status.Blocked);
+
+			if (!blockedByStack.getStatus().contains(Blocked.Status.Blocked))
+				blockedByStack.getStatus().add(Blocked.Status.Blocked);
+
+			if (temp) blockedByStack.addNewFlag(FlagData.Flag.Temp, true);
+			if (allmeta) blockedByStack.addNewFlag(FlagData.Flag.AllMeta, true);
+			if (disableBox) blockedByStack.addNewFlag(FlagData.Flag.DisableBox, true);
+			if (tile) blockedByStack.addNewFlag(FlagData.Flag.Tile, true);
+			if (usenbt) {
+				NBTTagCompound nbtTagCompound = itemStack.writeToNBT(new NBTTagCompound());
+				blockedByStack.setNbt(B64.encode(nbtTagCompound.toString()));
 			}
 
-			jo.addProperty("reason", text.trim());
-			if (disableBox)
-				jo.addProperty("disableBox", true);
-			if (tile) {
-				try {
-					jo.addProperty("tile", true);
-//					player.getHeldItemMainhand();
-					TileEntity.REGISTRY.getObject(itemStack.getItem().getRegistryName());
-					NBTTagCompound nbt = new NBTTagCompound();
-					itemStack.writeToNBT(nbt);
-					System.out.println(nbt.toString()); //TODO: removeme!
-					//JsonHelper.addServer(jo, JsonHelper.BLOCKER, nbt.getString("id") + ":" + 0);
-					//sender.sendMessage(new TextComponentString(ChatForm.prefix + String.format("ItemStack: %s successfully added!", nbt.getString("id") + ":" + meta)));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} else {
-				JsonHelper.addServer(jo, JsonHelper.BLOCKER, itemStack.getItem().getRegistryName().toString() + ":" + meta);
-				sender.sendMessage(new TextComponentString(ChatForm.prefix + String.format("ItemStack: %s successfully added!", itemStack.getItem().getRegistryName().toString() + ":" + meta)));
-			}
+			BlockHelper.addNewBlocked(blockedByStack);
+			sender.sendMessage(new TextComponentString("Done!"));
+			BlockHelper.save();
 		} catch (Exception e) {
+			e.printStackTrace();
 			sender.sendMessage(new TextComponentString(ChatForm.prefix_error + e.getMessage()));
 		}
 	}
 
-	/**
-	 * argumets: allmeta;
-	 */
 	public void remove(MinecraftServer server, ICommandSender sender, String[] args) {
 		EntityPlayer player = (EntityPlayer) sender;
 		if (player.getHeldItemMainhand().isEmpty()) {
@@ -115,18 +102,12 @@ public class CommandAdd implements Base {
 		}
 
 		ItemStack itemStack = player.getHeldItemMainhand();
-		int meta = itemStack.getMetadata();
-		if (contains(args, "allmeta")) meta = 0;
+		Blocked blockedByStack = BlockHelper.findBlockedByStack(itemStack);
 
-		JsonHelper.removeFromServer(JsonHelper.BLOCKER, itemStack.getItem().getRegistryName().toString() + ":" + meta);
-		sender.sendMessage(new TextComponentString(ChatForm.prefix + String.format("ItemStack: %s successfully deleted!", itemStack.getItem().getRegistryName().toString() + ":" + meta)));
-	}
+		if (blockedByStack != null) BlockHelper.removeStatus(blockedByStack, Blocked.Status.Blocked);
 
-	private boolean contains(String[] args, String text) {
-		for (int i = 0; i < args.length; i++) {
-			if (args[i].equalsIgnoreCase(text))
-				return true;
-		}
-		return false;
+		sender.sendMessage(new TextComponentString("Done!"));
+		BlockHelper.save();
+
 	}
 }

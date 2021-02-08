@@ -1,4 +1,4 @@
-package ru.will0376.OpenBlocker.common;
+package ru.will0376.OpenBlocker.common.utils;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -14,11 +14,9 @@ public class ItemHelper {
 		NonNullList<ItemStack> listall = NonNullList.create();
 		for (CreativeTabs creativeTabs : CreativeTabs.CREATIVE_TAB_ARRAY) {
 			if (!creativeTabs.equals(CreativeTabs.SEARCH)) {
-				//if(!listall.contains(i)){
 				NonNullList<ItemStack> list = NonNullList.create();
 				i.getSubItems(creativeTabs, list);
 				listall.addAll(list);
-				//}
 			}
 		}
 		return listall;

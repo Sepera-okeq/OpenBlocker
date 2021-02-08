@@ -18,10 +18,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import ru.will0376.OpenBlocker.KeyUtils;
 import ru.will0376.OpenBlocker.client.GuiBlocker;
-import ru.will0376.OpenBlocker.client.ItemsBlocks;
+import ru.will0376.OpenBlocker.common.BlockHelper;
+import ru.will0376.OpenBlocker.common.Blocked;
+import ru.will0376.OpenBlocker.common.utils.FlagData;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Mod.EventBusSubscriber(value = Side.CLIENT)
 public class ClientEvents {
@@ -51,8 +52,8 @@ public class ClientEvents {
 			if (e.getTarget() != null)
 				if (e.getPlayer().getEntityWorld().getBlockState(e.getTarget().getBlockPos()).getBlock() != Blocks.AIR) {
 					ItemStack is = getPickBlock(e.getPlayer().getEntityWorld(), e.getTarget().getBlockPos());
-					if (check(is, false) && !ItemsBlocks.get(is).disableBox)
-						render(e);
+					if (check(is, false) && !(boolean) BlockHelper.findBlockedByStack(is)
+							.getDataFromFlag(FlagData.Flag.DisableBox)) render(e);
 				}
 		} catch (Exception ignore) {
 		}
@@ -63,7 +64,7 @@ public class ClientEvents {
 		try {
 			ItemStack is = e.getItemStack();
 			if (check(is, true)) {
-				e.getToolTip().addAll(getIB(is).getLore());
+				e.getToolTip().addAll(BlockHelper.findBlockedByStack(is).getLore());
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -72,22 +73,11 @@ public class ClientEvents {
 
 	private static boolean check(ItemStack is, boolean checkNonBlocks) {
 		AtomicBoolean ret = new AtomicBoolean(false);
-		ItemsBlocks.ib.forEach(l -> {
-			if (l.is.isItemEqual(is) && !ret.get() && l.blocked)
-				ret.set(true);
-			else if (checkNonBlocks && l.is.isItemEqual(is) && !ret.get())
-				ret.set(true);
-			else if (l.allmeta && l.blocked && !ret.get() && l.is.getItem().equals(is.getItem()))
-				ret.set(true);
-		});
-		return ret.get();
-	}
-
-	private static ItemsBlocks getIB(ItemStack is) {
-		AtomicReference<ItemsBlocks> ret = new AtomicReference<>();
-		ItemsBlocks.ib.forEach(l -> {
-			if (l.is.isItemEqual(is) && ret.get() == null)
-				ret.set(l);
+		BlockHelper.BlockHelperClient.blockedListClient.forEach(l -> {
+			if (l.getStack().isItemEqual(is) && !ret.get() && l.containStatus(Blocked.Status.Blocked)) ret.set(true);
+			else if (checkNonBlocks && l.getStack().isItemEqual(is) && !ret.get()) ret.set(true);
+			else if ((boolean) l.getDataFromFlag(FlagData.Flag.AllMeta) && l.containStatus(Blocked.Status.Blocked) && !ret
+					.get() && l.getStack().getItem().equals(is.getItem())) ret.set(true);
 		});
 		return ret.get();
 	}

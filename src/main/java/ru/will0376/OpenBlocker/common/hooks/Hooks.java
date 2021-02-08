@@ -27,7 +27,8 @@ import net.minecraft.world.World;
 import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
 import ru.justagod.cutter.invoke.Invoke;
-import ru.will0376.OpenBlocker.common.JsonHelper;
+import ru.will0376.OpenBlocker.common.BlockHelper;
+import ru.will0376.OpenBlocker.common.Blocked;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,8 @@ public class Hooks {
 		try {
 			int ret = CraftingManager.REGISTRY.getIDForObject(recipe);
 			if (ret == -1) {
-				ret = ((net.minecraftforge.registries.ForgeRegistry<IRecipe>) net.minecraftforge.fml.common.registry.ForgeRegistries.RECIPES).getID(recipe.getRegistryName());
+				ret = ((net.minecraftforge.registries.ForgeRegistry<IRecipe>) net.minecraftforge.fml.common.registry.ForgeRegistries.RECIPES)
+						.getID(recipe.getRegistryName());
 				if (ret == -1) {
 					return 1;
 				}
@@ -54,13 +56,19 @@ public class Hooks {
 	@GradleSideOnly(GradleSide.SERVER)
 	@Hook(injectOnExit = true, returnCondition = ReturnCondition.ALWAYS)
 	public static boolean matches(ShapelessRecipes recipes, InventoryCrafting inv, World worldIn, @Hook.ReturnValue boolean returnValue) {
-		return Invoke.serverValue(() -> !JsonHelper.containsItemServer(JsonHelper.CRAFT, recipes.getRecipeOutput()) && returnValue);
+		return Invoke.serverValue(() -> {
+			Blocked blockedByStack = BlockHelper.findBlockedByStack(recipes.getRecipeOutput());
+			return (blockedByStack != null && blockedByStack.getStatus().contains(Blocked.Status.Craft)) && returnValue;
+		});
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)
 	@Hook(injectOnExit = true, returnCondition = ReturnCondition.ALWAYS)
 	public static boolean matches(ShapedRecipes recipes, InventoryCrafting inv, World worldIn, @Hook.ReturnValue boolean returnValue) {
-		return Invoke.serverValue(() -> !JsonHelper.containsItemServer(JsonHelper.CRAFT, recipes.getRecipeOutput()) && returnValue);
+		return Invoke.serverValue(() -> {
+			Blocked blockedByStack = BlockHelper.findBlockedByStack(recipes.getRecipeOutput());
+			return (blockedByStack != null && blockedByStack.getStatus().contains(Blocked.Status.Craft)) && returnValue;
+		});
 	}
 
 
@@ -157,8 +165,7 @@ public class Hooks {
 					String tmp = CraftingManager.REGISTRY.getNameForObject(irecipe).toString();
 					if (tmp != null) {
 						NBTTagString nbt = new NBTTagString(tmp);
-						if (nbt != null)
-							nbttaglist.appendTag(nbt);
+						if (nbt != null) nbttaglist.appendTag(nbt);
 					}
 				}
 			}
@@ -171,8 +178,7 @@ public class Hooks {
 					String tmp = CraftingManager.REGISTRY.getNameForObject(irecipe1).toString();
 					if (tmp != null) {
 						NBTTagString nbt = new NBTTagString(tmp);
-						if (nbt != null)
-							nbttaglist1.appendTag(nbt);
+						if (nbt != null) nbttaglist1.appendTag(nbt);
 					}
 				}
 			}

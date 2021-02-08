@@ -1,4 +1,4 @@
-package ru.will0376.OpenBlocker.common;
+package ru.will0376.OpenBlocker.common.utils;
 
 import java.util.Base64;
 

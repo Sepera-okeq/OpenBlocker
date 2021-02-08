@@ -13,27 +13,18 @@ import net.minecraft.util.text.TextComponentString;
 import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
-import ru.will0376.OpenBlocker.common.ChatForm;
-import ru.will0376.OpenBlocker.common.ItemHelper;
-import ru.will0376.OpenBlocker.common.JsonHelper;
+import ru.will0376.OpenBlocker.common.BlockHelper;
+import ru.will0376.OpenBlocker.common.Blocked;
+import ru.will0376.OpenBlocker.common.utils.ChatForm;
+import ru.will0376.OpenBlocker.common.utils.ItemHelper;
+import ru.will0376.OpenBlocker.server.IO;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @GradleSideOnly(GradleSide.SERVER)
 public class ComandsMain extends CommandBase {
-	private final String usage = "/ob <module>\n" +
-			"Helps:\n" +
-			"-> add-help\n" +
-			"-> mincost-help\n" +
-			"-> enchant-help\n" +
-			"-> limit-help\n" +
-			"-> craft-help\n" +
-			"\n" +
-			"Other modules:\n" +
-			"-> perms\n" +
-			"-> reload\n" +
-			"-> debug";
+	private final String usage = "/ob <module>\n" + "Helps:\n" + "-> add-help\n" + "-> mincost-help\n" + "-> enchant-help\n" + "-> limit-help\n" + "-> craft-help\n" + "\n" + "Other modules:\n" + "-> perms\n" + "-> reload\n" + "-> debug";
 
 	public static String stringArrToString(String[] arr) {
 		StringBuilder sb = new StringBuilder();
@@ -78,8 +69,7 @@ public class ComandsMain extends CommandBase {
 	public List getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
 
 		if (args.length == 1)
-			return getListOfStringsMatchingLastWord(args, "add", "add-help", "mincost", "mincost-help", "enchant", "enchant-help",
-					"craft", "craft-help", "limit", "limit-help", "perms", "reload", "debug", "getnbt", "getmaxmeta");
+			return getListOfStringsMatchingLastWord(args, "add", "add-help", "mincost", "mincost-help", "enchant", "enchant-help", "craft", "craft-help", "limit", "limit-help", "perms", "reload", "debug", "getnbt", "getmaxmeta");
 		if (args.length == 2) {
 			switch (args[0]) {
 				case "add":
@@ -116,14 +106,12 @@ public class ComandsMain extends CommandBase {
 					new CommandAdd().help(sender);
 					break;
 				case "mincost":
-					if (Main.config.isEnabledMinCost())
-						new CommandMincost().execute(server, sender, args);
+					if (Main.config.isEnabledMinCost()) new CommandMincost().execute(server, sender, args);
 					else sender.sendMessage(new TextComponentString(ChatForm.prefix_warring + "Module disabled"));
 
 					break; //add & remove
 				case "mincost-help":
-					if (Main.config.isEnabledMinCost())
-						new CommandMincost().help(sender);
+					if (Main.config.isEnabledMinCost()) new CommandMincost().help(sender);
 					else sender.sendMessage(new TextComponentString(ChatForm.prefix_warring + "Module disabled"));
 
 					break;
@@ -173,9 +161,19 @@ public class ComandsMain extends CommandBase {
 					sender.sendMessage(new TextComponentString(ChatForm.prefix + "Permissions:\n" + String.join(";\n", getperm())));
 					break;
 				case "reload":
-					JsonHelper.init();
-					JsonHelper.resendToClient();
+					List<Blocked> read = IO.read();
+					if (read == null) {
+						sender.sendMessage(new TextComponentString(ChatForm.prefix + "Error!"));
+						break;
+					}
+					BlockHelper.Instance.blockedList = read;
+					BlockHelper.sendAllBlocksToAll();
 					sender.sendMessage(new TextComponentString(ChatForm.prefix + "Reloaded!"));
+					break;
+				case "save":
+					BlockHelper.save();
+					sender.sendMessage(new TextComponentString(ChatForm.prefix + "Saved!"));
+
 					break;
 				case "debug":
 					Main.debug = !Main.debug;

@@ -1,21 +1,13 @@
 package ru.will0376.OpenBlocker.server.comands;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
-import ru.will0376.OpenBlocker.common.ChatForm;
-import ru.will0376.OpenBlocker.common.JsonHelper;
-
-import java.util.HashMap;
 
 @GradleSideOnly(GradleSide.SERVER)
+@Deprecated
 public class CommandMincost {
 	String usage = Base.usage + "mincost <args>\n" +
 			"   Arguments:\n" +
@@ -32,6 +24,7 @@ public class CommandMincost {
 	 * argumets: cost, allmeta
 	 */
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
+/*
 		EntityPlayer player = (EntityPlayer) sender;
 		ItemStack is = player.getHeldItemMainhand();
 		if (is.isEmpty()) {
@@ -64,6 +57,7 @@ public class CommandMincost {
 			JsonHelper.addServer(jo, JsonHelper.MINCOST, is.getItem().getRegistryName().toString() + ":" + meta);
 			sender.sendMessage(new TextComponentString(ChatForm.prefix + String.format("ItemStack: %s with minCost %s, successfully added!", is.getItem().getRegistryName().toString() + ":" + meta, args[1])));
 		}
+*/
 	}
 
 	public void help(ICommandSender sender) {

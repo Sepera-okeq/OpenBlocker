@@ -10,6 +10,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
+import ru.will0376.OpenBlocker.common.BlockHelper;
+import ru.will0376.OpenBlocker.common.Blocked;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,7 +22,7 @@ public class GuiBlocker extends GuiScreen {
 	private int maxPages = 1;
 	private int xCoord = 0, yCoord = 38, scaledWidth = 0;
 
-	private ArrayList<ItemsBlocks> blockslist = new ArrayList<>();
+	private List<Blocked> blockslist = new ArrayList<>();
 
 	public void initGui() {
 		blockslist.clear();
@@ -33,26 +35,20 @@ public class GuiBlocker extends GuiScreen {
 		buttonList.add(new GuiButton(4, super.width / 2 + 50 + 20, super.height - 45, 18, 20, ">>"));
 
 
-		if (ItemsBlocks.ib != null)
 			switch (page) {
 				case 0:
-					blockslist = (ArrayList<ItemsBlocks>) ItemsBlocks.ib.clone();
+					blockslist = new ArrayList<>(BlockHelper.BlockHelperClient.blockedListClient);
 					break;
 				case 1:
-					ItemsBlocks.ib.stream().filter(i -> i.blocked).forEach(blockslist::add);
+					blockslist = BlockHelper.getAllByStatus(Blocked.Status.Blocked);
 					break;
 				case 2:
-					ItemsBlocks.ib.stream().filter(i -> i.allmeta).forEach(blockslist::add);
+					blockslist = BlockHelper.getAllByStatus(Blocked.Status.Limit);
 					break;
 				case 3:
-					ItemsBlocks.ib.stream().filter(i -> i.limitb).forEach(blockslist::add);
+					blockslist = BlockHelper.getAllByStatus(Blocked.Status.Craft);
 					break;
-				case 4:
-					ItemsBlocks.ib.stream().filter(i -> i.mincostb).forEach(blockslist::add);
-					break;
-				case 5:
-					ItemsBlocks.ib.stream().filter(i -> i.craft).forEach(blockslist::add);
-					break;
+
 			}
 		ScaledResolution scaledResolution = new ScaledResolution(mc);
 		scaledWidth = scaledResolution.getScaledWidth();
@@ -91,7 +87,7 @@ public class GuiBlocker extends GuiScreen {
 	}
 
 	private void drawBlocks(int mouseX, int mouseY) {
-		switch (page) {
+		/*switch (page) {
 			case 0:
 				GuiHelper.drawScalledString((int) (width / 2 - ("All".length() * 1.5f)), 13, 1.5f, 1.5f, "All", -1);
 				break;
@@ -115,14 +111,29 @@ public class GuiBlocker extends GuiScreen {
 			case 5:
 				GuiHelper.drawScalledString((int) (width / 2 - ("Craft".length() * 1.5f)), 13, 1.5f, 1.5f, "Craft", -1);
 				break;
+		}*/
+		switch (page) {
+			case 0:
+				GuiHelper.drawScalledString((int) (width / 2 - ("All".length() * 1.5f)), 13, 1.5f, 1.5f, "All", -1);
+				break;
+			case 1:
+				GuiHelper.drawScalledString((int) (width / 2 - ("Block".length() * 1.5f)), 13, 1.5f, 1.5f, "Block", -1);
+				break;
+			case 2:
+				GuiHelper.drawScalledString((int) (width / 2 - ("Limit".length() * 1.5f)), 13, 1.5f, 1.5f, "Limit", -1);
+				break;
+			case 3:
+				GuiHelper.drawScalledString((int) (width / 2 - ("Craft".length() * 1.5f)), 13, 1.5f, 1.5f, "Craft", -1);
+				break;
+
 		}
 		RenderHelper.enableGUIStandardItemLighting();
-		ItemsBlocks tmpib = null;
+		Blocked tmpib = null;
 		int itemsInPage = (this.scaledWidth - 35 - 35) * (byte) 115 / 1024;
 		int offset = 0;
 		ArrayList<String> list;
 		if (!blockslist.isEmpty()) { //TODO: убрать говно с класса.
-			for (ItemsBlocks ib : blockslist) {
+			for (Blocked ib : blockslist) {
 				for (int k = 1; k < 50; ++k) {
 					if (k == 1) {
 						this.maxPages = 1;
@@ -148,19 +159,18 @@ public class GuiBlocker extends GuiScreen {
 						}
 					}
 				}
-				test(itemsInPage, offset, ib.is);
+				test(itemsInPage, offset, ib.getStack());
 				offset++;
 			}
 			this.yCoord = 38;
 			this.xCoord = 0;
 			if (tmpib != null) {
 				list = new ArrayList<>();
-				list.add(I18n.format("guiblocker.blockname", tmpib.is.getDisplayName()));
+				list.add(I18n.format("guiblocker.blockname", tmpib.getStack().getDisplayName()));
 				list.addAll(tmpib.getLore());
 				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 					list.add(TextFormatting.BOLD + "_______________");
-					if (tmpib.disableBox) list.add(I18n.format("ib.lore.disableBox"));
-					list.add("NBT: " + tmpib.nbt);
+					list.add("NBT: " + tmpib.getNbt());
 				}
 				renderTooltip(mouseX + 3, mouseY - 8, list);
 			}

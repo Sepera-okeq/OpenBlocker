@@ -1,33 +1,27 @@
 package ru.will0376.OpenBlocker.server.comands;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
-import ru.will0376.OpenBlocker.common.ChatForm;
-import ru.will0376.OpenBlocker.common.JsonHelper;
+import ru.will0376.OpenBlocker.Main;
+import ru.will0376.OpenBlocker.common.BlockHelper;
+import ru.will0376.OpenBlocker.common.Blocked;
+import ru.will0376.OpenBlocker.common.utils.FlagData;
 
 import java.util.HashMap;
 
 @GradleSideOnly(GradleSide.SERVER)
 public class CommandLimit implements Base {
-	String addusage = Base.usage + "limit <args>\n" +
-			"   Arguments:\n" +
-			"   -allmeta(bool)\n" +
-			"   -l(int)\n\n" +
-			"   e.x: /ob limit l:5; allmeta\n" +
-			"   (delimiter ';')";
+	String addusage = Base.usage + "limit <args>\n" + "   Arguments:\n" + "   -allmeta(bool)\n" + "   -l(int)\n\n" + "   e.x: /ob limit l:5";
 	String removeusage = Base.usage + "removelimit";
 
 	public static String[] getArgs(int mode) {
 		if (mode == 0) //add
-			return new String[]{"allmeta", "l"};
+			return new String[]{"l"};
 		return new String[]{""};
 	}
 
@@ -36,42 +30,34 @@ public class CommandLimit implements Base {
 	}
 
 	/**
-	 * argumets: allmeta,l
+	 * argumets: l
 	 */
 	public void add(MinecraftServer server, ICommandSender sender, String[] args) {
-		EntityPlayer player = (EntityPlayer) sender;
-		ItemStack is = player.getHeldItemMainhand();
-		if (is.isEmpty()) {
-			player.sendMessage(new TextComponentString("Hand is empty!"));
-			return;
-		}
-		int meta = is.getMetadata();
-		HashMap<String, String> parsed = new CommandParser().commandParser(ComandsMain.stringArrToString(args).replace("limit ", ""));
-		String limit = parsed.getOrDefault("l", "-1");
-		boolean allmeta = Boolean.parseBoolean(parsed.getOrDefault("allmeta", "false"));
-
-		JsonObject jo = new JsonObject();
-		if (allmeta) {
-			jo.addProperty("boolBlockAllMeta", true);
-			meta = 0;
-		}
-		if (limit.equals("-1")) {
-			sender.sendMessage(new TextComponentString("Hey, you forgot to enter a limit!"));
-			return;
-		}
-		jo.addProperty("limit", limit);
-
-		if (is.getTagCompound() != null && !is.getTagCompound().isEmpty()) {
-			NBTTagCompound nbtTagCompound = is.getTagCompound();
-			JsonArray ja = new JsonArray();
-			for (String tgs : nbtTagCompound.getKeySet()) {
-				ja.add(nbtTagCompound.getTag(tgs).toString().replace("\"", ""));
+		try {
+			EntityPlayer player = (EntityPlayer) sender;
+			ItemStack is = player.getHeldItemMainhand();
+			if (is.isEmpty()) {
+				player.sendMessage(new TextComponentString("Hand is empty!"));
+				return;
 			}
-			jo.add("nbts", ja);
-		}
+			HashMap<String, String> parsed = new CommandParser().commandParser(ComandsMain.stringArrToString(args)
+					.replace("limit ", ""));
+			String limit = parsed.getOrDefault("l", "-1");
 
-		JsonHelper.addServer(jo, JsonHelper.LIMIT, is.getItem().getRegistryName().toString() + ":" + meta);
-		player.sendMessage(new TextComponentString(ChatForm.prefix + String.format("The limit for %s block is set to %s", is.getItem().getRegistryName().toString() + ":" + meta, args[1])));
+			Blocked blockedByStack = BlockHelper.findBlockedByStack(is);
+
+			if (blockedByStack == null)
+				blockedByStack = Blocked.builder().stack(is).reason(Main.config.getDefRes()).build();
+
+			if (!blockedByStack.containsFlag(FlagData.Flag.Limit))
+				blockedByStack.addNewFlag(FlagData.Flag.Limit, limit);
+
+			if (!blockedByStack.getStatus().contains(Blocked.Status.Limit))
+				BlockHelper.addStatus(blockedByStack, Blocked.Status.Limit);
+
+			sender.sendMessage(new TextComponentString("Done!"));
+		} catch (Exception ex) {
+			ex.printStackTrace();}
 	}
 
 	public void remove(MinecraftServer server, ICommandSender sender, String[] args) {
@@ -81,9 +67,11 @@ public class CommandLimit implements Base {
 			player.sendMessage(new TextComponentString("Hand is empty!"));
 			return;
 		}
-		int meta = is.getMetadata();
-		JsonHelper.removeFromServer(JsonHelper.LIMIT, is.getItem().getRegistryName().toString() + ":" + meta);
-		player.sendMessage(new TextComponentString(ChatForm.prefix + String.format("The limit for %s block removed", is.getItem().getRegistryName().toString() + ":" + meta)));
+		Blocked blockedByStack = BlockHelper.findBlockedByStack(is);
+		if (blockedByStack != null) BlockHelper.removeStatus(blockedByStack, Blocked.Status.Limit);
+
+		BlockHelper.save();
+
 	}
 
 	private boolean contains(String[] args, String text) {

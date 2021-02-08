@@ -18,7 +18,7 @@ buildscript {
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: 'cutter'
 
-version = "1.1.6"
+version = "2.0"
 group = "ru.will0376.OpenBlocker"
 archivesBaseName = "OpenBlocker"
 
@@ -28,7 +28,7 @@ compileJava {
 }
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 minecraft {
-    version = "1.12.2-14.23.5.2784"
+    version = "1.12.2-14.23.5.2800"
     runDir = "run"
     mappings = "stable_39"
     clientJvmArgs += "-Dfml.coreMods.load=ru.will0376.OpenBlocker.common.Hookloader"
@@ -52,14 +52,12 @@ dependencies {
     compile fileTree(dir: 'lib', include: ['*.jar'])
     compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
     compile 'com.google.code.gson:gson:2.7'
-    //compile group: 'net.minecraft', name: 'launchwrapper', version: '1.2'
     compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
-    //compile group: 'org.apache.logging.log4j', name: 'log4j', version: '2.12.1', ext: 'pom'
-    //compile group: 'com.google.common', name: 'google-collect', version: '1.0-rc1'
     compile group: 'com.google.guava', name: 'guava', version: '21.0'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     compile group: 'org.ow2.asm', name: 'asm-all', version: '5.2'
     compile group: 'commons-io', name: 'commons-io', version: '2.7'
+    compileOnly 'org.projectlombok:lombok:1.18.8'
 }
 
 processResources {
@@ -81,5 +79,4 @@ processResources {
             attributes 'FMLCorePluginContainsFMLMod': 'true'
         }
     }
-
 }
