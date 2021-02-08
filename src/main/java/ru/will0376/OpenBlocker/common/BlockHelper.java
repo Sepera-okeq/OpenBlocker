@@ -7,6 +7,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import ru.justagod.cutter.GradleSide;
+import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.net.ToClientBlocked;
 import ru.will0376.OpenBlocker.common.utils.B64;
@@ -122,6 +124,7 @@ public enum BlockHelper {
 		return false;
 	}
 
+	@GradleSideOnly(GradleSide.SERVER)
 	public static void init() {
 		List<Blocked> read = IO.read();
 		if (read == null) {
@@ -132,6 +135,7 @@ public enum BlockHelper {
 		}
 	}
 
+	@GradleSideOnly(GradleSide.SERVER)
 	public static void save() {
 		IO.write(Instance.blockedList);
 	}
