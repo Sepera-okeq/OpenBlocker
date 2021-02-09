@@ -12,10 +12,17 @@ import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.server.ServerEvents;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 @GradleSideOnly(GradleSide.SERVER)
 public class IC2Checker extends TEBase {
+	@Override
+	public List<String> getCheckList() {
+		return Arrays.asList("ic2:te");
+	}
+
 	@Override
 	public boolean handler(EntityPlayer player, String inputReg, World world, BlockPos pos) {
 		try {

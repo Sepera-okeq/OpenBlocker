@@ -10,6 +10,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
+import ru.will0376.OpenBlocker.client.utils.GuiHelper;
+import ru.will0376.OpenBlocker.client.utils.RenderUtils;
 import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
 

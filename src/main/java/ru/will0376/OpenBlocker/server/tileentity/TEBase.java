@@ -7,12 +7,16 @@ import net.minecraft.world.World;
 import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
 
+import java.util.List;
+
 @GradleSideOnly(GradleSide.SERVER)
 public abstract class TEBase {
 	public static boolean isTileEntity(World world, BlockPos pos) {
 		TileEntity entity = world.getTileEntity(pos);
 		return entity != null;
 	}
+
+	public abstract List<String> getCheckList();
 
 	public abstract boolean handler(EntityPlayer player, String inputReg, World world, BlockPos pos);
 }

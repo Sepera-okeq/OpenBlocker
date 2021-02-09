@@ -7,10 +7,7 @@ import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -25,6 +22,7 @@ import ru.will0376.OpenBlocker.common.net.ToClientBlocked;
 import ru.will0376.OpenBlocker.common.utils.ItemStackAdapter;
 import ru.will0376.OpenBlocker.server.IO;
 import ru.will0376.OpenBlocker.server.comands.ComandsMain;
+import ru.will0376.OpenBlocker.server.tileentity.TileEntityChecker;
 
 import java.io.File;
 
@@ -32,7 +30,7 @@ import java.io.File;
 public class Main {
 	public static final String MODID = "openblocker";
 	public static final String NAME = "OpenBlocker";
-	public static final String VERSION = "2.0";
+	public static final String VERSION = "2.0.1";
 	public static boolean debug = true, server = true;
 	public static Config config;
 	public static File configFile;
@@ -77,6 +75,13 @@ public class Main {
 	@EventHandler
 	public void onServerStarting(FMLServerStartingEvent event) {
 		event.registerServerCommand(new ComandsMain());
+	}
+
+	@GradleSideOnly(GradleSide.SERVER)
+	@EventHandler
+	public void onServerStarted(FMLServerStartedEvent event) {
+		TileEntityChecker.loadTEs();
+
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)

@@ -12,7 +12,6 @@ public class Config {
 	private String defRes;
 
 	private boolean deleteBlocked;
-	private final boolean enabledMinCost = false;
 
 	public Config(File file) {
 		this.configuration = new Configuration(file);
@@ -44,7 +43,6 @@ public class Config {
 	private void setConfigs() {
 		this.defRes = this.configuration.getString("defRes", "general", "Потому-что!", "Default Reason");
 		this.deleteBlocked = this.configuration.getBoolean("deleteBlocked", "general", true, "Remove blocked items from inventory");
-		//this.enabledMinCost = this.configuration.getBoolean("enabledMinCost", "general", false, "Enable module?");
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)
@@ -55,7 +53,7 @@ public class Config {
 
 	@GradleSideOnly(GradleSide.SERVER)
 	public boolean isEnabledMinCost() {
-		return enabledMinCost;
+		return false;
 	}
 
 }

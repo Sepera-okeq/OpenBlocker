@@ -18,7 +18,7 @@ buildscript {
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: 'cutter'
 
-version = "2.0"
+version = "2.0.1"
 group = "ru.will0376.OpenBlocker"
 archivesBaseName = "OpenBlocker"
 

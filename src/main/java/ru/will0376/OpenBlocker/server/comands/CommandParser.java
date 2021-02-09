@@ -3,10 +3,10 @@ package ru.will0376.OpenBlocker.server.comands;
 import java.util.HashMap;
 
 public class CommandParser {
-	/*
-	 *  /command <boolArg(string); Strings:bla bla bla;>
-	 * 	return - hashmap
-	 * */
+	/**
+	 * /command <boolArg(string); Strings:bla bla bla;>
+	 * return - hashmap
+	 */
 	public HashMap<String, String> commandParser(String args) {
 		HashMap<String, String> ret = new HashMap<>();
 		for (String tmp : args.split(";")) {

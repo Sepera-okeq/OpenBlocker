@@ -1,4 +1,4 @@
-package ru.will0376.OpenBlocker.client;
+package ru.will0376.OpenBlocker.client.utils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
