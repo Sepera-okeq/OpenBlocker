@@ -55,7 +55,7 @@ public class CommandCraft {
 				blockedByStack = Blocked.builder().stack(is).reason(text).build().addStatus(Blocked.Status.Craft);
 				if (allmeta) blockedByStack.addNewFlag(FlagData.Flag.AllMeta, true);
 			}
-			blockedByStack.addStatus(Blocked.Status.Craft);
+			BlockHelper.addStatus(blockedByStack, Blocked.Status.Craft);
 			sender.sendMessage(new TextComponentString("Done!"));
 			BlockHelper.save();
 

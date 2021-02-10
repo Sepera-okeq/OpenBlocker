@@ -2,6 +2,7 @@ package ru.will0376.OpenBlocker.server.comands;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
@@ -19,17 +20,8 @@ import java.util.HashMap;
 
 @GradleSideOnly(GradleSide.SERVER)
 public class CommandAdd implements Base {
-	String usageadd = Base.usage + "add <args>\n" +
-			"   Arguments:\n" +
-			"   -text:reason(multi-string)\n" +
-			"   -temp(bool)\n" +
-			"   -allmeta(bool)\n" +
-			"	-disableBox\n\n" +
-			"   e.x: /ob add text:Test reason; temp; allmeta; disableBox\n" +
-			"   (delimiter ';')";
-	String usageremove = Base.usage + "remove(or delete) <agrs>\n" +
-			"   Arguments:\n" +
-			"   -allmeta(bool)";
+	String usageadd = Base.usage + "add <args>\n" + "   Arguments:\n" + "   -text:reason(multi-string)\n" + "   -temp(bool)\n" + "   -allmeta(bool)\n" + "	-disableBox\n\n" + "   e.x: /ob add text:Test reason; temp; allmeta; disableBox\n" + "   (delimiter ';')";
+	String usageremove = Base.usage + "remove(or delete) <agrs>\n" + "   Arguments:\n" + "   -allmeta(bool)";
 
 	public static String[] getArgs(int mode) {
 		if (mode == 0) //add
@@ -96,12 +88,18 @@ public class CommandAdd implements Base {
 
 	public void remove(MinecraftServer server, ICommandSender sender, String[] args) {
 		EntityPlayer player = (EntityPlayer) sender;
-		if (player.getHeldItemMainhand().isEmpty()) {
+		ItemStack itemStack = player.getHeldItemMainhand();
+
+		if (args.length >= 3) {
+			if (args[1].contains(":") && args[2].matches("\\d")) {
+				itemStack = new ItemStack(Item.getByNameOrId(args[1]), 1, Integer.parseInt(args[2]));
+			}
+		}
+		if (itemStack.isEmpty()) {
 			sender.sendMessage(new TextComponentString(ChatForm.prefix_warring + "Take a subject in a hand"));
 			return;
 		}
 
-		ItemStack itemStack = player.getHeldItemMainhand();
 		Blocked blockedByStack = BlockHelper.findBlockedByStack(itemStack);
 
 		if (blockedByStack != null) BlockHelper.removeStatus(blockedByStack, Blocked.Status.Blocked);
