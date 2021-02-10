@@ -27,19 +27,20 @@ public class IC2Checker extends TEBase {
 	public boolean handler(EntityPlayer player, String inputReg, World world, BlockPos pos) {
 		try {
 			TileEntity entity = world.getTileEntity(pos);
-			Block block = entity.getBlockType();
-			IBlockState state = block.getDefaultState().getActualState(world, pos);
+			if (entity != null) {
+				Block block = entity.getBlockType();
+				IBlockState state = block.getDefaultState().getActualState(world, pos);
 
-			AtomicReference<Comparable<MetaTeBlock>> ar = new AtomicReference<>();
-			state.getProperties().forEach((key, value) -> {
-				if (ar.get() == null && key.getName().equals("type")) {
-					ar.set((Comparable<MetaTeBlock>) value);
+				AtomicReference<Comparable<MetaTeBlock>> ar = new AtomicReference<>();
+				state.getProperties().forEach((key, value) -> {
+					if (ar.get() == null && key.getName().equals("type")) {
+						ar.set((Comparable<MetaTeBlock>) value);
+					}
+				});
+				if (ar.get() != null) {
+					MetaTeBlock meta = (MetaTeBlock) ar.get();
+					return ServerEvents.checkBlock(player, new ItemStack(block, 1, meta.teBlock.getId()), "serverevent.interaction", "PlayerInteractEvent.RightClickBlock");
 				}
-			});
-			if (ar.get() != null) {
-				MetaTeBlock meta = (MetaTeBlock) ar.get();
-				boolean ret = ServerEvents.checkBlock(player, new ItemStack(block, 1, meta.teBlock.getId()), "serverevent.interaction", "PlayerInteractEvent.RightClickBlock");
-				return ret;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

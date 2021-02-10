@@ -9,9 +9,10 @@ import java.io.File;
 public class Config {
 
 	private final Configuration configuration;
-	private String defRes;
 
+	private String defRes;
 	private boolean deleteBlocked;
+	private boolean enablePickupHandler;
 
 	public Config(File file) {
 		this.configuration = new Configuration(file);
@@ -43,6 +44,7 @@ public class Config {
 	private void setConfigs() {
 		this.defRes = this.configuration.getString("defRes", "general", "Потому-что!", "Default Reason");
 		this.deleteBlocked = this.configuration.getBoolean("deleteBlocked", "general", true, "Remove blocked items from inventory");
+		this.enablePickupHandler = this.configuration.getBoolean("enablePickupHandler", "general", true, "");
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)
@@ -56,4 +58,8 @@ public class Config {
 		return false;
 	}
 
+	@GradleSideOnly(GradleSide.SERVER)
+	public boolean isEnablePickupHandler() {
+		return enablePickupHandler;
+	}
 }

@@ -112,16 +112,20 @@ public class ServerEvents {
 		return false;
 	}
 
-	/*@SuppressWarnings("deprecation")
+	@SuppressWarnings("deprecation")
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void checkPickupBlocker(PlayerEvent.ItemPickupEvent e) {
+		if (!Main.config.isEnablePickupHandler()) return;
+
 		EntityPlayer player = e.player;
 		ItemStack is = e.pickedUp.getItem();
-		if (check(player, is, true, ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem().getRegistryName().toString(), is.getMetadata()).getFormattedText())) {
-			if (Main.debug) sendToPlayerDebugMessage(player, "[DEBUG_Pickup] pickup check done. Canceled event.");
+		if (check(player, is, true, ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem()
+				.getRegistryName()
+				.toString(), is.getMetadata()).getFormattedText())) {
 			e.setCanceled(true);
+			e.pickedUp.setDead();
 		}
-	}*/
+	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void everyTickRemover(TickEvent.PlayerTickEvent e) {
