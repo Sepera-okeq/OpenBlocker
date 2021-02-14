@@ -19,6 +19,8 @@ import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.CommonProxy;
 import ru.will0376.OpenBlocker.common.Config;
 import ru.will0376.OpenBlocker.common.net.ToClientBlocked;
+import ru.will0376.OpenBlocker.common.utils.FlagData;
+import ru.will0376.OpenBlocker.common.utils.FlagDataAdapter;
 import ru.will0376.OpenBlocker.common.utils.ItemStackAdapter;
 import ru.will0376.OpenBlocker.server.IO;
 import ru.will0376.OpenBlocker.server.comands.ComandsMain;
@@ -30,7 +32,7 @@ import java.io.File;
 public class Main {
 	public static final String MODID = "openblocker";
 	public static final String NAME = "OpenBlocker";
-	public static final String VERSION = "2.0.1";
+	public static final String VERSION = "2.0.2";
 	public static boolean debug = true, server = true;
 	public static Config config;
 	public static File configFile;
@@ -43,6 +45,7 @@ public class Main {
 	public static CommonProxy proxy;
 	public static Gson gson = new GsonBuilder().setPrettyPrinting()
 			.registerTypeAdapter(ItemStack.class, new ItemStackAdapter())
+			.registerTypeAdapter(FlagData.class, new FlagDataAdapter())
 			.create();
 
 	@EventHandler

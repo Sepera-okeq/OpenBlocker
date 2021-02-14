@@ -1,13 +1,25 @@
 package ru.will0376.OpenBlocker.common.utils;
 
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public abstract class FlagData {
+	Flag flag;
+
 	public abstract <T> T getData();
 
 	public abstract void setData(Object data);
 
 	public abstract String getLore();
+
+	public Flag getFlag() {
+		return flag;
+	}
+
+	public void setFlag(Flag flag) {
+		this.flag = flag;
+	}
 
 	@Getter
 	public enum Flag {
@@ -26,6 +38,7 @@ public abstract class FlagData {
 		public static FlagData createNewByFlag(Flag flag, Object data) throws IllegalAccessException, InstantiationException {
 			FlagData flagData = (FlagData) flag.getClazz().newInstance();
 			flagData.setData(data);
+			flagData.setFlag(flag);
 			return flagData;
 		}
 	}
@@ -40,7 +53,7 @@ public abstract class FlagData {
 
 		@Override
 		public void setData(Object data) {
-			enabled = (boolean) data;
+			enabled = Boolean.parseBoolean((String) data);
 		}
 
 		@Override
@@ -59,7 +72,7 @@ public abstract class FlagData {
 
 		@Override
 		public void setData(Object data) {
-			enabled = (boolean) data;
+			enabled = Boolean.parseBoolean((String) data);
 		}
 
 		@Override
@@ -78,7 +91,7 @@ public abstract class FlagData {
 
 		@Override
 		public void setData(Object data) {
-			enabled = (boolean) data;
+			enabled = Boolean.parseBoolean((String) data);
 		}
 
 		@Override
@@ -97,7 +110,7 @@ public abstract class FlagData {
 
 		@Override
 		public void setData(Object data) {
-			enabled = (boolean) data;
+			enabled = Boolean.parseBoolean((String) data);
 		}
 
 		@Override
@@ -116,7 +129,7 @@ public abstract class FlagData {
 
 		@Override
 		public void setData(Object data) {
-			limit = (int) data;
+			limit = Integer.parseInt(String.valueOf(data));
 		}
 
 		@Override
