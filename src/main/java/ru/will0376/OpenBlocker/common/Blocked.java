@@ -2,6 +2,7 @@ package ru.will0376.OpenBlocker.common;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import net.minecraft.item.ItemStack;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.utils.FlagData;
@@ -70,16 +71,33 @@ public class Blocked {
 
 	public ArrayList<String> getLore() {
 		ArrayList<String> ret = new ArrayList<>();
+		ret.add("---------");
+		for (Status fstatus : status)
+			ret.add(fstatus.getLore());
+
+
 		for (FlagData datum : getData()) {
-			ret.add(datum.getLore());
+			ret.add(datum.getLore() + (datum instanceof FlagData.LimitData ? " : " + datum.getData() : ""));
 		}
+
 		return ret;
 	}
 
+	@Getter
 	public enum Status {
-		Blocked,
-		Craft,
-		Limit,
-		Enchant
+		Blocked("Заблокированно"),
+		Craft("Отключен крафт"),
+		Limit(),
+		Enchant;
+
+		String lore;
+
+		Status() {
+			lore = "";
+		}
+
+		Status(String s) {
+			lore = s;
+		}
 	}
 }

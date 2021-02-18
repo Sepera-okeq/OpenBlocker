@@ -23,7 +23,7 @@ public class FlagDataAdapter implements JsonDeserializer<FlagData>, JsonSerializ
 	public JsonElement serialize(FlagData src, Type typeOfSrc, JsonSerializationContext context) {
 		JsonObject jo = new JsonObject();
 		jo.addProperty("flag", src.getFlag().name());
-		jo.addProperty("data", String.valueOf(src.getData()));
+		jo.addProperty("data", src.getData().toString());
 		return jo;
 	}
 }

@@ -53,7 +53,7 @@ public abstract class FlagData {
 
 		@Override
 		public void setData(Object data) {
-			enabled = Boolean.parseBoolean((String) data);
+			enabled = Boolean.parseBoolean(String.valueOf(data));
 		}
 
 		@Override
@@ -72,7 +72,7 @@ public abstract class FlagData {
 
 		@Override
 		public void setData(Object data) {
-			enabled = Boolean.parseBoolean((String) data);
+			enabled = Boolean.parseBoolean(String.valueOf(data));
 		}
 
 		@Override
@@ -91,7 +91,8 @@ public abstract class FlagData {
 
 		@Override
 		public void setData(Object data) {
-			enabled = Boolean.parseBoolean((String) data);
+			enabled = Boolean.parseBoolean(String.valueOf(data));
+
 		}
 
 		@Override
@@ -110,7 +111,7 @@ public abstract class FlagData {
 
 		@Override
 		public void setData(Object data) {
-			enabled = Boolean.parseBoolean((String) data);
+			enabled = Boolean.parseBoolean(String.valueOf(data));
 		}
 
 		@Override
@@ -134,7 +135,7 @@ public abstract class FlagData {
 
 		@Override
 		public String getLore() {
-			return "Лимитый предмет!";
+			return "Лимитый предмет";
 		}
 	}
 }

@@ -24,12 +24,12 @@ public enum BlockHelper {
 	public List<Blocked> blockedList = new ArrayList<>();
 
 	public static Blocked findBlockedByStack(ItemStack is) {
+		if (is.isEmpty()) return null;
 		for (Blocked blocked : (FMLCommonHandler.instance()
 				.getSide()
 				.isServer() ? Instance.blockedList : BlockHelperClient.blockedListClient)) {
 			ItemStack stack = blocked.getStack();
-			if ((blocked.getAllMeta() && stack.isItemEqualIgnoreDurability(is)) || stack.isItemEqual(is))
-				return blocked;
+			if ((blocked.getAllMeta() && stack.getItem() == is.getItem()) || stack.isItemEqual(is)) return blocked;
 		}
 		return null;
 	}

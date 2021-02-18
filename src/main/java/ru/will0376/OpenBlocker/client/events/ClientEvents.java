@@ -29,10 +29,8 @@ public class ClientEvents {
 	public static ItemStack getPickBlock(World world, BlockPos pos) {
 		try {
 			Item item = Item.getItemFromBlock(world.getBlockState(pos).getBlock());
-			if (item == Items.AIR)
-				return ItemStack.EMPTY;
-			else
-				return new ItemStack(item, 1, Block.getBlockFromItem(item).getMetaFromState(world.getBlockState(pos)));
+			if (item == Items.AIR) return ItemStack.EMPTY;
+			else return new ItemStack(item, 1, Block.getBlockFromItem(item).getMetaFromState(world.getBlockState(pos)));
 		} catch (Exception e) {
 			return ItemStack.EMPTY;
 		}
@@ -41,20 +39,21 @@ public class ClientEvents {
 	@SubscribeEvent
 	public static void actionOpenGui(TickEvent.PlayerTickEvent event) {
 		if (event.phase == TickEvent.Phase.START && event.side == Side.CLIENT) {
-			if (KeyUtils.key.isPressed())
-				Minecraft.getMinecraft().displayGuiScreen(new GuiBlocker());
+			if (KeyUtils.key.isPressed()) Minecraft.getMinecraft().displayGuiScreen(new GuiBlocker());
 		}
 	}
 
 	@SubscribeEvent
 	public static void drawBlokced(DrawBlockHighlightEvent e) {
 		try {
-			if (e.getTarget() != null)
-				if (e.getPlayer().getEntityWorld().getBlockState(e.getTarget().getBlockPos()).getBlock() != Blocks.AIR) {
-					ItemStack is = getPickBlock(e.getPlayer().getEntityWorld(), e.getTarget().getBlockPos());
-					if (check(is, false) && !(boolean) BlockHelper.findBlockedByStack(is)
-							.getDataFromFlag(FlagData.Flag.DisableBox)) render(e);
-				}
+			if (e.getTarget() != null) if (e.getPlayer()
+					.getEntityWorld()
+					.getBlockState(e.getTarget().getBlockPos())
+					.getBlock() != Blocks.AIR) {
+				ItemStack is = getPickBlock(e.getPlayer().getEntityWorld(), e.getTarget().getBlockPos());
+				if (check(is, false) && !(Boolean) BlockHelper.findBlockedByStack(is)
+						.getDataFromFlag(FlagData.Flag.DisableBox)) render(e);
+			}
 		} catch (Exception ignore) {
 		}
 	}
@@ -73,12 +72,12 @@ public class ClientEvents {
 
 	private static boolean check(ItemStack is, boolean checkNonBlocks) {
 		AtomicBoolean ret = new AtomicBoolean(false);
-		BlockHelper.BlockHelperClient.blockedListClient.forEach(l -> {
+		for (Blocked l : BlockHelper.BlockHelperClient.blockedListClient) {
 			if (l.getStack().isItemEqual(is) && !ret.get() && l.containStatus(Blocked.Status.Blocked)) ret.set(true);
 			else if (checkNonBlocks && l.getStack().isItemEqual(is) && !ret.get()) ret.set(true);
-			else if ((boolean) l.getDataFromFlag(FlagData.Flag.AllMeta) && l.containStatus(Blocked.Status.Blocked) && !ret
+			else if ((Boolean) l.getDataFromFlag(FlagData.Flag.AllMeta) && l.containStatus(Blocked.Status.Blocked) && !ret
 					.get() && l.getStack().getItem().equals(is.getItem())) ret.set(true);
-		});
+		}
 		return ret.get();
 	}
 

@@ -23,7 +23,7 @@ import ru.will0376.OpenBlocker.common.utils.FlagData;
 import ru.will0376.OpenBlocker.common.utils.FlagDataAdapter;
 import ru.will0376.OpenBlocker.common.utils.ItemStackAdapter;
 import ru.will0376.OpenBlocker.server.IO;
-import ru.will0376.OpenBlocker.server.comands.ComandsMain;
+import ru.will0376.OpenBlocker.server.commands.CommandMain;
 import ru.will0376.OpenBlocker.server.tileentity.TileEntityChecker;
 
 import java.io.File;
@@ -32,7 +32,7 @@ import java.io.File;
 public class Main {
 	public static final String MODID = "openblocker";
 	public static final String NAME = "OpenBlocker";
-	public static final String VERSION = "2.0.2";
+	public static final String VERSION = "2.0.3";
 	public static boolean debug = true, server = true;
 	public static Config config;
 	public static File configFile;
@@ -77,7 +77,7 @@ public class Main {
 	@GradleSideOnly(GradleSide.SERVER)
 	@EventHandler
 	public void onServerStarting(FMLServerStartingEvent event) {
-		event.registerServerCommand(new ComandsMain());
+		event.registerServerCommand(new CommandMain());
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)

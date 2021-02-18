@@ -63,8 +63,7 @@ public class GuiBlocker extends GuiScreen {
 					--this.localpage;
 				break;
 			case 2:
-				if (this.localpage != this.maxPages)
-					++this.localpage;
+				if (this.localpage != this.maxPages) ++this.localpage;
 				break;
 			case 3:
 				if (this.page != 0) {
@@ -73,7 +72,7 @@ public class GuiBlocker extends GuiScreen {
 				}
 				break;
 			case 4:
-				if (this.page != 5) {
+				if (this.page != 3) {
 					++this.page;
 					mc.displayGuiScreen(this);
 				}
