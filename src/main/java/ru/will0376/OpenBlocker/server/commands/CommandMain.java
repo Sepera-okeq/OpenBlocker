@@ -8,6 +8,8 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import ru.justagod.cutter.GradleSide;
+import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.common.utils.ChatForm;
 
 import javax.annotation.Nullable;
@@ -16,6 +18,8 @@ import java.util.Arrays;
 import java.util.List;
 
 @Log4j2
+@GradleSideOnly(GradleSide.SERVER)
+
 public class CommandMain extends CommandBase {
 	private static final List<SubCommands> commandsList = new ArrayList<>();
 

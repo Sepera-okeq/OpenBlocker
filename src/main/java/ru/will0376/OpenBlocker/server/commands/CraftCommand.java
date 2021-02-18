@@ -6,6 +6,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.cli.CommandLine;
+import ru.justagod.cutter.GradleSide;
+import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
@@ -13,6 +15,8 @@ import ru.will0376.OpenBlocker.common.utils.FlagData;
 
 import java.util.Arrays;
 import java.util.List;
+
+@GradleSideOnly(GradleSide.SERVER)
 
 public class CraftCommand extends CommandAbstract {
 	public CraftCommand() {
@@ -66,10 +70,7 @@ public class CraftCommand extends CommandAbstract {
 
 	@Override
 	public List<Argument> getArgMap() {
-		return Arrays.asList(Argument.builder()
-				.name("allMeta")
-				.desc("блокирует все метадаты")
-				.build(), Argument.builder()
+		return Arrays.asList(Argument.builder().name("allMeta").desc("блокирует все метадаты").build(), Argument.builder()
 				.name("reason")
 				.desc("причина блокировки")
 				.hasArg(true)
