@@ -32,7 +32,7 @@ import java.io.File;
 public class Main {
 	public static final String MODID = "openblocker";
 	public static final String NAME = "OpenBlocker";
-	public static final String VERSION = "2.0.3";
+	public static final String VERSION = "@version@";
 	public static boolean debug = true, server = true;
 	public static Config config;
 	public static File configFile;
