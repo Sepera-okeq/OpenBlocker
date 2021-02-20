@@ -9,6 +9,9 @@ variables:
 stages:
   - build
 
+before_script:
+  - apk update && apk add git
+
 build:
   image: openjdk:8-alpine
   stage: build
