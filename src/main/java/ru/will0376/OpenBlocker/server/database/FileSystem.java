@@ -2,6 +2,8 @@ package ru.will0376.OpenBlocker.server.database;
 
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Logger;
+import ru.justagod.cutter.GradleSide;
+import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
 import ru.will0376.OpenBlocker.server.IO;
@@ -9,6 +11,7 @@ import ru.will0376.OpenBlocker.server.IO;
 import java.util.List;
 
 @Log4j2
+@GradleSideOnly(GradleSide.SERVER)
 public class FileSystem extends AbstractStorage {
 
 	@Override

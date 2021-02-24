@@ -130,12 +130,10 @@ public enum BlockHelper {
 	public static void init() throws Exception {
 		Instance.blockedList = new ArrayList<>();
 		if (Main.config.isBD()) {
-			switch (Config.get().getBlockStorage()) {
-				case Mysql:
-					Main.storage = new Mysql();
-					break;
-				default:
-					throw new Exception("Storage not found");
+			if (Config.get().getBlockStorage() == Config.BlockStorage.Mysql) {
+				Main.storage = new Mysql();
+			} else {
+				throw new Exception("Storage not found");
 			}
 		} else {
 			Main.storage = new FileSystem();

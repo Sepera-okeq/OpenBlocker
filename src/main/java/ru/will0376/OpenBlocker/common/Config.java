@@ -2,6 +2,8 @@ package ru.will0376.OpenBlocker.common;
 
 import lombok.Getter;
 import net.minecraftforge.common.config.Configuration;
+import ru.justagod.cutter.GradleSide;
+import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 
 import java.io.File;
@@ -10,6 +12,7 @@ import java.util.Arrays;
 import static ru.will0376.OpenBlocker.common.Config.BlockStorage.FileSystem;
 
 @Getter
+@GradleSideOnly(GradleSide.SERVER)
 
 public class Config {
 

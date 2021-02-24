@@ -2,6 +2,8 @@ package ru.will0376.OpenBlocker.server.database;
 
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Logger;
+import ru.justagod.cutter.GradleSide;
+import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.common.Config;
 
 import java.sql.Connection;
@@ -9,6 +11,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 @Log4j2
+@GradleSideOnly(GradleSide.SERVER)
+
 public class Mysql extends AbstractStorage implements AbstractStorage.IDBConnect {
 
 	public Mysql() {

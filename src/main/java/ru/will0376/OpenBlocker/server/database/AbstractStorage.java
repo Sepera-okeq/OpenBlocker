@@ -4,6 +4,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import org.apache.logging.log4j.Logger;
+import ru.justagod.cutter.GradleSide;
+import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
@@ -17,6 +19,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@GradleSideOnly(GradleSide.SERVER)
 public abstract class AbstractStorage {
 	String url = null;
 	String username = null;
@@ -90,8 +93,7 @@ public abstract class AbstractStorage {
 							clone.setNbt(s1);
 							BlockHelper.Instance.blockedList.add(clone);
 
-							if (Main.debug)
-								getDBLogger().info("Loaded item {} -> {}", itemName, s1.substring(s1.length() - 5));
+							if (Main.debug) getDBLogger().info("Loaded item {} -> {}", itemName, s1.substring(s1.length() - 5));
 
 						}
 						continue;
