@@ -54,6 +54,10 @@ public class BlockCommand extends CommandAbstract {
 				.build()
 				.addStatus(Blocked.Status.Blocked);
 
+		if (blockedByStack.getNbt() != null && !blockedByStack.getNbt().isEmpty() && !blockedByStack.getNbt()
+				.equals("null")) blockedByStack = (Blocked) blockedByStack.clone();
+
+
 		if (!blockedByStack.getStatus().contains(Blocked.Status.Blocked))
 			blockedByStack.getStatus().add(Blocked.Status.Blocked);
 
@@ -61,7 +65,8 @@ public class BlockCommand extends CommandAbstract {
 		if (parse.hasOption("allMeta")) blockedByStack.addNewFlag(FlagData.Flag.AllMeta, true);
 		if (parse.hasOption("disableBox")) blockedByStack.addNewFlag(FlagData.Flag.DisableBox, true);
 		if (parse.hasOption("tile")) blockedByStack.addNewFlag(FlagData.Flag.Tile, true);
-		if (parse.hasOption("useNBT")) {
+		if (parse.hasOption("interaction")) blockedByStack.addNewFlag(FlagData.Flag.Interaction, true);
+		if (parse.hasOption("useNbt")) {
 			NBTTagCompound nbtTagCompound = itemStack.writeToNBT(new NBTTagCompound());
 			blockedByStack.setNbt(B64.encode(nbtTagCompound.toString()));
 		}
@@ -100,20 +105,30 @@ public class BlockCommand extends CommandAbstract {
 
 	@Override
 	public List<Argument> getArgMap() {
-		return Arrays.asList(Argument.builder().name("allMeta").desc("блокирует все метадаты").build(), Argument.builder()
+		return Arrays.asList(Argument.builder()
+				.name("allMeta")
+				.desc("блокирует все метадаты")
+				.build(), Argument.builder()
 				.name("reason")
 				.desc("причина блокировки")
 				.hasArg(true)
-				.build(), Argument.builder().name("temp").desc("помечает предмет временно заблокированным").build(), Argument.builder()
+				.build(), Argument.builder()
+				.name("temp")
+				.desc("помечает предмет временно заблокированным")
+				.build(), Argument.builder()
 				.name("disableBox")
 				.desc("отключает выделение блока в мире")
 				.build(), Argument.builder().name("useNbt").desc("использовать НБТ").build(), Argument.builder()
 				.name("useTile")
 				.desc("Тест")
-				.build(), Argument.builder().name("useItem").desc("использовать предмет из строки").hasArg(true).build(), Argument.builder()
+				.build(), Argument.builder()
+				.name("useItem")
+				.desc("использовать предмет из строки")
+				.hasArg(true)
+				.build(), Argument.builder()
 				.name("useItemMeta")
 				.desc("использовать предмет из строки")
 				.hasArg(true)
-				.build());
+				.build(), Argument.builder().name("interaction").desc("разрешает использовать блок в мире").build());
 	}
 }

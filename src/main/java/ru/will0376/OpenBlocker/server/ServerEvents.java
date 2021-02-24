@@ -32,7 +32,6 @@ import ru.will0376.OpenBlocker.common.Blocked;
 import ru.will0376.OpenBlocker.common.net.ToClientBlocked;
 import ru.will0376.OpenBlocker.common.utils.ChatForm;
 import ru.will0376.OpenBlocker.common.utils.FlagData;
-import ru.will0376.OpenBlocker.server.tileentity.TEBase;
 import ru.will0376.OpenBlocker.server.tileentity.TileEntityChecker;
 
 import java.util.HashMap;
@@ -64,8 +63,7 @@ public class ServerEvents {
 				.getRegistryName()
 				.toString(), e.getWorld(), e.getPos());
 		e.setCanceled(canceled);
-		if (!e.isCanceled() && !TEBase.isTileEntity(e.getWorld(), e.getPos()))
-			e.setCanceled(checkBlock(player, is, "serverevent.interaction", "BlockEvent.BreakEvent"));
+		if (!e.isCanceled()) e.setCanceled(checkBlock(player, is, "serverevent.breakBlock", "BlockEvent.BreakEvent"));
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -75,8 +73,7 @@ public class ServerEvents {
 		e.setCanceled(TileEntityChecker.checkBlock(player, is.getItem()
 				.getRegistryName()
 				.toString(), e.getWorld(), e.getPos()));
-		if (!e.isCanceled() && !TEBase.isTileEntity(e.getWorld(), e.getPos()))
-			e.setCanceled(checkBlock(player, is, "serverevent.interaction", "BlockEvent.PlaceEvent"));
+		if (!e.isCanceled()) e.setCanceled(checkBlock(player, is, "serverevent.placeBlock", "BlockEvent.PlaceEvent"));
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -86,8 +83,8 @@ public class ServerEvents {
 		e.setCanceled(TileEntityChecker.checkBlock(player, is.getItem()
 				.getRegistryName()
 				.toString(), e.getWorld(), e.getPos()));
-		if (!e.isCanceled() && !TEBase.isTileEntity(e.getWorld(), e.getPos()))
-			e.setCanceled(checkBlock(player, is, "serverevent.interaction", "BlockEvent.MultiPlaceEvent"));
+		if (!e.isCanceled())
+			e.setCanceled(checkBlock(player, is, "serverevent.placeBlock", "BlockEvent.MultiPlaceEvent"));
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -97,15 +94,22 @@ public class ServerEvents {
 		e.setCanceled(TileEntityChecker.checkBlock(player, is.getItem()
 				.getRegistryName()
 				.toString(), e.getWorld(), e.getPos()));
-		if (!e.isCanceled() && !TEBase.isTileEntity(e.getWorld(), e.getPos()))
+		if (!e.isCanceled())
 			e.setCanceled(checkBlock(player, is, "serverevent.interaction", "PlayerInteractEvent.RightClickBlock"));
 	}
 
 	public static boolean checkBlock(EntityPlayer player, ItemStack is, String translation, String debug) {
+		if (translation.equals("serverevent.interaction")) {
+			Blocked blockedByStack = BlockHelper.findBlockedByStack(is);
+			if (blockedByStack != null && blockedByStack.containsFlag(FlagData.Flag.Interaction) && (Boolean) blockedByStack
+					.getDataFromFlag(FlagData.Flag.Interaction)) return false;
+		}
+
 		if (check(player, is, Main.config.isDeleteBlocked() && (!debug.contains("RightClickBlock") && !debug.contains("BreakEvent")), ChatForm.prefix + new TextComponentTranslation(translation, is
 				.getItem()
 				.getRegistryName()
 				.toString(), is.getMetadata()).getFormattedText())) {
+
 			if (Main.debug) sendToPlayerDebugMessage(player, "[DEBUG_" + debug + "] Canceled event.");
 			return true;
 		}
@@ -119,7 +123,7 @@ public class ServerEvents {
 
 		EntityPlayer player = e.player;
 		ItemStack is = e.pickedUp.getItem();
-		if (check(player, is, true, ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is.getItem()
+		if (check(player, is, true, ChatForm.prefix + new TextComponentTranslation("serverevent.pickup", is.getItem()
 				.getRegistryName()
 				.toString(), is.getMetadata()).getFormattedText())) {
 			e.setCanceled(true);
@@ -133,7 +137,7 @@ public class ServerEvents {
 			EntityPlayer player = e.player;
 			for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 				ItemStack is = player.inventory.getStackInSlot(i);
-				check(player, is, Main.config.isDeleteBlocked(), ChatForm.prefix + new TextComponentTranslation("serverevent.interaction", is
+				check(player, is, Main.config.isDeleteBlocked(), ChatForm.prefix + new TextComponentTranslation("serverevent.tick", is
 						.getItem()
 						.getRegistryName()
 						.toString(), is.getMetadata()).getFormattedText());
@@ -174,7 +178,7 @@ public class ServerEvents {
 		if (blockedByStack != null && blockedByStack.getStatus()
 				.contains(Blocked.Status.Blocked) && !checkPlayer(player) && checkNBT(player, is)) {
 			if (delete) {
-				text += " " + new TextComponentTranslation("serverevent.interaction.remove", ChatForm.prefix).getFormattedText();
+//				text += " " + new TextComponentTranslation("serverevent.interaction.remove", ChatForm.prefix).getFormattedText();
 				for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 					if (player.inventory.getStackInSlot(i) == is) player.inventory.removeStackFromSlot(i);
 				}

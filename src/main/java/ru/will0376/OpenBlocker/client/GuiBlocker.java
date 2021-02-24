@@ -8,12 +8,14 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 import ru.will0376.OpenBlocker.client.utils.GuiHelper;
 import ru.will0376.OpenBlocker.client.utils.RenderUtils;
 import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
+import ru.will0376.OpenBlocker.common.utils.B64;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,21 +39,21 @@ public class GuiBlocker extends GuiScreen {
 		buttonList.add(new GuiButton(4, super.width / 2 + 50 + 20, super.height - 45, 18, 20, ">>"));
 
 
-			switch (page) {
-				case 0:
-					blockslist = new ArrayList<>(BlockHelper.BlockHelperClient.blockedListClient);
-					break;
-				case 1:
-					blockslist = BlockHelper.getAllByStatus(Blocked.Status.Blocked);
-					break;
-				case 2:
-					blockslist = BlockHelper.getAllByStatus(Blocked.Status.Limit);
-					break;
-				case 3:
-					blockslist = BlockHelper.getAllByStatus(Blocked.Status.Craft);
-					break;
+		switch (page) {
+			case 0:
+				blockslist = new ArrayList<>(BlockHelper.BlockHelperClient.blockedListClient);
+				break;
+			case 1:
+				blockslist = BlockHelper.getAllByStatus(Blocked.Status.Blocked);
+				break;
+			case 2:
+				blockslist = BlockHelper.getAllByStatus(Blocked.Status.Limit);
+				break;
+			case 3:
+				blockslist = BlockHelper.getAllByStatus(Blocked.Status.Craft);
+				break;
 
-			}
+		}
 		ScaledResolution scaledResolution = new ScaledResolution(mc);
 		scaledWidth = scaledResolution.getScaledWidth();
 	}
@@ -59,8 +61,7 @@ public class GuiBlocker extends GuiScreen {
 	protected void actionPerformed(GuiButton g) {
 		switch (g.id) {
 			case 1:
-				if (this.localpage != 1)
-					--this.localpage;
+				if (this.localpage != 1) --this.localpage;
 				break;
 			case 2:
 				if (this.localpage != this.maxPages) ++this.localpage;
@@ -88,31 +89,6 @@ public class GuiBlocker extends GuiScreen {
 	}
 
 	private void drawBlocks(int mouseX, int mouseY) {
-		/*switch (page) {
-			case 0:
-				GuiHelper.drawScalledString((int) (width / 2 - ("All".length() * 1.5f)), 13, 1.5f, 1.5f, "All", -1);
-				break;
-
-			case 1:
-				GuiHelper.drawScalledString((int) (width / 2 - ("Block".length() * 1.5f)), 13, 1.5f, 1.5f, "Block", -1);
-				break;
-
-			case 2:
-				GuiHelper.drawScalledString((int) (width / 2 - ("All Meta".length() * 1.5f)), 13, 1.5f, 1.5f, "All Meta", -1);
-				break;
-
-			case 3:
-				GuiHelper.drawScalledString((int) (width / 2 - ("Limit".length() * 1.5f)), 13, 1.5f, 1.5f, "Limit", -1);
-				break;
-
-			case 4:
-				GuiHelper.drawScalledString((int) (width / 2 - ("Min Cost".length() * 1.5f)), 13, 1.5f, 1.5f, "Min Cost", -1);
-				break;
-
-			case 5:
-				GuiHelper.drawScalledString((int) (width / 2 - ("Craft".length() * 1.5f)), 13, 1.5f, 1.5f, "Craft", -1);
-				break;
-		}*/
 		switch (page) {
 			case 0:
 				GuiHelper.drawScalledString((int) (width / 2 - ("All".length() * 1.5f)), 13, 1.5f, 1.5f, "All", -1);
@@ -128,55 +104,61 @@ public class GuiBlocker extends GuiScreen {
 				break;
 
 		}
-		RenderHelper.enableGUIStandardItemLighting();
-		Blocked tmpib = null;
-		int itemsInPage = (this.scaledWidth - 35 - 35) * (byte) 115 / 1024;
-		int offset = 0;
-		ArrayList<String> list;
-		if (!blockslist.isEmpty()) { //TODO: убрать говно с класса.
-			for (Blocked ib : blockslist) {
-				for (int k = 1; k < 50; ++k) {
-					if (k == 1) {
-						this.maxPages = 1;
-						if (this.localpage == 1 && offset >= 0 && offset < itemsInPage) {
-							this.moveCoord();
-							if (mouseX >= this.xCoord && mouseX < this.xCoord + 30 && mouseY >= this.yCoord && mouseY < this.yCoord + 34) {
-								tmpib = ib;
-								RenderUtils.renderItemEnable(this.xCoord, this.yCoord, 32, 32);
+		try {
+			RenderHelper.enableGUIStandardItemLighting();
+			Blocked tmpib = null;
+			int itemsInPage = (this.scaledWidth - 35 - 35) * 115 / 1024;
+			int offset = 0;
+			ArrayList<String> list;
+			if (!blockslist.isEmpty()) { //TODO: убрать говно с класса.
+				for (Blocked ib : blockslist) {
+					for (int k = 1; k < 50; ++k) {
+						if (k == 1) {
+							this.maxPages = 1;
+							if (this.localpage == 1 && offset >= 0 && offset < itemsInPage) {
+								this.moveCoord();
+								if (mouseX >= this.xCoord && mouseX < this.xCoord + 30 && mouseY >= this.yCoord && mouseY < this.yCoord + 34) {
+									tmpib = ib;
+									RenderUtils.renderItemEnable(this.xCoord, this.yCoord, 32, 32);
+								}
 							}
-						}
-					} else {
-						if (offset >= itemsInPage * (k - 1) && offset < itemsInPage * k) {
-							this.maxPages = k;
-						}
+						} else {
+							if (offset >= itemsInPage * (k - 1) && offset < itemsInPage * k) {
+								this.maxPages = k;
+							}
 
-						if (this.localpage == k && offset >= itemsInPage * (k - 1) && offset < itemsInPage * k) {
-							this.moveCoord();
-							if (mouseX >= this.xCoord && mouseX < this.xCoord + 30 && mouseY >= this.yCoord && mouseY < this.yCoord + 34) {
-								tmpib = ib;
-								RenderUtils.renderItemEnable(this.xCoord, this.yCoord, 32, 32);
+							if (this.localpage == k && offset >= itemsInPage * (k - 1) && offset < itemsInPage * k) {
+								this.moveCoord();
+								if (mouseX >= this.xCoord && mouseX < this.xCoord + 30 && mouseY >= this.yCoord && mouseY < this.yCoord + 34) {
+									tmpib = ib;
+									RenderUtils.renderItemEnable(this.xCoord, this.yCoord, 32, 32);
 
+								}
 							}
 						}
 					}
+					test(itemsInPage, offset, (!ib.NBTEmpty() ? new ItemStack(JsonToNBT.getTagFromJson(B64.decode(ib.getNbt()))) : ib
+							.getStack()));
+					offset++;
 				}
-				test(itemsInPage, offset, ib.getStack());
-				offset++;
-			}
-			this.yCoord = 38;
-			this.xCoord = 0;
-			if (tmpib != null) {
-				list = new ArrayList<>();
-				list.add(I18n.format("guiblocker.blockname", tmpib.getStack().getDisplayName()));
-				list.addAll(tmpib.getLore());
-				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-					list.add(TextFormatting.BOLD + "_______________");
-					list.add("NBT: " + tmpib.getNbt());
+				this.yCoord = 38;
+				this.xCoord = 0;
+				if (tmpib != null) {
+					list = new ArrayList<>();
+					list.add(I18n.format("guiblocker.blockname", (!tmpib.NBTEmpty() ? new ItemStack(JsonToNBT.getTagFromJson(B64
+							.decode(tmpib.getNbt()))) : tmpib.getStack()).getDisplayName()));
+					list.addAll(tmpib.getLore());
+					if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+						list.add(TextFormatting.BOLD + "_______________");
+						list.add("NBT: " + tmpib.getNbt());
+					}
+					renderTooltip(mouseX + 3, mouseY - 8, list);
 				}
-				renderTooltip(mouseX + 3, mouseY - 8, list);
 			}
+			drawCenteredString(super.fontRenderer, I18n.format("guiblocker.page.of", localpage, maxPages), super.width / 2, super.height - 40, 16777215);
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
-		drawCenteredString(super.fontRenderer, I18n.format("guiblocker.page.of", localpage, maxPages), super.width / 2, super.height - 40, 16777215);
 	}
 
 	private void test(int itemsInPage, int bEnch1, ItemStack is) {

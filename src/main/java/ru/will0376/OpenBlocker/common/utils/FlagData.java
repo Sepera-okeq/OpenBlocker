@@ -27,7 +27,8 @@ public abstract class FlagData {
 		DisableBox(DisableBoxData.class),
 		Temp(TempData.class),
 		Limit(LimitData.class),
-		Tile(TileData.class);
+		Tile(TileData.class),
+		Interaction(InteractionData.class);
 
 		public Class<?> clazz;
 
@@ -59,6 +60,25 @@ public abstract class FlagData {
 		@Override
 		public String getLore() {
 			return "Учитываются все метадаты!";
+		}
+	}
+
+	public static class InteractionData extends FlagData {
+		boolean enabled;
+
+		@Override
+		public Boolean getData() {
+			return enabled;
+		}
+
+		@Override
+		public void setData(Object data) {
+			enabled = Boolean.parseBoolean(String.valueOf(data));
+		}
+
+		@Override
+		public String getLore() {
+			return "Можно использовать в мире";
 		}
 	}
 

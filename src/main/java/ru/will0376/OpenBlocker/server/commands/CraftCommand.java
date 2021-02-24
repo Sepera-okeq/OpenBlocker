@@ -40,6 +40,10 @@ public class CraftCommand extends CommandAbstract {
 					.stack(itemStack)
 					.reason(parse.hasOption("reason") ? parse.getOptionValue("reason") : Main.config.getDefRes())
 					.build();
+
+			if (blockedByStack.getNbt() != null && !blockedByStack.getNbt().isEmpty() && !blockedByStack.getNbt()
+					.equals("null")) blockedByStack = (Blocked) blockedByStack.clone();
+
 			BlockHelper.addNewBlocked(blockedByStack);
 			if (parse.hasOption("allMeta")) blockedByStack.addNewFlag(FlagData.Flag.AllMeta, true);
 		}

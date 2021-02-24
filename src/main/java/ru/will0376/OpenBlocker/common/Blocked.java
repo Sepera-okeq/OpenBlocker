@@ -12,7 +12,7 @@ import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
-public class Blocked {
+public class Blocked implements Cloneable {
 	String nbt;
 	String reason;
 	ItemStack stack;
@@ -49,7 +49,7 @@ public class Blocked {
 
 	public boolean containsFlag(FlagData.Flag flag) {
 		for (FlagData datum : data) {
-			return flag.getClazz().isAssignableFrom(datum.getClass());
+			if (flag.getClazz().getSimpleName().equals(datum.getClass().getSimpleName())) return true;
 		}
 		return false;
 	}
@@ -83,6 +83,10 @@ public class Blocked {
 		return ret;
 	}
 
+	public boolean NBTEmpty() {
+		return getNbt() == null || getNbt().isEmpty() || getNbt().equals("null");
+	}
+
 	@Getter
 	public enum Status {
 		Blocked("Заблокированно"),
@@ -99,5 +103,10 @@ public class Blocked {
 		Status(String s) {
 			lore = s;
 		}
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

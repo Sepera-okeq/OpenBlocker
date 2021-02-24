@@ -22,8 +22,6 @@ import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
 import ru.will0376.OpenBlocker.common.utils.FlagData;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 @Mod.EventBusSubscriber(value = Side.CLIENT)
 public class ClientEvents {
 	public static ItemStack getPickBlock(World world, BlockPos pos) {
@@ -71,14 +69,22 @@ public class ClientEvents {
 	}
 
 	private static boolean check(ItemStack is, boolean checkNonBlocks) {
-		AtomicBoolean ret = new AtomicBoolean(false);
 		for (Blocked l : BlockHelper.BlockHelperClient.blockedListClient) {
-			if (l.getStack().isItemEqual(is) && !ret.get() && l.containStatus(Blocked.Status.Blocked)) ret.set(true);
-			else if (checkNonBlocks && l.getStack().isItemEqual(is) && !ret.get()) ret.set(true);
-			else if ((Boolean) l.getDataFromFlag(FlagData.Flag.AllMeta) && l.containStatus(Blocked.Status.Blocked) && !ret
-					.get() && l.getStack().getItem().equals(is.getItem())) ret.set(true);
+			if (l.getStack().isItemEqual(is) && l.containStatus(Blocked.Status.Blocked) && BlockHelper.checkNBT(is)) {
+				return true;
+			} else if (l.getStack().isItemEqual(is) && l.containStatus(Blocked.Status.Blocked) && l.NBTEmpty()) {
+				return true;
+			} else if (checkNonBlocks && l.getStack().isItemEqual(is) && l.NBTEmpty()) {
+				return true;
+			} else if ((Boolean) l.getDataFromFlag(FlagData.Flag.AllMeta) && l.containStatus(Blocked.Status.Blocked) && l
+					.getStack()
+					.getItem()
+					.equals(is.getItem())) {
+				return true;
+			}
 		}
-		return ret.get();
+		return false;
+
 	}
 
 	public static void render(DrawBlockHighlightEvent event) {

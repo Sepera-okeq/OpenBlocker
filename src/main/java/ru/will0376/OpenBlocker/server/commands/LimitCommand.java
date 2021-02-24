@@ -47,6 +47,7 @@ public class LimitCommand extends CommandAbstract {
 					.stack(itemStack)
 					.reason(parse.hasOption("reason") ? parse.getOptionValue("reason") : Main.config.getDefRes())
 					.build();
+
 			BlockHelper.addNewBlocked(blockedByStack);
 		}
 

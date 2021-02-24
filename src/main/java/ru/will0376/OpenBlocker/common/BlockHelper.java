@@ -12,8 +12,10 @@ import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.net.ToClientBlocked;
 import ru.will0376.OpenBlocker.common.utils.B64;
-import ru.will0376.OpenBlocker.server.IO;
+import ru.will0376.OpenBlocker.server.database.FileSystem;
+import ru.will0376.OpenBlocker.server.database.Mysql;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -119,25 +121,31 @@ public enum BlockHelper {
 		for (Blocked blocked : (FMLCommonHandler.instance()
 				.getSide()
 				.isServer() ? Instance.blockedList : BlockHelperClient.blockedListClient)) {
-			return !blocked.getNbt().isEmpty() && blocked.getNbt().equals(encode);
+			if (!blocked.NBTEmpty() && blocked.getNbt().equals(encode)) return true;
 		}
 		return false;
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)
-	public static void init() {
-		List<Blocked> read = IO.read();
-		if (read == null) {
-			log.error("File Read Error!");
-			Instance.blockedList = new ArrayList<>();
+	public static void init() throws Exception {
+		Instance.blockedList = new ArrayList<>();
+		if (Main.config.isBD()) {
+			switch (Config.get().getBlockStorage()) {
+				case Mysql:
+					Main.storage = new Mysql();
+					break;
+				default:
+					throw new Exception("Storage not found");
+			}
 		} else {
-			Instance.blockedList = read;
+			Main.storage = new FileSystem();
 		}
+		Main.storage.load();
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)
-	public static void save() {
-		IO.write(Instance.blockedList);
+	public static void save() throws SQLException {
+		Main.storage.save();
 	}
 
 	@Data

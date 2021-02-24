@@ -8,6 +8,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.common.utils.ChatForm;
@@ -81,7 +82,7 @@ public class CommandMain extends CommandBase {
 			} else sender.sendMessage(new TextComponentString(ChatForm.prefix_error + "No rights!"));
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			sender.sendMessage(new TextComponentString(ex.getMessage()));
+			sender.sendMessage(new TextComponentString(ChatForm.prefix_error + TextFormatting.RED + ex.getMessage()));
 		}
 	}
 

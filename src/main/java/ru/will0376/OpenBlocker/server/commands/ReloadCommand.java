@@ -6,9 +6,7 @@ import net.minecraft.util.text.TextComponentString;
 import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.common.BlockHelper;
-import ru.will0376.OpenBlocker.common.Blocked;
 import ru.will0376.OpenBlocker.common.utils.ChatForm;
-import ru.will0376.OpenBlocker.server.IO;
 
 import java.util.List;
 
@@ -31,12 +29,7 @@ public class ReloadCommand extends CommandAbstract {
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws Exception {
-		List<Blocked> read = IO.read();
-		if (read == null) {
-			sender.sendMessage(new TextComponentString(ChatForm.prefix + "Error!"));
-			return;
-		}
-		BlockHelper.Instance.blockedList = read;
+		BlockHelper.init();
 		BlockHelper.sendAllBlocksToAll();
 		sender.sendMessage(new TextComponentString(ChatForm.prefix + "Reloaded!"));
 	}
