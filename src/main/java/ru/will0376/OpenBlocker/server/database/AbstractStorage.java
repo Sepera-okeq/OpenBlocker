@@ -41,7 +41,6 @@ public abstract class AbstractStorage {
 		default void checkTable() {
 			try {
 				Connection connect = getConnect();
-				//connect.prepareStatement(getSQLCheckTable()).executeQuery();
 				Statement stmt = connect.createStatement();
 				stmt.execute(insertTableName(getSQLCheckTable()));
 			} catch (Exception ex) {
@@ -55,7 +54,6 @@ public abstract class AbstractStorage {
 
 				Statement s = connect.createStatement();
 				ResultSet rs = s.executeQuery(insertTableName(getSQLItems()));
-				next:
 				while (rs.next()) {
 					Blocked build = Blocked.builder().build();
 					String itemName = rs.getString("itemName");

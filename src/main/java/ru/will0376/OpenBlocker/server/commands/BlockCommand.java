@@ -125,9 +125,7 @@ public class BlockCommand extends CommandAbstract {
 				.name("useItem")
 				.desc("использовать предмет из строки")
 				.hasArg(true)
-				.build(), Argument.builder()
-				.name("useItemMeta")
-				.desc("использовать предмет из строки")
+				.build(), Argument.builder().name("useItemMeta").desc("использовать мету из строки")
 				.hasArg(true)
 				.build(), Argument.builder().name("interaction").desc("разрешает использовать блок в мире").build());
 	}

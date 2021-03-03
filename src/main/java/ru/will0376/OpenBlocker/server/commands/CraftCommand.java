@@ -55,7 +55,6 @@ public class CraftCommand extends CommandAbstract {
 
 	@Override
 	public void remove(MinecraftServer server, ICommandSender sender, String[] args) throws Exception {
-//		CommandLine parse = getLine(args);
 		EntityPlayer player = (EntityPlayer) sender;
 		ItemStack itemStack = player.getHeldItemMainhand();
 		if (itemStack.isEmpty()) {
