@@ -9,9 +9,6 @@ variables:
 stages:
   - build
 
-before_script:
-  - apk update && apk add git
-
 build:
   image: openjdk:8-alpine
   stage: build
@@ -19,9 +16,11 @@ build:
     variables:
       - $CI_COMMIT_REF_NAME =~ /dev*/
   before_script:
+    - apk update && apk add git
     - export GRADLE_USER_HOME=`pwd`/.gradle
     - chmod +x gradlew
   script:
+    - git rev-list --count HEAD
     - ./gradlew buildAll
   artifacts:
     expire_in: never

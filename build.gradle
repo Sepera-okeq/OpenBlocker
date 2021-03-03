@@ -23,7 +23,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'cutter'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-version = _version
+version = String.format('%s.%s',_version, getBuild())
 group = _group
 archivesBaseName = _archivesBaseName
 
@@ -124,4 +124,8 @@ ext {
     println('+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+')
     println('Mod version:' + version)
     println('+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+')
+}
+
+def getBuild() {
+    return 'git rev-list --count HEAD'.execute(null, projectDir).text.trim()
 }
