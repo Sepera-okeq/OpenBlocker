@@ -11,6 +11,7 @@ stages:
 
 before_script:
   - apk update && apk add git
+  - git --version
 
 build:
   image: openjdk:8-alpine
