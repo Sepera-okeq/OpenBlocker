@@ -20,7 +20,6 @@ build:
     - export GRADLE_USER_HOME=`pwd`/.gradle
     - chmod +x gradlew
   script:
-    - git rev-list --count HEAD
     - ./gradlew buildAll
   artifacts:
     expire_in: never

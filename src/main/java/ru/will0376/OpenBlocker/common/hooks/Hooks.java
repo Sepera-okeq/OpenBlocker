@@ -58,7 +58,8 @@ public class Hooks {
 	public static boolean matches(ShapelessRecipes recipes, InventoryCrafting inv, World worldIn, @Hook.ReturnValue boolean returnValue) {
 		return Invoke.serverValue(() -> {
 			Blocked blockedByStack = BlockHelper.findBlockedByStack(recipes.getRecipeOutput());
-			return (blockedByStack != null && blockedByStack.getStatus().contains(Blocked.Status.Craft)) && returnValue;
+			return !(blockedByStack != null && blockedByStack.getStatus()
+					.contains(Blocked.Status.Craft)) && returnValue;
 		});
 	}
 
@@ -67,7 +68,8 @@ public class Hooks {
 	public static boolean matches(ShapedRecipes recipes, InventoryCrafting inv, World worldIn, @Hook.ReturnValue boolean returnValue) {
 		return Invoke.serverValue(() -> {
 			Blocked blockedByStack = BlockHelper.findBlockedByStack(recipes.getRecipeOutput());
-			return (blockedByStack != null && blockedByStack.getStatus().contains(Blocked.Status.Craft)) && returnValue;
+			return !(blockedByStack != null && blockedByStack.getStatus()
+					.contains(Blocked.Status.Craft)) && returnValue;
 		});
 	}
 
