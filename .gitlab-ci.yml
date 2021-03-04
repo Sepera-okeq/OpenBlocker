@@ -15,7 +15,6 @@ build:
   except:
     variables:
       - $CI_COMMIT_REF_NAME =~ /dev*/
-      - $BUILDNUM=$(git rev-list --count HEAD)
   before_script:
     - apk update && apk add git
     - export GRADLE_USER_HOME=`pwd`/.gradle
@@ -23,7 +22,7 @@ build:
   script:
     - ./gradlew buildAll
   artifacts:
-    name: "OpenBlocker-$BUILDNUM"
+    name: "OpenBlocker"
     expire_in: never
     paths:
       - build/libs/
