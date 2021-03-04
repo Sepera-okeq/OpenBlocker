@@ -25,7 +25,6 @@ public abstract class CommandAbstract {
 
 	public CommandAbstract(String commandName) {
 		this.commandName = commandName;
-
 	}
 
 	public abstract void add(MinecraftServer server, ICommandSender sender, String[] args) throws Exception;

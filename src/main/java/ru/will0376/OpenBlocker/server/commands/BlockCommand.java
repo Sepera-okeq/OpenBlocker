@@ -31,7 +31,8 @@ public class BlockCommand extends CommandAbstract {
 		CommandLine parse = getLine(args);
 
 		EntityPlayer player = (EntityPlayer) sender;
-		ItemStack itemStack = player.getHeldItemMainhand();
+		ItemStack itemStack = player.getHeldItemMainhand().copy();
+
 
 		if (itemStack.isEmpty()) {
 			if (parse.hasOption("useItem")) {
@@ -46,6 +47,7 @@ public class BlockCommand extends CommandAbstract {
 				return;
 			}
 		}
+		itemStack.setCount(1);
 		Blocked blockedByStack = BlockHelper.findBlockedByStack(itemStack);
 
 		if (blockedByStack == null) blockedByStack = Blocked.builder()

@@ -71,7 +71,7 @@ public class Blocked implements Cloneable {
 
 	public ArrayList<String> getLore() {
 		ArrayList<String> ret = new ArrayList<>();
-		ret.add("---------");
+		ret.add("---------------");
 		for (Status fstatus : status)
 			ret.add(fstatus.getLore());
 

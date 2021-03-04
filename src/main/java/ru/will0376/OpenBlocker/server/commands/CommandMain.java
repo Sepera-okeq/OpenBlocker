@@ -92,6 +92,7 @@ public class CommandMain extends CommandBase {
 		craft(new CraftCommand()),
 		//		enchant(new EnchantCommand()), //TODO: как-нибудь сделать
 		limit(new LimitCommand()),
+		blockHotBar(new BlockHotBarCommand()),
 		save(new SaveCommand(), true),
 		reload(new ReloadCommand(), true),
 		test(new TestCommand(), true),
@@ -110,7 +111,6 @@ public class CommandMain extends CommandBase {
 			this.comma = comma;
 			disableHelp = b;
 			commandsList.add(this);
-
 		}
 	}
 }

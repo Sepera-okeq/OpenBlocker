@@ -27,11 +27,12 @@ public class LimitCommand extends CommandAbstract {
 		CommandLine parse = getLine(args);
 
 		EntityPlayer player = (EntityPlayer) sender;
-		ItemStack itemStack = player.getHeldItemMainhand();
+		ItemStack itemStack = player.getHeldItemMainhand().copy();
 		if (itemStack.isEmpty()) {
 			player.sendMessage(new TextComponentString("Take item/block into hand"));
 			return;
 		}
+		itemStack.setCount(1);
 
 		int limit = Integer.parseInt(parse.getOptionValue("l", "0"));
 

@@ -70,14 +70,15 @@ public class ClientEvents {
 
 	private static boolean check(ItemStack is, boolean checkNonBlocks) {
 		for (Blocked l : BlockHelper.BlockHelperClient.blockedListClient) {
-			if (l.getStack().isItemEqual(is) && l.containStatus(Blocked.Status.Blocked) && BlockHelper.checkNBT(is)) {
+			ItemStack stack = l.getStack();
+			if (stack.getItem() == is.getItem() && stack.getMetadata() == is.getMetadata() && l.containStatus(Blocked.Status.Blocked) && BlockHelper
+					.checkNBT(is.copy())) {
 				return true;
-			} else if (l.getStack().isItemEqual(is) && l.containStatus(Blocked.Status.Blocked) && l.NBTEmpty()) {
+			} else if (stack.isItemEqual(is) && l.containStatus(Blocked.Status.Blocked) && l.NBTEmpty()) {
 				return true;
-			} else if (checkNonBlocks && l.getStack().isItemEqual(is) && l.NBTEmpty()) {
+			} else if (checkNonBlocks && stack.isItemEqual(is) && l.NBTEmpty()) {
 				return true;
-			} else if ((Boolean) l.getDataFromFlag(FlagData.Flag.AllMeta) && l.containStatus(Blocked.Status.Blocked) && l
-					.getStack()
+			} else if ((Boolean) l.getDataFromFlag(FlagData.Flag.AllMeta) && l.containStatus(Blocked.Status.Blocked) && stack
 					.getItem()
 					.equals(is.getItem())) {
 				return true;

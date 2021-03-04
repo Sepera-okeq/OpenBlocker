@@ -116,6 +116,7 @@ public enum BlockHelper {
 	}
 
 	public static boolean checkNBT(ItemStack is) {
+		is.setCount(1);
 		NBTTagCompound nbtTagCompound = is.writeToNBT(new NBTTagCompound());
 		String encode = B64.encode(nbtTagCompound.toString());
 		for (Blocked blocked : (FMLCommonHandler.instance()

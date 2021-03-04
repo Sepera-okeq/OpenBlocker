@@ -1,9 +1,9 @@
 package ru.will0376.OpenBlocker.client;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
@@ -11,21 +11,21 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
+import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.client.utils.GuiHelper;
-import ru.will0376.OpenBlocker.client.utils.RenderUtils;
 import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
 import ru.will0376.OpenBlocker.common.utils.B64;
 
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 public class GuiBlocker extends GuiScreen {
 	private int page = 0, localpage = 1;
 	private int maxPages = 1;
-	private int xCoord = 0, yCoord = 38, scaledWidth = 0;
-
+	int itemsX, itemsY, itemsInPage;
 	private List<Blocked> blockslist = new ArrayList<>();
 
 	public void initGui() {
@@ -54,8 +54,10 @@ public class GuiBlocker extends GuiScreen {
 				break;
 
 		}
-		ScaledResolution scaledResolution = new ScaledResolution(mc);
-		scaledWidth = scaledResolution.getScaledWidth();
+		itemsX = (this.width - 70) / 38;
+		itemsY = (this.height - 76) / 38;
+		itemsInPage = itemsX * itemsY;
+		maxPages = (int) Math.ceil((double) blockslist.size() / itemsInPage);
 	}
 
 	protected void actionPerformed(GuiButton g) {
@@ -106,54 +108,48 @@ public class GuiBlocker extends GuiScreen {
 		}
 		try {
 			RenderHelper.enableGUIStandardItemLighting();
-			Blocked tmpib = null;
-			int itemsInPage = (this.scaledWidth - 35 - 35) * 115 / 1024;
-			int offset = 0;
-			ArrayList<String> list;
-			if (!blockslist.isEmpty()) { //TODO: убрать говно с класса.
-				for (Blocked ib : blockslist) {
-					for (int k = 1; k < 50; ++k) {
-						if (k == 1) {
-							this.maxPages = 1;
-							if (this.localpage == 1 && offset >= 0 && offset < itemsInPage) {
-								this.moveCoord();
-								if (mouseX >= this.xCoord && mouseX < this.xCoord + 30 && mouseY >= this.yCoord && mouseY < this.yCoord + 34) {
-									tmpib = ib;
-									RenderUtils.renderItemEnable(this.xCoord, this.yCoord, 32, 32);
-								}
-							}
-						} else {
-							if (offset >= itemsInPage * (k - 1) && offset < itemsInPage * k) {
-								this.maxPages = k;
-							}
 
-							if (this.localpage == k && offset >= itemsInPage * (k - 1) && offset < itemsInPage * k) {
-								this.moveCoord();
-								if (mouseX >= this.xCoord && mouseX < this.xCoord + 30 && mouseY >= this.yCoord && mouseY < this.yCoord + 34) {
-									tmpib = ib;
-									RenderUtils.renderItemEnable(this.xCoord, this.yCoord, 32, 32);
+			int startedIndex = (localpage - 1) * itemsInPage;
+			int endIndex = (localpage) * itemsInPage;
+			if (Main.debug)
+				drawString(Minecraft.getMinecraft().fontRenderer, String.format("x: %s, y: %s, all: %s, page: %s", itemsX, itemsY, itemsInPage, localpage), 0, 0, Color.white
+						.getRGB());
 
-								}
+			Optional<Render> render = Optional.empty();
+			if (!blockslist.isEmpty()) {
+				for (Blocked blocked : blockslist) {
+
+					int index = blockslist.indexOf(blocked) + 1;
+
+					if (index < startedIndex) continue;
+					if (index > endIndex) continue;
+
+					int nowX = (index * 38) - ((index - 1) / itemsX * (itemsX * 38));
+					int nowY = 38 + ((index - 1 - startedIndex) / itemsX) * 38;
+
+					ItemStack itemStack = !blocked.NBTEmpty() ? new ItemStack(JsonToNBT.getTagFromJson(B64.decode(blocked
+							.getNbt()))) : blocked.getStack();
+
+					GlStateManager.pushMatrix();
+					GlStateManager.translate(nowX, nowY, 1.5F);
+					GlStateManager.scale(2.0F, 2.0F, 1.5F);
+					itemRender.renderItemAndEffectIntoGUI(itemStack, 0, 0);
+					GlStateManager.popMatrix();
+
+					if (mouseX >= nowX && mouseX < nowX + 34 && mouseY >= nowY && mouseY < nowY + 34) {
+						render = Optional.of(() -> {
+							List<String> list = new ArrayList<>();
+							list.add(I18n.format("guiblocker.blockname", itemStack.getDisplayName()));
+							list.addAll(blocked.getLore());
+							if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+								list.add(TextFormatting.BOLD + "_______________");
+								list.add("NBT: " + blocked.getNbt());
 							}
-						}
+							renderTooltip(mouseX + 3, mouseY - 8, list);
+						});
 					}
-					test(itemsInPage, offset, (!ib.NBTEmpty() ? new ItemStack(JsonToNBT.getTagFromJson(B64.decode(ib.getNbt()))) : ib
-							.getStack()));
-					offset++;
 				}
-				this.yCoord = 38;
-				this.xCoord = 0;
-				if (tmpib != null) {
-					list = new ArrayList<>();
-					list.add(I18n.format("guiblocker.blockname", (!tmpib.NBTEmpty() ? new ItemStack(JsonToNBT.getTagFromJson(B64
-							.decode(tmpib.getNbt()))) : tmpib.getStack()).getDisplayName()));
-					list.addAll(tmpib.getLore());
-					if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-						list.add(TextFormatting.BOLD + "_______________");
-						list.add("NBT: " + tmpib.getNbt());
-					}
-					renderTooltip(mouseX + 3, mouseY - 8, list);
-				}
+				render.ifPresent(Render::onRender);
 			}
 			drawCenteredString(super.fontRenderer, I18n.format("guiblocker.page.of", localpage, maxPages), super.width / 2, super.height - 40, 16777215);
 		} catch (Exception ex) {
@@ -161,146 +157,30 @@ public class GuiBlocker extends GuiScreen {
 		}
 	}
 
-	private void test(int itemsInPage, int bEnch1, ItemStack is) {
-		int k;
-		for (k = 1; k < 50; ++k) {
-			if (k == 1) {
-				this.maxPages = 1;
-				if (this.localpage == 1 && bEnch1 >= 0 && bEnch1 < itemsInPage) {
-					GlStateManager.pushMatrix();
-					GlStateManager.translate((float) this.xCoord, (float) this.yCoord, 1.5F);
-					GlStateManager.scale(2.0F, 2.0F, 1.5F);
-					itemRender.renderItemAndEffectIntoGUI(is, 0, 0);
-					GlStateManager.popMatrix();
-				}
-			} else {
-				if (bEnch1 >= itemsInPage * (k - 1) && bEnch1 < itemsInPage * k) {
-					this.maxPages = k;
-				}
-
-				if (this.localpage == k && bEnch1 >= itemsInPage * (k - 1) && bEnch1 < itemsInPage * k) {
-					GlStateManager.pushMatrix();
-					GlStateManager.translate((float) this.xCoord, (float) this.yCoord, 1.5F);
-					GlStateManager.scale(2.0F, 2.0F, 1.5F);
-					itemRender.renderItemAndEffectIntoGUI(is, 0, 0);
-					GlStateManager.popMatrix();
-				}
-			}
-		}
-	}
-
-	public void moveCoord() {
-		if (this.xCoord + 70 >= scaledWidth - 35) {
-			this.xCoord = 35;
-			this.yCoord += 38;
-		} else {
-			this.xCoord += 35;
-		}
-
-	}
-
-	/*@Override
-	protected void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
-		net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(textLines, x, y, width, height, -1, font);
-		if (false && !textLines.isEmpty()) {
-			GlStateManager.disableRescaleNormal();
-			RenderHelper.disableStandardItemLighting();
-			GlStateManager.disableLighting();
-			GlStateManager.disableDepth();
-			int i = 0;
-
-			for (String s : textLines) {
-				int j = this.fontRenderer.getStringWidth(s);
-
-				if (j > i) {
-					i = j;
-				}
-			}
-
-			int l1 = x + 12;
-			int i2 = y - 12;
-			int k = 8;
-
-			if (textLines.size() > 1) {
-				k += 2 + (textLines.size() - 1) * 10;
-			}
-
-			if (l1 + i > this.width) {
-				l1 -= 28 + i;
-			}
-
-			if (i2 + k + 6 > this.height) {
-				i2 = this.height - k - 6;
-			}
-
-			this.zLevel = 400.0F;
-			this.itemRender.zLevel = 299.0F;
-			int l = -267386864;
-			this.drawGradientRect(l1 - 3, i2 - 4, l1 + i + 3, i2 - 3, -267386864, -267386864);
-			this.drawGradientRect(l1 - 3, i2 + k + 3, l1 + i + 3, i2 + k + 4, -267386864, -267386864);
-			this.drawGradientRect(l1 - 3, i2 - 3, l1 + i + 3, i2 + k + 3, -267386864, -267386864);
-			this.drawGradientRect(l1 - 4, i2 - 3, l1 - 3, i2 + k + 3, -267386864, -267386864);
-			this.drawGradientRect(l1 + i + 3, i2 - 3, l1 + i + 4, i2 + k + 3, -267386864, -267386864);
-			int i1 = 1347420415;
-			int j1 = 1344798847;
-			this.drawGradientRect(l1 - 3, i2 - 3 + 1, l1 - 3 + 1, i2 + k + 3 - 1, 1347420415, 1344798847);
-			this.drawGradientRect(l1 + i + 2, i2 - 3 + 1, l1 + i + 3, i2 + k + 3 - 1, 1347420415, 1344798847);
-			this.drawGradientRect(l1 - 3, i2 - 3, l1 + i + 3, i2 - 3 + 1, 1347420415, 1347420415);
-			this.drawGradientRect(l1 - 3, i2 + k + 2, l1 + i + 3, i2 + k + 3, 1344798847, 1344798847);
-
-			for (int k1 = 0; k1 < textLines.size(); ++k1) {
-				String s1 = textLines.get(k1);
-				this.fontRenderer.drawStringWithShadow(s1, (float) l1, (float) i2, -1);
-
-				if (k1 == 0) {
-					i2 += 2;
-				}
-
-				i2 += 10;
-			}
-
-			this.zLevel = 400.0F;
-			this.itemRender.zLevel = 0.0F;
-			GlStateManager.enableLighting();
-			GlStateManager.enableDepth();
-			RenderHelper.enableStandardItemLighting();
-			GlStateManager.enableRescaleNormal();
-		}
-	}*/
-	private void renderTooltip(int xCoord, int yCoord, List list) {
+	private void renderTooltip(int xCoord, int yCoord, List<String> list) {
 		this.drawHoveringTexts(list, xCoord - 5, yCoord, fontRenderer);
 	}
 
-	protected void drawHoveringTexts(List list, int xCoord, int yCoord, FontRenderer font) {
+	protected void drawHoveringTexts(List<String> list, int xCoord, int yCoord, FontRenderer font) {
 		if (!list.isEmpty()) {
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.disableDepth();
 			int k = 0;
-			Iterator iterator = list.iterator();
-
 			int k2;
-			while (iterator.hasNext()) {
-				String j2 = (String) iterator.next();
-				k2 = font.getStringWidth(j2);
-				if (k2 > k) {
-					k = k2;
-				}
+			for (String s : list) {
+				k2 = font.getStringWidth(s);
+				if (k2 > k) k = k2;
 			}
 
 			int var15 = xCoord + 12;
 			k2 = yCoord - 12;
 			int i1 = 8;
-			if (list.size() > 1) {
-				i1 += 2 + (list.size() - 1) * 10;
-			}
+			if (list.size() > 1) i1 += 2 + (list.size() - 1) * 10;
 
-			if (var15 + k > super.width) {
-				var15 -= 28 + k;
-			}
+			if (var15 + k > super.width) var15 -= 28 + k;
 
-			if (k2 + i1 + 6 > super.height) {
-				k2 = super.height - i1 - 6;
-			}
+			if (k2 + i1 + 6 > super.height) k2 = super.height - i1 - 6;
+
 
 			super.zLevel = 300.0F;
 			int j1 = -267386864;
@@ -317,7 +197,7 @@ public class GuiBlocker extends GuiScreen {
 			this.drawGradientRect(var15 - 3, k2 + i1 + 2, var15 + k + 3, k2 + i1 + 3, l1, l1);
 
 			for (int i2 = 0; i2 < list.size(); ++i2) {
-				String s1 = (String) list.get(i2);
+				String s1 = list.get(i2);
 				font.drawStringWithShadow(s1, var15, k2, -1);
 				if (i2 == 0) {
 					k2 += 2;
@@ -332,4 +212,7 @@ public class GuiBlocker extends GuiScreen {
 		}
 	}
 
+	public interface Render {
+		void onRender();
+	}
 }
