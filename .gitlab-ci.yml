@@ -19,9 +19,13 @@ build:
     - apk update && apk add git
     - export GRADLE_USER_HOME=`pwd`/.gradle
     - chmod +x gradlew
+    - $COMMIT_VERSION = git rev-list --count HEAD
   script:
     - ./gradlew buildAll
+    - export version=$(grep -o -P '_version           = (\d+\S+)' gradle.properties | tr -s " " | cut -d " " -f 3)
+    - export build=$(git rev-list --count HEAD)
   artifacts:
+    name: "OpenBlocker-$version.$build"
     expire_in: never
     paths:
       - build/libs/
