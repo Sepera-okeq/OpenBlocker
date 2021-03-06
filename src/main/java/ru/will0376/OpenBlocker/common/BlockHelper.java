@@ -86,24 +86,28 @@ public enum BlockHelper {
 		if (blocked.getStack().getItem() == Items.AIR) return;
 		if (FMLCommonHandler.instance().getSide().isServer()) {
 			Instance.blockedList.add(blocked);
-			sendToAllClient(blocked, ToClientBlocked.Action.AddBlock);
+			sendToPlayersUpdate(blocked);
 		} else {
 			BlockHelperClient.blockedListClient.add(blocked);
 		}
+	}
+
+	public static void sendToPlayersUpdate(Blocked blocked) {
+		sendToAllClient(blocked, ToClientBlocked.Action.UpdateBlock);
 	}
 
 	public static void removeStatus(Blocked blocked, Blocked.Status status) {
 		blocked.getStatus().remove(status);
 
 		if (blocked.getStatus().isEmpty()) removeBlocked(blocked);
-		else sendToAllClient(blocked, ToClientBlocked.Action.ReloadBlock);
+		else sendToAllClient(blocked, ToClientBlocked.Action.UpdateBlock);
 	}
 
 	public static void addStatus(Blocked blocked, Blocked.Status status) {
 		if (blocked.getStack().getItem() == Items.AIR) return;
 
 		blocked.addStatus(status);
-		sendToAllClient(blocked, ToClientBlocked.Action.ReloadBlock);
+		sendToAllClient(blocked, ToClientBlocked.Action.UpdateBlock);
 	}
 
 	public static void removeBlocked(Blocked blocked) {

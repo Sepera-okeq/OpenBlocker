@@ -43,12 +43,13 @@ public class CraftCommand extends CommandAbstract {
 					.reason(parse.hasOption("reason") ? parse.getOptionValue("reason") : Main.config.getDefRes())
 					.build();
 
-			if (blockedByStack.getNbt() != null && !blockedByStack.getNbt().isEmpty() && !blockedByStack.getNbt()
-					.equals("null")) blockedByStack = (Blocked) blockedByStack.clone();
-
 			BlockHelper.addNewBlocked(blockedByStack);
-			if (parse.hasOption("allMeta")) blockedByStack.addNewFlag(FlagData.Flag.AllMeta, true);
 		}
+
+		if (blockedByStack.getNbt() != null && !blockedByStack.getNbt().isEmpty() && !blockedByStack.getNbt()
+				.equals("null")) blockedByStack = (Blocked) blockedByStack.clone();
+
+		if (parse.hasOption("allMeta")) blockedByStack.addNewFlag(FlagData.Flag.AllMeta, true);
 
 		BlockHelper.addStatus(blockedByStack, Blocked.Status.Craft);
 		sender.sendMessage(new TextComponentString("Done!"));

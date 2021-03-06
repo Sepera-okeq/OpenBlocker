@@ -22,7 +22,7 @@ public class ToClientBlocked implements IMessage, IMessageHandler<ToClientBlocke
 	@Override
 	public void toBytes(ByteBuf byteBuf) {
 		byteBuf.writeInt(action.ordinal());
-		if (action == Action.AddBlock || action == Action.RemoveBlock || action == Action.ReloadBlock)
+		if (action == Action.AddBlock || action == Action.RemoveBlock || action == Action.UpdateBlock)
 			ByteBufUtils.writeUTF8String(byteBuf, blocked.toStr());
 	}
 
@@ -51,7 +51,7 @@ public class ToClientBlocked implements IMessage, IMessageHandler<ToClientBlocke
 				BlockHelper.removeBlocked(toClientBlocked.blocked);
 				break;
 
-			case ReloadBlock:
+			case UpdateBlock:
 				BlockHelper.removeBlocked(toClientBlocked.blocked);
 				BlockHelper.addNewBlocked(toClientBlocked.blocked);
 				break;
@@ -63,6 +63,6 @@ public class ToClientBlocked implements IMessage, IMessageHandler<ToClientBlocke
 		AddBlock,
 		RemoveBlock,
 		ClearList,
-		ReloadBlock
+		UpdateBlock
 	}
 }

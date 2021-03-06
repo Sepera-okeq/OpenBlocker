@@ -1,5 +1,6 @@
 package ru.will0376.OpenBlocker.client;
 
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -22,10 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static ru.will0376.OpenBlocker.client.GuiBlocker.Screen.ALL;
+
 public class GuiBlocker extends GuiScreen {
-	private int page = 0, localpage = 1;
+	private int itemsX;
+	private int itemsY;
+	private int itemsInPage;
 	private int maxPages = 1;
-	int itemsX, itemsY, itemsInPage;
+	private int localpage = 1;
+	private Screen screen = ALL;
 	private List<Blocked> blockslist = new ArrayList<>();
 
 	public void initGui() {
@@ -38,22 +44,9 @@ public class GuiBlocker extends GuiScreen {
 		buttonList.add(new GuiButton(3, super.width / 2 - 90, super.height - 45, 18, 20, "<<"));
 		buttonList.add(new GuiButton(4, super.width / 2 + 50 + 20, super.height - 45, 18, 20, ">>"));
 
+		if (screen.getStatus() == null) blockslist = new ArrayList<>(BlockHelper.BlockHelperClient.blockedListClient);
+		else blockslist = BlockHelper.getAllByStatus(screen.getStatus());
 
-		switch (page) {
-			case 0:
-				blockslist = new ArrayList<>(BlockHelper.BlockHelperClient.blockedListClient);
-				break;
-			case 1:
-				blockslist = BlockHelper.getAllByStatus(Blocked.Status.Blocked);
-				break;
-			case 2:
-				blockslist = BlockHelper.getAllByStatus(Blocked.Status.Limit);
-				break;
-			case 3:
-				blockslist = BlockHelper.getAllByStatus(Blocked.Status.Craft);
-				break;
-
-		}
 		itemsX = (this.width - 70) / 38;
 		itemsY = (this.height - 76) / 38;
 		itemsInPage = itemsX * itemsY;
@@ -69,16 +62,12 @@ public class GuiBlocker extends GuiScreen {
 				if (this.localpage != this.maxPages) ++this.localpage;
 				break;
 			case 3:
-				if (this.page != 0) {
-					--this.page;
-					mc.displayGuiScreen(this);
-				}
+				screen = screen.getPrevScreen();
+				mc.displayGuiScreen(this);
 				break;
 			case 4:
-				if (this.page != 3) {
-					++this.page;
-					mc.displayGuiScreen(this);
-				}
+				screen = screen.getNextScreen();
+				mc.displayGuiScreen(this);
 				break;
 		}
 	}
@@ -91,29 +80,18 @@ public class GuiBlocker extends GuiScreen {
 	}
 
 	private void drawBlocks(int mouseX, int mouseY) {
-		switch (page) {
-			case 0:
-				GuiHelper.drawScalledString((int) (width / 2 - ("All".length() * 1.5f)), 13, 1.5f, 1.5f, "All", -1);
-				break;
-			case 1:
-				GuiHelper.drawScalledString((int) (width / 2 - ("Block".length() * 1.5f)), 13, 1.5f, 1.5f, "Block", -1);
-				break;
-			case 2:
-				GuiHelper.drawScalledString((int) (width / 2 - ("Limit".length() * 1.5f)), 13, 1.5f, 1.5f, "Limit", -1);
-				break;
-			case 3:
-				GuiHelper.drawScalledString((int) (width / 2 - ("Craft".length() * 1.5f)), 13, 1.5f, 1.5f, "Craft", -1);
-				break;
+		String screenName = I18n.format(screen.getI18name());
+		GuiHelper.drawScalledString((int) (width / 2 - (fontRenderer.getStringWidth(screenName) / 2 * 1.5f)), 13, 1.5f, 1.5f, screenName, -1);
 
-		}
 		try {
 			RenderHelper.enableGUIStandardItemLighting();
 
-			int startedIndex = (localpage - 1) * itemsInPage;
-			int endIndex = (localpage) * itemsInPage;
 			if (Main.debug)
 				drawString(Minecraft.getMinecraft().fontRenderer, String.format("x: %s, y: %s, all: %s, page: %s", itemsX, itemsY, itemsInPage, localpage), 0, 0, Color.white
 						.getRGB());
+
+			int startedIndex = (localpage - 1) * itemsInPage;
+			int endIndex = (localpage) * itemsInPage;
 
 			Optional<Render> render = Optional.empty();
 			if (!blockslist.isEmpty()) {
@@ -121,7 +99,7 @@ public class GuiBlocker extends GuiScreen {
 
 					int index = blockslist.indexOf(blocked) + 1;
 
-					if (index < startedIndex) continue;
+					if (index <= startedIndex) continue;
 					if (index > endIndex) continue;
 
 					int nowX = (index * 38) - ((index - 1) / itemsX * (itemsX * 38));
@@ -136,7 +114,7 @@ public class GuiBlocker extends GuiScreen {
 					itemRender.renderItemAndEffectIntoGUI(itemStack, 0, 0);
 					GlStateManager.popMatrix();
 
-					if (mouseX >= nowX && mouseX < nowX + 34 && mouseY >= nowY && mouseY < nowY + 34) {
+					if (mouseX >= nowX && mouseX < nowX + 36 && mouseY >= nowY && mouseY < nowY + 36) {
 						render = Optional.of(() -> {
 							List<String> list = new ArrayList<>();
 							list.add(I18n.format("guiblocker.blockname", itemStack.getDisplayName()));
@@ -145,7 +123,7 @@ public class GuiBlocker extends GuiScreen {
 								list.add(TextFormatting.BOLD + "_______________");
 								list.add("NBT: " + blocked.getNbt());
 							}
-							renderTooltip(mouseX + 3, mouseY - 8, list);
+							drawHoveringTexts(list, mouseX + 3, mouseY - 8, fontRenderer);
 						});
 					}
 				}
@@ -209,6 +187,32 @@ public class GuiBlocker extends GuiScreen {
 			super.zLevel = 0.0F;
 			GlStateManager.enableDepth();
 			GlStateManager.enableRescaleNormal();
+		}
+	}
+
+	@Getter
+	public enum Screen {
+		ALL("guiblocker.screen.name.all", null),
+		BLOCK("guiblocker.screen.name.block", Blocked.Status.Blocked),
+		LIMIT("guiblocker.screen.name.limit", Blocked.Status.Limit),
+		CRAFT("guiblocker.screen.name.craft", Blocked.Status.Craft);
+
+		String i18name;
+		Blocked.Status status;
+
+		Screen(String name, Blocked.Status status) {
+			this.i18name = name;
+			this.status = status;
+		}
+
+		public Screen getNextScreen() {
+			if (this.ordinal() == Screen.values().length - 1) return this;
+			else return Screen.values()[this.ordinal() + 1];
+		}
+
+		public Screen getPrevScreen() {
+			if (this.ordinal() == 0) return this;
+			else return Screen.values()[this.ordinal() - 1];
 		}
 	}
 

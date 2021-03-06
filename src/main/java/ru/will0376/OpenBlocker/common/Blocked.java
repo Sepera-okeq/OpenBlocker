@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextComponentTranslation;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.utils.FlagData;
 
@@ -71,10 +72,11 @@ public class Blocked implements Cloneable {
 
 	public ArrayList<String> getLore() {
 		ArrayList<String> ret = new ArrayList<>();
+		ret.add(new TextComponentTranslation("lore.reason", reason).getFormattedText());
 		ret.add("---------------");
-		for (Status fstatus : status)
-			ret.add(fstatus.getLore());
 
+		for (Status statues : status)
+			if (!statues.getLore().isEmpty()) ret.add(statues.getLore());
 
 		for (FlagData datum : getData()) {
 			ret.add(datum.getLore() + (datum instanceof FlagData.LimitData ? " : " + datum.getData() : ""));
