@@ -96,6 +96,13 @@ shadowJar {
     exclude '*.js'
 }
 
+afterEvaluate {
+    reobf {
+        shadowJar {}
+    }
+}
+
+
 processResources {
     inputs.property 'version', project.version
     inputs.property 'mcversion', project.minecraft.version

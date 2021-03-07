@@ -26,3 +26,5 @@ runserver
 gradle\.properties
 classes
 cutter-cache
+/run/
+/out/
