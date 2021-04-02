@@ -35,7 +35,7 @@ public class ReloadCommand extends CommandAbstract {
 	}
 
 	@Override
-	public List<Argument> getArgMap() {
+	public List<Argument> getArgList() {
 		return null;
 	}
 }

@@ -78,7 +78,7 @@ public class BlockHotBarCommand extends CommandAbstract {
 	}
 
 	@Override
-	public List<Argument> getArgMap() {
+	public List<Argument> getArgList() {
 		return Arrays.asList(Argument.builder()
 				.name("allMeta")
 				.desc("блокирует все метадаты")
@@ -86,9 +86,7 @@ public class BlockHotBarCommand extends CommandAbstract {
 				.name("reason")
 				.desc("причина блокировки")
 				.hasArg(true)
-				.build(), Argument.builder()
-				.name("temp")
-				.desc("помечает предмет временно заблокированным")
+				.build(), Argument.builder().name("temp").desc("помечает предмет временно заблокированным")
 				.build(), Argument.builder()
 				.name("disableBox")
 				.desc("отключает выделение блока в мире")

@@ -75,8 +75,11 @@ public class CraftCommand extends CommandAbstract {
 	}
 
 	@Override
-	public List<Argument> getArgMap() {
-		return Arrays.asList(Argument.builder().name("allMeta").desc("блокирует все метадаты").build(), Argument.builder()
+	public List<Argument> getArgList() {
+		return Arrays.asList(Argument.builder()
+				.name("allMeta")
+				.desc("блокирует все метадаты")
+				.build(), Argument.builder()
 				.name("reason")
 				.desc("причина блокировки")
 				.hasArg(true)

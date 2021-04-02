@@ -31,7 +31,7 @@ public abstract class CommandAbstract {
 
 	public abstract void remove(MinecraftServer server, ICommandSender sender, String[] args) throws Exception;
 
-	public abstract List<Argument> getArgMap();
+	public abstract List<Argument> getArgList();
 
 	public CommandLine getLine(String[] args) throws Exception {
 		return new DefaultParser().parse(getArguments(), args);
@@ -54,7 +54,7 @@ public abstract class CommandAbstract {
 	}
 
 	public String getUsage() {
-		List<Argument> argMap = getArgMap();
+		List<Argument> argMap = getArgList();
 		if (argMap != null)
 			return argMap.stream().map(e -> e.getName() + " - " + e.getDesc()).collect(Collectors.joining("\n"));
 		return "";
@@ -64,7 +64,7 @@ public abstract class CommandAbstract {
 		if (size == 2) {
 			return Arrays.asList("a", "r", "add", "remove");
 		} else if (size >= 3) {
-			List<Argument> argMap = getArgMap();
+			List<Argument> argMap = getArgList();
 			if (argMap != null) return argMap.stream().map(e -> "-" + e.getName()).collect(Collectors.toList());
 		}
 		return Collections.singletonList("");
@@ -72,7 +72,7 @@ public abstract class CommandAbstract {
 
 	public Options getArguments() {
 		Options options = new Options();
-		for (Argument argument : getArgMap()) {
+		for (Argument argument : getArgList()) {
 			Option build = Option.builder(argument.getName().replace("-", ""))
 					.desc(argument.getDesc())
 					.required(argument.isRequired())

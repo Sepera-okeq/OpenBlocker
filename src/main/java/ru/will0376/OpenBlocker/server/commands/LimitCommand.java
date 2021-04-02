@@ -78,7 +78,7 @@ public class LimitCommand extends CommandAbstract {
 	}
 
 	@Override
-	public List<Argument> getArgMap() {
+	public List<Argument> getArgList() {
 		return Arrays.asList(Argument.builder().name("useTile").desc("Тест").build(), Argument.builder()
 				.name("l")
 				.desc("лимит")

@@ -30,7 +30,7 @@ public class TestCommand extends CommandAbstract {
 	}
 
 	@Override
-	public List<Argument> getArgMap() {
+	public List<Argument> getArgList() {
 		return null;
 	}
 }
