@@ -16,7 +16,7 @@ import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.client.utils.GuiHelper;
 import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
-import ru.will0376.OpenBlocker.common.utils.B64;
+import ru.will0376.OpenBlocker.common.utils.Base64;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -105,8 +105,8 @@ public class GuiBlocker extends GuiScreen {
 					int nowX = (index * 38) - ((index - 1) / itemsX * (itemsX * 38));
 					int nowY = 38 + ((index - 1 - startedIndex) / itemsX) * 38;
 
-					ItemStack itemStack = !blocked.NBTEmpty() ? new ItemStack(JsonToNBT.getTagFromJson(B64.decode(blocked
-							.getNbt()))) : blocked.getStack();
+					ItemStack itemStack = !blocked.NBTEmpty() ?
+							new ItemStack(JsonToNBT.getTagFromJson(Base64.decode(blocked.getNbt()))) : blocked.getStack();
 
 					GlStateManager.pushMatrix();
 					GlStateManager.translate(nowX, nowY, 1.5F);

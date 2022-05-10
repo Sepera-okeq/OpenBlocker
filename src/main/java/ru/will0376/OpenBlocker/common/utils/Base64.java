@@ -1,15 +1,13 @@
 package ru.will0376.OpenBlocker.common.utils;
 
-import java.util.Base64;
-
-public class B64 {
+public class Base64 {
 	public static String encode(String text) {
-		return Base64.getEncoder().encodeToString(text.getBytes());
+		return java.util.Base64.getEncoder().encodeToString(text.getBytes());
 	}
 
 	public static String decode(String b64) {
 		try {
-			return new String(Base64.getDecoder().decode(b64));
+			return new String(java.util.Base64.getDecoder().decode(b64));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

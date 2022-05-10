@@ -4,26 +4,16 @@ import com.google.gson.*;
 
 import java.lang.reflect.Type;
 
-public class FlagDataAdapter implements JsonDeserializer<FlagData>, JsonSerializer<FlagData> {
+public class FlagDataAdapter implements JsonDeserializer<FlagData<?>>, JsonSerializer<FlagData<?>> {
+	private static final Gson gson = new Gson();
 
 	@Override
-	public FlagData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-		JsonObject asJsonObject = json.getAsJsonObject();
-		JsonElement flag = asJsonObject.get("flag");
-		JsonElement data = asJsonObject.get("data");
-		try {
-			return FlagData.Flag.createNewByFlag(FlagData.Flag.valueOf(flag.getAsString()), data.getAsString());
-		} catch (IllegalAccessException | InstantiationException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public FlagData<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		return gson.fromJson(json, FlagData.class);
 	}
 
 	@Override
 	public JsonElement serialize(FlagData src, Type typeOfSrc, JsonSerializationContext context) {
-		JsonObject jo = new JsonObject();
-		jo.addProperty("flag", src.getFlag().name());
-		jo.addProperty("data", src.getData().toString());
-		return jo;
+		return gson.toJsonTree(src, FlagData.class);
 	}
 }

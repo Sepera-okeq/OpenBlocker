@@ -13,8 +13,11 @@ public class ItemStackAdapter implements JsonSerializer<ItemStack>, JsonDeserial
 	@Override
 	public ItemStack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		JsonObject asJsonObject = json.getAsJsonObject();
-		Item item = Item.getByNameOrId(asJsonObject.get("itemName").getAsString());
-		if (item == Items.AIR) log.error("Item == air");
+		String itemName = asJsonObject.get("itemName").getAsString();
+		Item item = Item.getByNameOrId(itemName);
+		if (item == Items.AIR) {
+			log.error("Item({}) == air", itemName);
+		}
 		return new ItemStack(item, 1, asJsonObject.get("metaData").getAsInt());
 	}
 

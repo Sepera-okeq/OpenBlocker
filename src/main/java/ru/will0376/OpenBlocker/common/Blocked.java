@@ -24,7 +24,7 @@ public class Blocked implements Cloneable {
 	List<Status> status = new ArrayList<>();
 
 	@Builder.Default
-	List<FlagData> data = new ArrayList<>();
+	List<FlagData<?>> data = new ArrayList<>();
 
 	public static Blocked fromJson(String in) {
 		return Main.gson.fromJson(in, Blocked.class);
@@ -39,8 +39,8 @@ public class Blocked implements Cloneable {
 		return this;
 	}
 
-	public Blocked addNewFlag(FlagData.Flag flag, Object data) throws InstantiationException, IllegalAccessException {
-		this.data.add(FlagData.Flag.createNewByFlag(flag, data));
+	public Blocked addNewFlag(FlagData.Flags flags, Object data) {
+		this.data.add(FlagData.Flags.createNewByFlag(flags, data));
 		return this;
 	}
 
@@ -48,26 +48,26 @@ public class Blocked implements Cloneable {
 		return Main.gson.toJson(this);
 	}
 
-	public boolean containsFlag(FlagData.Flag flag) {
-		for (FlagData datum : data) {
-			if (flag.getClazz().getSimpleName().equals(datum.getClass().getSimpleName())) return true;
+	public boolean containsFlag(FlagData.Flags flags) {
+		for (FlagData<?> datum : data) {
+			if (flags.getClazz().getSimpleName().equals(datum.getClass().getSimpleName()))
+				return true;
 		}
 		return false;
 	}
 
-	public Object getDataFromFlag(FlagData.Flag flag) {
-		for (FlagData datum : data) {
-			if (flag.getClazz().isAssignableFrom(datum.getClass())) return datum.getData();
+	public Object getDataFromFlag(FlagData.Flags flags) {
+		for (FlagData<?> datum : data) {
+			if (flags.getClazz().isAssignableFrom(datum.getClass()))
+				return datum.getData();
 		}
-		if (flag == FlagData.Flag.AllMeta || flag == FlagData.Flag.DisableBox) return false;
+		if (flags == FlagData.Flags.AllMeta || flags == FlagData.Flags.DisableBox)
+			return false;
 		return null;
 	}
 
 	public boolean getAllMeta() {
-		for (FlagData datum : data) {
-			if (datum instanceof FlagData.AllMetaData) return datum.getData();
-		}
-		return false;
+		return data.stream().anyMatch(e -> e.getFlag() == FlagData.Flags.AllMeta);
 	}
 
 	public ArrayList<String> getLore() {
@@ -76,10 +76,10 @@ public class Blocked implements Cloneable {
 		ret.add("---------------");
 
 		for (Status statues : status)
-			if (!statues.getLore().isEmpty()) ret.add(statues.getLore());
-
-		for (FlagData datum : getData()) {
-			ret.add(datum.getLore() + (datum instanceof FlagData.LimitData ? " : " + datum.getData() : ""));
+			if (!statues.getLore().isEmpty())
+				ret.add(statues.getLore());
+		for (FlagData<?> datum : getData()) {
+			ret.add(datum.getFlag().getLore() + (datum.getFlag() == FlagData.Flags.Limit ? " : " + datum.getData() : ""));
 		}
 
 		return ret;
@@ -93,7 +93,7 @@ public class Blocked implements Cloneable {
 	public enum Status {
 		Blocked("Заблокированно"),
 		Craft("Отключен крафт"),
-		Limit(),
+		Limit,
 		Enchant;
 
 		String lore;

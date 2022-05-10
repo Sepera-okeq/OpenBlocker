@@ -13,7 +13,7 @@ import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
-import ru.will0376.OpenBlocker.common.utils.B64;
+import ru.will0376.OpenBlocker.common.utils.Base64;
 import ru.will0376.OpenBlocker.common.utils.ChatForm;
 import ru.will0376.OpenBlocker.common.utils.FlagData;
 
@@ -52,25 +52,28 @@ public class BlockCommand extends CommandAbstract {
 
 		if (blockedByStack == null) blockedByStack = Blocked.builder()
 				.stack(itemStack)
-				.reason(parse.getOptionValue("reason", Main.config.getDefRes()))
-				.build()
-				.addStatus(Blocked.Status.Blocked);
+				.reason(parse.getOptionValue("reason", Main.config.getDefRes())).build().addStatus(Blocked.Status.Blocked);
 
-		if (blockedByStack.getNbt() != null && !blockedByStack.getNbt().isEmpty() && !blockedByStack.getNbt()
-				.equals("null")) blockedByStack = (Blocked) blockedByStack.clone();
+		if (blockedByStack.getNbt() != null && !blockedByStack.getNbt().isEmpty() && !blockedByStack.getNbt().equals("null"))
+			blockedByStack = (Blocked) blockedByStack.clone();
 
 
 		if (!blockedByStack.getStatus().contains(Blocked.Status.Blocked))
 			blockedByStack.getStatus().add(Blocked.Status.Blocked);
 
-		if (parse.hasOption("temp")) blockedByStack.addNewFlag(FlagData.Flag.Temp, true);
-		if (parse.hasOption("allMeta")) blockedByStack.addNewFlag(FlagData.Flag.AllMeta, true);
-		if (parse.hasOption("disableBox")) blockedByStack.addNewFlag(FlagData.Flag.DisableBox, true);
-		if (parse.hasOption("tile")) blockedByStack.addNewFlag(FlagData.Flag.Tile, true);
-		if (parse.hasOption("interaction")) blockedByStack.addNewFlag(FlagData.Flag.Interaction, true);
+		if (parse.hasOption("temp"))
+			blockedByStack.addNewFlag(FlagData.Flags.Temp, true);
+		if (parse.hasOption("allMeta"))
+			blockedByStack.addNewFlag(FlagData.Flags.AllMeta, true);
+		if (parse.hasOption("disableBox"))
+			blockedByStack.addNewFlag(FlagData.Flags.DisableBox, true);
+		if (parse.hasOption("tile"))
+			blockedByStack.addNewFlag(FlagData.Flags.Tile, true);
+		if (parse.hasOption("interaction"))
+			blockedByStack.addNewFlag(FlagData.Flags.Interaction, true);
 		if (parse.hasOption("useNbt")) {
 			NBTTagCompound nbtTagCompound = itemStack.writeToNBT(new NBTTagCompound());
-			blockedByStack.setNbt(B64.encode(nbtTagCompound.toString()));
+			blockedByStack.setNbt(Base64.encode(nbtTagCompound.toString()));
 		}
 
 		BlockHelper.addNewBlocked(blockedByStack);

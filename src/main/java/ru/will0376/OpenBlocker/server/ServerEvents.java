@@ -23,7 +23,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
 import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
@@ -37,7 +36,7 @@ import ru.will0376.OpenBlocker.server.tileentity.TileEntityChecker;
 import java.util.HashMap;
 
 @GradleSideOnly(GradleSide.SERVER)
-@Mod.EventBusSubscriber(Side.SERVER)
+@Mod.EventBusSubscriber(/*Side.SERVER*/)
 public class ServerEvents {
 	private static final HashMap<EntityPlayer, Long> cooldown = new HashMap<>();
 	private static final HashMap<EntityPlayer, Long> cooldownDebug = new HashMap<>();
@@ -63,26 +62,24 @@ public class ServerEvents {
 				.getRegistryName()
 				.toString(), e.getWorld(), e.getPos());
 		e.setCanceled(canceled);
-		if (!e.isCanceled()) e.setCanceled(checkBlock(player, is, "serverevent.breakBlock", "BlockEvent.BreakEvent"));
+		if (!e.isCanceled())
+			e.setCanceled(checkBlock(player, is, "serverevent.breakBlock", "BlockEvent.BreakEvent"));
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void checkPlaceBlock(BlockEvent.PlaceEvent e) {
 		EntityPlayer player = e.getPlayer();
 		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
-		e.setCanceled(TileEntityChecker.checkBlock(player, is.getItem()
-				.getRegistryName()
-				.toString(), e.getWorld(), e.getPos()));
-		if (!e.isCanceled()) e.setCanceled(checkBlock(player, is, "serverevent.placeBlock", "BlockEvent.PlaceEvent"));
+		e.setCanceled(TileEntityChecker.checkBlock(player, is.getItem().getRegistryName().toString(), e.getWorld(), e.getPos()));
+		if (!e.isCanceled())
+			e.setCanceled(checkBlock(player, is, "serverevent.placeBlock", "BlockEvent.PlaceEvent"));
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void checkPlaceBlock(BlockEvent.MultiPlaceEvent e) {
 		EntityPlayer player = e.getPlayer();
 		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
-		e.setCanceled(TileEntityChecker.checkBlock(player, is.getItem()
-				.getRegistryName()
-				.toString(), e.getWorld(), e.getPos()));
+		e.setCanceled(TileEntityChecker.checkBlock(player, is.getItem().getRegistryName().toString(), e.getWorld(), e.getPos()));
 		if (!e.isCanceled())
 			e.setCanceled(checkBlock(player, is, "serverevent.placeBlock", "BlockEvent.MultiPlaceEvent"));
 	}
@@ -91,9 +88,7 @@ public class ServerEvents {
 	public static void playerCheckInteract(PlayerInteractEvent.RightClickBlock e) {
 		EntityPlayer player = e.getEntityPlayer();
 		ItemStack is = getPickBlock(e.getWorld(), e.getPos());
-		e.setCanceled(TileEntityChecker.checkBlock(player, is.getItem()
-				.getRegistryName()
-				.toString(), e.getWorld(), e.getPos()));
+		e.setCanceled(TileEntityChecker.checkBlock(player, is.getItem().getRegistryName().toString(), e.getWorld(), e.getPos()));
 		if (!e.isCanceled())
 			e.setCanceled(checkBlock(player, is, "serverevent.interaction", "PlayerInteractEvent.RightClickBlock"));
 	}
@@ -101,16 +96,17 @@ public class ServerEvents {
 	public static boolean checkBlock(EntityPlayer player, ItemStack is, String translation, String debug) {
 		if (translation.equals("serverevent.interaction")) {
 			Blocked blockedByStack = BlockHelper.findBlockedByStack(is);
-			if (blockedByStack != null && blockedByStack.containsFlag(FlagData.Flag.Interaction) && (Boolean) blockedByStack
-					.getDataFromFlag(FlagData.Flag.Interaction)) return false;
+			if (blockedByStack != null && blockedByStack.containsFlag(FlagData.Flags.Interaction) && (Boolean) blockedByStack.getDataFromFlag(FlagData.Flags.Interaction))
+				return false;
 		}
 
-		if (check(player, is, Main.config.isDeleteBlocked() && (!debug.contains("RightClickBlock") && !debug.contains("BreakEvent")), ChatForm.prefix + new TextComponentTranslation(translation, is
-				.getItem()
+		if (check(player, is, Main.config.isDeleteBlocked() && (!debug.contains("RightClickBlock") && !debug.contains(
+				"BreakEvent")), ChatForm.prefix + new TextComponentTranslation(translation, is.getItem()
 				.getRegistryName()
 				.toString(), is.getMetadata()).getFormattedText())) {
 
-			if (Main.debug) sendToPlayerDebugMessage(player, "[DEBUG_" + debug + "] Canceled event.");
+			if (Main.debug)
+				sendToPlayerDebugMessage(player, "[DEBUG_" + debug + "] Canceled event.");
 			return true;
 		}
 		return false;
@@ -119,7 +115,8 @@ public class ServerEvents {
 	@SuppressWarnings("deprecation")
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void checkPickupBlocker(PlayerEvent.ItemPickupEvent e) {
-		if (!Main.config.isEnablePickupHandler()) return;
+		if (!Main.config.isEnablePickupHandler())
+			return;
 
 		EntityPlayer player = e.player;
 		ItemStack is = e.pickedUp.getItem();
@@ -137,8 +134,8 @@ public class ServerEvents {
 			EntityPlayer player = e.player;
 			for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 				ItemStack is = player.inventory.getStackInSlot(i);
-				check(player, is, Main.config.isDeleteBlocked(), ChatForm.prefix + new TextComponentTranslation("serverevent.tick", is
-						.getItem()
+				check(player, is, Main.config.isDeleteBlocked(), ChatForm.prefix + new TextComponentTranslation("serverevent" +
+						".tick", is.getItem()
 						.getRegistryName()
 						.toString(), is.getMetadata()).getFormattedText());
 				checkEnchant(player, is, i);
@@ -163,8 +160,8 @@ public class ServerEvents {
 					int lvl = tmp.getShort("lvl");
 					if (BlockHelper.findBlockedByEnch(id, lvl) != null && !checkPlayer(player)) {
 						player.inventory.setInventorySlotContents(invStackSlot, removeEnchID(id, is));
-						sendToPlayerMessage(player, ChatForm.prefix + new TextComponentTranslation("serverevent.blockenchant", Enchantment
-								.getEnchantmentByID(id)
+						sendToPlayerMessage(player, ChatForm.prefix + new TextComponentTranslation("serverevent.blockenchant",
+								Enchantment.getEnchantmentByID(id)
 								.getTranslatedName(lvl)).getFormattedText());
 					}
 				}
@@ -178,9 +175,9 @@ public class ServerEvents {
 		if (blockedByStack != null && blockedByStack.getStatus()
 				.contains(Blocked.Status.Blocked) && !checkPlayer(player) && checkNBT(player, is)) {
 			if (delete) {
-//				text += " " + new TextComponentTranslation("serverevent.interaction.remove", ChatForm.prefix).getFormattedText();
 				for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-					if (player.inventory.getStackInSlot(i) == is) player.inventory.removeStackFromSlot(i);
+					if (player.inventory.getStackInSlot(i) == is)
+						player.inventory.removeStackFromSlot(i);
 				}
 			}
 			sendToPlayerMessage(player, text);
@@ -193,20 +190,21 @@ public class ServerEvents {
 	public static void placeLimitBlock(BlockEvent.PlaceEvent event) {
 		if (Main.debug || !event.getWorld().isRemote) {
 			Block block = event.getWorld().getBlockState(event.getPos()).getBlock();
-			Blocked blockedByStack = BlockHelper.findBlockedByStack(new ItemStack(block, 1, block.getMetaFromState(event
-					.getWorld()
+			Blocked blockedByStack = BlockHelper.findBlockedByStack(new ItemStack(block, 1,
+					block.getMetaFromState(event.getWorld()
 					.getBlockState(event.getPos()))));
 			if (blockedByStack != null && blockedByStack.containStatus(Blocked.Status.Limit)) {
-				int limit = (int) blockedByStack.getDataFromFlag(FlagData.Flag.Limit);
+				int limit = (int) blockedByStack.getDataFromFlag(FlagData.Flags.Limit);
 				if (getBlocksInChunk(event) > limit) {
-					sendToPlayerMessage(event.getPlayer(), ChatForm.prefix + new TextComponentTranslation("serverevent.limitevent.limitover", limit)
-							.getFormattedText());
+					sendToPlayerMessage(event.getPlayer(), ChatForm.prefix + new TextComponentTranslation("serverevent" +
+							".limitevent.limitover", limit).getFormattedText());
 					if (Main.debug)
 						sendToPlayerDebugMessage(event.getPlayer(), "[DEBUG_limit] pickup check done. Canceled event.");
 					event.setCanceled(true);
 				} else {
 					event.getPlayer()
-							.sendStatusMessage(new TextComponentTranslation("serverevent.limitevent.action", getBlocksInChunk(event), limit), true);
+							.sendStatusMessage(new TextComponentTranslation("serverevent.limitevent.action",
+									getBlocksInChunk(event), limit), true);
 				}
 
 			}
@@ -215,16 +213,19 @@ public class ServerEvents {
 
 	@GradleSideOnly(GradleSide.SERVER)
 	private static boolean checkNBT(EntityPlayer player, ItemStack is) {
-		if (!is.hasTagCompound()) return true;
+		if (!is.hasTagCompound())
+			return true;
 		return BlockHelper.checkNBT(is.copy());
 	}
 
 	/**
 	 * @param player - player
+	 *
 	 * @return false, if blocked.
 	 */
 	private static boolean checkPlayer(EntityPlayer player) {
-		if (Main.debug) return false;
+		if (Main.debug)
+			return false;
 		return player.canUseCommand(4, "openblocker.bypasscheck");
 	}
 
@@ -309,7 +310,8 @@ public class ServerEvents {
 			for (int z = 0; z <= 15; z++)
 				for (int y = 0; y <= 255; y++) {
 					BlockPos bp = new BlockPos(ch.getPos().getXStart() + x, y, ch.getPos().getZStart() + z);
-					if (event.getWorld().getBlockState(bp).equals(event.getPlacedBlock())) count = count + 1;
+					if (event.getWorld().getBlockState(bp).equals(event.getPlacedBlock()))
+						count = count + 1;
 				}
 		return count;
 	}

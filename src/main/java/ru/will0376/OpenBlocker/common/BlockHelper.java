@@ -11,7 +11,7 @@ import ru.justagod.cutter.GradleSide;
 import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.net.ToClientBlocked;
-import ru.will0376.OpenBlocker.common.utils.B64;
+import ru.will0376.OpenBlocker.common.utils.Base64;
 import ru.will0376.OpenBlocker.server.database.FileSystem;
 import ru.will0376.OpenBlocker.server.database.Mysql;
 
@@ -122,7 +122,7 @@ public enum BlockHelper {
 	public static boolean checkNBT(ItemStack is) {
 		is.setCount(1);
 		NBTTagCompound nbtTagCompound = is.writeToNBT(new NBTTagCompound());
-		String encode = B64.encode(nbtTagCompound.toString());
+		String encode = Base64.encode(nbtTagCompound.toString());
 		for (Blocked blocked : (FMLCommonHandler.instance()
 				.getSide()
 				.isServer() ? Instance.blockedList : BlockHelperClient.blockedListClient)) {

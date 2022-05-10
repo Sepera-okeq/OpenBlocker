@@ -79,7 +79,7 @@ public abstract class AbstractStorage {
 
 					if (!data.isEmpty()) for (String s1 : data.split("\\|")) {
 						String[] split1 = s1.split(":");
-						build.getData().add(FlagData.Flag.createNewByFlag(FlagData.Flag.valueOf(split1[0]), split1[1]));
+						build.getData().add(FlagData.Flags.createNewByFlag(FlagData.Flags.valueOf(split1[0]), split1[1]));
 					}
 
 					if (nbt.contains("|")) {
@@ -131,19 +131,20 @@ public abstract class AbstractStorage {
 			ItemStack stack = blocked.getStack();
 			StringBuilder builder = new StringBuilder();
 
-			List<FlagData> data = blocked.getData();
+			List<FlagData<?>> data = blocked.getData();
 			for (int i = 0; i < data.size(); i++) {
-				FlagData datum = data.get(i);
-				builder.append(datum.getFlag()).append(":" + datum.getData());
+				FlagData<?> datum = data.get(i);
+				builder.append(datum.getFlag()).append(":").append(datum.getData());
 
-				if (i != data.size() - 1) builder.append("|");
+				if (i != data.size() - 1)
+					builder.append("|");
 			}
 			Statement stmt = connect.createStatement();
 
 			String collect = blocked.getStatus().stream().map(e -> e.name() + "|").collect(Collectors.joining());
 			String s = stack.getItem().getRegistryName() + ":" + stack.getMetadata();
-			String format = String.format(getSQLReplacedTable(), Config.get().getDbTable(), s, blocked.getNbt(), blocked
-					.getReason(), collect, builder.toString());
+			String format = String.format(getSQLReplacedTable(), Config.get()
+					.getDbTable(), s, blocked.getNbt(), blocked.getReason(), collect, builder);
 
 			System.out.println(format);
 

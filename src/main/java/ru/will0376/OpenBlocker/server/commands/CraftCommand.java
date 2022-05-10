@@ -49,7 +49,8 @@ public class CraftCommand extends CommandAbstract {
 		if (blockedByStack.getNbt() != null && !blockedByStack.getNbt().isEmpty() && !blockedByStack.getNbt()
 				.equals("null")) blockedByStack = (Blocked) blockedByStack.clone();
 
-		if (parse.hasOption("allMeta")) blockedByStack.addNewFlag(FlagData.Flag.AllMeta, true);
+		if (parse.hasOption("allMeta"))
+			blockedByStack.addNewFlag(FlagData.Flags.AllMeta, true);
 
 		BlockHelper.addStatus(blockedByStack, Blocked.Status.Craft);
 		sender.sendMessage(new TextComponentString("Done!"));

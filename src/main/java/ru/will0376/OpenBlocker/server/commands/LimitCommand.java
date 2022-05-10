@@ -52,7 +52,8 @@ public class LimitCommand extends CommandAbstract {
 			BlockHelper.addNewBlocked(blockedByStack);
 		}
 
-		if (!blockedByStack.containsFlag(FlagData.Flag.Limit)) blockedByStack.addNewFlag(FlagData.Flag.Limit, limit);
+		if (!blockedByStack.containsFlag(FlagData.Flags.Limit))
+			blockedByStack.addNewFlag(FlagData.Flags.Limit, limit);
 
 		if (!blockedByStack.getStatus().contains(Blocked.Status.Limit))
 			BlockHelper.addStatus(blockedByStack, Blocked.Status.Limit);

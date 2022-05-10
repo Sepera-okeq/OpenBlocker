@@ -49,8 +49,8 @@ public class ClientEvents {
 					.getBlockState(e.getTarget().getBlockPos())
 					.getBlock() != Blocks.AIR) {
 				ItemStack is = getPickBlock(e.getPlayer().getEntityWorld(), e.getTarget().getBlockPos());
-				if (check(is, false) && !(Boolean) BlockHelper.findBlockedByStack(is)
-						.getDataFromFlag(FlagData.Flag.DisableBox)) render(e);
+				if (check(is, false) && !(Boolean) BlockHelper.findBlockedByStack(is).getDataFromFlag(FlagData.Flags.DisableBox))
+					render(e);
 			}
 		} catch (Exception ignore) {
 		}
@@ -78,8 +78,7 @@ public class ClientEvents {
 				return true;
 			} else if (checkNonBlocks && stack.isItemEqual(is) && l.NBTEmpty()) {
 				return true;
-			} else if ((Boolean) l.getDataFromFlag(FlagData.Flag.AllMeta) && l.containStatus(Blocked.Status.Blocked) && stack
-					.getItem()
+			} else if ((Boolean) l.getDataFromFlag(FlagData.Flags.AllMeta) && l.containStatus(Blocked.Status.Blocked) && stack.getItem()
 					.equals(is.getItem())) {
 				return true;
 			}
