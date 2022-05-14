@@ -10,6 +10,7 @@ import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
 import ru.will0376.OpenBlocker.common.Config;
+import ru.will0376.OpenBlocker.common.utils.Flag;
 import ru.will0376.OpenBlocker.common.utils.FlagData;
 
 import java.sql.Connection;
@@ -60,7 +61,7 @@ public abstract class AbstractStorage {
 					String nbt = rs.getString("nbt");
 					String reason = rs.getString("reason");
 					String status = rs.getString("status");
-					String data = rs.getString("data");
+					String data = rs.getString("flags");
 
 					String[] split = itemName.split(":");
 					Item byNameOrId = Item.getByNameOrId(split[1]);
@@ -79,23 +80,27 @@ public abstract class AbstractStorage {
 
 					if (!data.isEmpty()) for (String s1 : data.split("\\|")) {
 						String[] split1 = s1.split(":");
-						build.getData().add(FlagData.Flags.createNewByFlag(FlagData.Flags.valueOf(split1[0]), split1[1]));
+						build.getFlags().add(Flag.Flags.createNewByFlag(Flag.Flags.valueOf(split1[0]), split1[1]));
 					}
 
 					if (nbt.contains("|")) {
 						String[] strings = nbt.split("\\|");
 						for (String s1 : strings) {
-							if (s1.isEmpty() || s1.contains("null")) break;
+							if (s1.isEmpty() || s1.contains("null"))
+								break;
 
 							Blocked clone = (Blocked) build.clone();
-							clone.setNbt(s1);
+							clone.addData(FlagData.Const.NBTData, s1);
 							BlockHelper.Instance.blockedList.add(clone);
 
-							if (Main.debug) getDBLogger().info("Loaded item {} -> {}", itemName, s1.substring(s1.length() - 5));
-
+							if (Main.debug)
+								getDBLogger().info("Loaded item {} -> {}", itemName, s1.substring(s1.length() - 5));
 						}
 						continue;
-					} else build.setNbt(nbt.contains("null") ? "" : nbt);
+					} else {
+						if (!"null".equals(nbt))
+							build.addData(FlagData.Const.NBTData, nbt);
+					}
 
 					BlockHelper.Instance.blockedList.add(build);
 					if (Main.debug) getDBLogger().info("Loaded item {}", itemName);
@@ -131,9 +136,9 @@ public abstract class AbstractStorage {
 			ItemStack stack = blocked.getStack();
 			StringBuilder builder = new StringBuilder();
 
-			List<FlagData<?>> data = blocked.getData();
+			List<Flag<?>> data = blocked.getFlags();
 			for (int i = 0; i < data.size(); i++) {
-				FlagData<?> datum = data.get(i);
+				Flag<?> datum = data.get(i);
 				builder.append(datum.getFlag()).append(":").append(datum.getData());
 
 				if (i != data.size() - 1)
@@ -144,7 +149,7 @@ public abstract class AbstractStorage {
 			String collect = blocked.getStatus().stream().map(e -> e.name() + "|").collect(Collectors.joining());
 			String s = stack.getItem().getRegistryName() + ":" + stack.getMetadata();
 			String format = String.format(getSQLReplacedTable(), Config.get()
-					.getDbTable(), s, blocked.getNbt(), blocked.getReason(), collect, builder);
+					.getDbTable(), s, blocked.getNBT(), blocked.getReason(), collect, builder);
 
 			System.out.println(format);
 

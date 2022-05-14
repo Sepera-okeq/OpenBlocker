@@ -30,7 +30,7 @@ import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
 import ru.will0376.OpenBlocker.common.net.ToClientBlocked;
 import ru.will0376.OpenBlocker.common.utils.ChatForm;
-import ru.will0376.OpenBlocker.common.utils.FlagData;
+import ru.will0376.OpenBlocker.common.utils.Flag;
 import ru.will0376.OpenBlocker.server.tileentity.TileEntityChecker;
 
 import java.util.HashMap;
@@ -96,7 +96,8 @@ public class ServerEvents {
 	public static boolean checkBlock(EntityPlayer player, ItemStack is, String translation, String debug) {
 		if (translation.equals("serverevent.interaction")) {
 			Blocked blockedByStack = BlockHelper.findBlockedByStack(is);
-			if (blockedByStack != null && blockedByStack.containsFlag(FlagData.Flags.Interaction) && (Boolean) blockedByStack.getDataFromFlag(FlagData.Flags.Interaction))
+			if (blockedByStack != null && blockedByStack.containsFlag(Flag.Flags.Interaction) && blockedByStack.getFlagData(Flag.Flags.Interaction)
+					.getAsBoolean())
 				return false;
 		}
 
@@ -194,7 +195,7 @@ public class ServerEvents {
 					block.getMetaFromState(event.getWorld()
 					.getBlockState(event.getPos()))));
 			if (blockedByStack != null && blockedByStack.containStatus(Blocked.Status.Limit)) {
-				int limit = (int) blockedByStack.getDataFromFlag(FlagData.Flags.Limit);
+				int limit = blockedByStack.getFlagData(Flag.Flags.Limit).getAsInteger();
 				if (getBlocksInChunk(event) > limit) {
 					sendToPlayerMessage(event.getPlayer(), ChatForm.prefix + new TextComponentTranslation("serverevent" +
 							".limitevent.limitover", limit).getFormattedText());

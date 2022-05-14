@@ -15,6 +15,7 @@ import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
 import ru.will0376.OpenBlocker.common.utils.Base64;
 import ru.will0376.OpenBlocker.common.utils.ChatForm;
+import ru.will0376.OpenBlocker.common.utils.Flag;
 import ru.will0376.OpenBlocker.common.utils.FlagData;
 
 import java.util.Arrays;
@@ -54,7 +55,7 @@ public class BlockCommand extends CommandAbstract {
 				.stack(itemStack)
 				.reason(parse.getOptionValue("reason", Main.config.getDefRes())).build().addStatus(Blocked.Status.Blocked);
 
-		if (blockedByStack.getNbt() != null && !blockedByStack.getNbt().isEmpty() && !blockedByStack.getNbt().equals("null"))
+		if (blockedByStack.getNBT() != null && !blockedByStack.getNBT().isEmpty() && !blockedByStack.getNBT().equals("null"))
 			blockedByStack = (Blocked) blockedByStack.clone();
 
 
@@ -62,18 +63,18 @@ public class BlockCommand extends CommandAbstract {
 			blockedByStack.getStatus().add(Blocked.Status.Blocked);
 
 		if (parse.hasOption("temp"))
-			blockedByStack.addNewFlag(FlagData.Flags.Temp, true);
+			blockedByStack.addNewFlag(Flag.Flags.Temp, true);
 		if (parse.hasOption("allMeta"))
-			blockedByStack.addNewFlag(FlagData.Flags.AllMeta, true);
+			blockedByStack.addNewFlag(Flag.Flags.AllMeta, true);
 		if (parse.hasOption("disableBox"))
-			blockedByStack.addNewFlag(FlagData.Flags.DisableBox, true);
+			blockedByStack.addNewFlag(Flag.Flags.DisableBox, true);
 		if (parse.hasOption("tile"))
-			blockedByStack.addNewFlag(FlagData.Flags.Tile, true);
+			blockedByStack.addNewFlag(Flag.Flags.Tile, true);
 		if (parse.hasOption("interaction"))
-			blockedByStack.addNewFlag(FlagData.Flags.Interaction, true);
+			blockedByStack.addNewFlag(Flag.Flags.Interaction, true);
 		if (parse.hasOption("useNbt")) {
 			NBTTagCompound nbtTagCompound = itemStack.writeToNBT(new NBTTagCompound());
-			blockedByStack.setNbt(Base64.encode(nbtTagCompound.toString()));
+			blockedByStack.addData(FlagData.Const.NBTData, Base64.encode(nbtTagCompound.toString()));
 		}
 
 		BlockHelper.addNewBlocked(blockedByStack);

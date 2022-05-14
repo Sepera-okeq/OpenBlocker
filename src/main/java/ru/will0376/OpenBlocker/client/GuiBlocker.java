@@ -106,7 +106,7 @@ public class GuiBlocker extends GuiScreen {
 					int nowY = 38 + ((index - 1 - startedIndex) / itemsX) * 38;
 
 					ItemStack itemStack = !blocked.NBTEmpty() ?
-							new ItemStack(JsonToNBT.getTagFromJson(Base64.decode(blocked.getNbt()))) : blocked.getStack();
+							new ItemStack(JsonToNBT.getTagFromJson(Base64.decode(blocked.getNBT()))) : blocked.getStack();
 
 					GlStateManager.pushMatrix();
 					GlStateManager.translate(nowX, nowY, 1.5F);
@@ -121,7 +121,7 @@ public class GuiBlocker extends GuiScreen {
 							list.addAll(blocked.getLore());
 							if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 								list.add(TextFormatting.BOLD + "_______________");
-								list.add("NBT: " + blocked.getNbt());
+								list.add("NBT: " + blocked.getNBT());
 							}
 							drawHoveringTexts(list, mouseX + 3, mouseY - 8, fontRenderer);
 						});

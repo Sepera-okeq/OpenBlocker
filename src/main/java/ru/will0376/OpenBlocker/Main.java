@@ -18,8 +18,6 @@ import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.CommonProxy;
 import ru.will0376.OpenBlocker.common.Config;
 import ru.will0376.OpenBlocker.common.net.ToClientBlocked;
-import ru.will0376.OpenBlocker.common.utils.FlagData;
-import ru.will0376.OpenBlocker.common.utils.FlagDataAdapter;
 import ru.will0376.OpenBlocker.common.utils.ItemStackAdapter;
 import ru.will0376.OpenBlocker.server.IO;
 import ru.will0376.OpenBlocker.server.commands.CommandMain;
@@ -47,7 +45,6 @@ public class Main {
 	public static CommonProxy proxy;
 	public static Gson gson = new GsonBuilder().setPrettyPrinting()
 			.registerTypeAdapter(ItemStack.class, new ItemStackAdapter())
-			.registerTypeAdapter(FlagData.class, new FlagDataAdapter())
 			.create();
 
 	@EventHandler

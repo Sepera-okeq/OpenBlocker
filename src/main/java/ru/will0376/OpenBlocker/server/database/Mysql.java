@@ -34,13 +34,15 @@ public class Mysql extends AbstractStorage implements AbstractStorage.IDBConnect
 	@Override
 	public String getSQLCheckTable() {
 		return "CREATE TABLE IF NOT EXISTS %s ( itemName VARCHAR(100), " + //itemstack.getname : itemstack.getmeta
-				"nbt LONGTEXT, " + "reason VARCHAR(100), " + "status VARCHAR(250), " + "data VARCHAR(250), " + "PRIMARY KEY (itemName)" + ");";
+				"nbt LONGTEXT, " + "reason VARCHAR(100), " + "status VARCHAR(250), " + "flags VARCHAR(250), " + "PRIMARY KEY " +
+				"(itemName)" + ");";
 	}
 
 	@Override
 	public String getSQLReplacedTable() {
-		return "INSERT INTO %s (itemName,nbt,reason,status,data) VALUES('%s','%s','%s','%s','%s')" + //itemName,nbt,reason,status,data
-				" ON DUPLICATE KEY UPDATE reason = reason, status = status, data = data, nbt =  concat(nbt,'|',VALUES(nbt));"; //reason,status,data,nbtob;
+		return "INSERT INTO %s (itemName,nbt,reason,status,flags) VALUES('%s','%s','%s','%s','%s')" + //itemName,nbt,reason,
+				// status,flags
+				" ON DUPLICATE KEY UPDATE reason = reason, status = status, flags = flags, nbt =  concat(nbt,'|',VALUES(nbt));"; //reason,status,flags,nbtob;
 	}
 
 	@Override

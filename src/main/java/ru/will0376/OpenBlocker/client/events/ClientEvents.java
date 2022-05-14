@@ -20,7 +20,7 @@ import ru.will0376.OpenBlocker.KeyUtils;
 import ru.will0376.OpenBlocker.client.GuiBlocker;
 import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
-import ru.will0376.OpenBlocker.common.utils.FlagData;
+import ru.will0376.OpenBlocker.common.utils.Flag;
 
 @Mod.EventBusSubscriber(value = Side.CLIENT)
 public class ClientEvents {
@@ -49,7 +49,7 @@ public class ClientEvents {
 					.getBlockState(e.getTarget().getBlockPos())
 					.getBlock() != Blocks.AIR) {
 				ItemStack is = getPickBlock(e.getPlayer().getEntityWorld(), e.getTarget().getBlockPos());
-				if (check(is, false) && !(Boolean) BlockHelper.findBlockedByStack(is).getDataFromFlag(FlagData.Flags.DisableBox))
+				if (check(is, false) && !BlockHelper.findBlockedByStack(is).getFlagData(Flag.Flags.DisableBox).getAsBoolean())
 					render(e);
 			}
 		} catch (Exception ignore) {
@@ -78,8 +78,8 @@ public class ClientEvents {
 				return true;
 			} else if (checkNonBlocks && stack.isItemEqual(is) && l.NBTEmpty()) {
 				return true;
-			} else if ((Boolean) l.getDataFromFlag(FlagData.Flags.AllMeta) && l.containStatus(Blocked.Status.Blocked) && stack.getItem()
-					.equals(is.getItem())) {
+			} else if (l.containsFlag(Flag.Flags.AllMeta) && l.getFlagData(Flag.Flags.AllMeta)
+					.getAsBoolean() && l.containStatus(Blocked.Status.Blocked) && stack.getItem().equals(is.getItem())) {
 				return true;
 			}
 		}

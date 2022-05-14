@@ -11,7 +11,7 @@ import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
-import ru.will0376.OpenBlocker.common.utils.FlagData;
+import ru.will0376.OpenBlocker.common.utils.Flag;
 
 import java.util.Arrays;
 import java.util.List;
@@ -52,8 +52,8 @@ public class LimitCommand extends CommandAbstract {
 			BlockHelper.addNewBlocked(blockedByStack);
 		}
 
-		if (!blockedByStack.containsFlag(FlagData.Flags.Limit))
-			blockedByStack.addNewFlag(FlagData.Flags.Limit, limit);
+		if (!blockedByStack.containsFlag(Flag.Flags.Limit))
+			blockedByStack.addNewFlag(Flag.Flags.Limit, limit);
 
 		if (!blockedByStack.getStatus().contains(Blocked.Status.Limit))
 			BlockHelper.addStatus(blockedByStack, Blocked.Status.Limit);

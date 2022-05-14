@@ -40,9 +40,9 @@ public enum BlockHelper {
 		for (Blocked blocked : (FMLCommonHandler.instance()
 				.getSide()
 				.isServer() ? Instance.blockedList : BlockHelperClient.blockedListClient)) {
-			if (blocked.getStatus().contains(Blocked.Status.Enchant)) {
-				if (id == blocked.getEnchantedID() && lvl == blocked.getEnchantedLVL()) return blocked;
-			}
+			if (blocked.getStatus().contains(Blocked.Status.Enchant))
+				if (id == blocked.getEnchId() && lvl == blocked.getEnchLVL())
+					return blocked;
 		}
 		return null;
 	}
@@ -126,7 +126,8 @@ public enum BlockHelper {
 		for (Blocked blocked : (FMLCommonHandler.instance()
 				.getSide()
 				.isServer() ? Instance.blockedList : BlockHelperClient.blockedListClient)) {
-			if (!blocked.NBTEmpty() && blocked.getNbt().equals(encode)) return true;
+			if (!blocked.NBTEmpty() && blocked.getNBT().equals(encode))
+				return true;
 		}
 		return false;
 	}

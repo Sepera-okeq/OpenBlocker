@@ -2,6 +2,7 @@ package ru.will0376.OpenBlocker.common.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
@@ -9,25 +10,36 @@ import lombok.extern.log4j.Log4j2;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class FlagData<T> {
-	Flags flag;
+	Const aConst;
 	T data;
+
+	public boolean getAsBoolean() {
+		return getAs(Boolean.class, false);
+	}
+
+	public int getAsInteger() {
+		return getAs(Integer.class, 0);
+	}
+
+	public String getString() {
+		return getAs(String.class, "");
+	}
+
+	public <C> C getAs(Class<C> clazz, C defaultRet) {
+		if (aConst.clazz == clazz)
+			return clazz.cast(data);
+		return defaultRet;
+	}
 
 	@Getter
 	@AllArgsConstructor
-	public enum Flags {
-		AllMeta(Boolean.class, "Учитываются все метадаты!"),
-		DisableBox(Boolean.class, ""),
-		Temp(Boolean.class, "Временно"),
-		Limit(Integer.class, "Лимитый предмет"),
-		Tile(Boolean.class, ""),
-		Interaction(Boolean.class, "Можно использовать в мире");
+	public enum Const {
+		NBTData(String.class),
+		EnchantId(Integer.class),
+		EnchantLVL(Integer.class);
 
-		public final Class<?> clazz;
-		public final String lore;
-
-		public static <T> FlagData<?> createNewByFlag(Flags flags, T data) {
-			return new FlagData<>(flags, data);
-		}
+		Class<?> clazz;
 	}
 }

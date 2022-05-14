@@ -6,6 +6,7 @@ import lombok.Getter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentTranslation;
 import ru.will0376.OpenBlocker.Main;
+import ru.will0376.OpenBlocker.common.utils.Flag;
 import ru.will0376.OpenBlocker.common.utils.FlagData;
 
 import java.util.ArrayList;
@@ -14,17 +15,45 @@ import java.util.List;
 @Data
 @Builder(toBuilder = true)
 public class Blocked implements Cloneable {
-	String nbt;
 	String reason;
 	ItemStack stack;
-	int enchantedID;
-	int enchantedLVL;
 
 	@Builder.Default
 	List<Status> status = new ArrayList<>();
 
 	@Builder.Default
+	List<Flag<?>> flags = new ArrayList<>();
+
+	@Builder.Default
 	List<FlagData<?>> data = new ArrayList<>();
+
+	public int getEnchId() {
+		return data.stream()
+				.filter(e -> e.getAConst() == FlagData.Const.EnchantId)
+				.findFirst()
+				.orElse(new FlagData<>())
+				.getAsInteger();
+	}
+
+	public int getEnchLVL() {
+		return data.stream()
+				.filter(e -> e.getAConst() == FlagData.Const.EnchantLVL)
+				.findFirst()
+				.orElse(new FlagData<>())
+				.getAsInteger();
+	}
+
+	public void addData(FlagData.Const c, Object data) {
+		this.data.add(new FlagData<>(c, data));
+	}
+
+	public String getNBT() {
+		return data.stream()
+				.filter(e -> e.getAConst() == FlagData.Const.NBTData)
+				.findFirst()
+				.orElse(new FlagData<>())
+				.getString();
+	}
 
 	public static Blocked fromJson(String in) {
 		return Main.gson.fromJson(in, Blocked.class);
@@ -39,8 +68,8 @@ public class Blocked implements Cloneable {
 		return this;
 	}
 
-	public Blocked addNewFlag(FlagData.Flags flags, Object data) {
-		this.data.add(FlagData.Flags.createNewByFlag(flags, data));
+	public Blocked addNewFlag(Flag.Flags flag, Object data) {
+		flags.add(new Flag<>(flag, data));
 		return this;
 	}
 
@@ -48,26 +77,16 @@ public class Blocked implements Cloneable {
 		return Main.gson.toJson(this);
 	}
 
-	public boolean containsFlag(FlagData.Flags flags) {
-		for (FlagData<?> datum : data) {
-			if (flags.getClazz().getSimpleName().equals(datum.getClass().getSimpleName()))
-				return true;
-		}
-		return false;
+	public Flag<?> getFlagData(Flag.Flags flag) {
+		return this.flags.stream().filter(e -> e.getFlag() == flag).findFirst().orElse(new Flag<>());
 	}
 
-	public Object getDataFromFlag(FlagData.Flags flags) {
-		for (FlagData<?> datum : data) {
-			if (flags.getClazz().isAssignableFrom(datum.getClass()))
-				return datum.getData();
-		}
-		if (flags == FlagData.Flags.AllMeta || flags == FlagData.Flags.DisableBox)
-			return false;
-		return null;
+	public boolean containsFlag(Flag.Flags flag) {
+		return this.flags.stream().anyMatch(e -> e.getFlag() == flag);
 	}
 
 	public boolean getAllMeta() {
-		return data.stream().anyMatch(e -> e.getFlag() == FlagData.Flags.AllMeta);
+		return flags.stream().anyMatch(e -> e.getFlag() == Flag.Flags.AllMeta);
 	}
 
 	public ArrayList<String> getLore() {
@@ -78,37 +97,34 @@ public class Blocked implements Cloneable {
 		for (Status statues : status)
 			if (!statues.getLore().isEmpty())
 				ret.add(statues.getLore());
-		for (FlagData<?> datum : getData()) {
-			ret.add(datum.getFlag().getLore() + (datum.getFlag() == FlagData.Flags.Limit ? " : " + datum.getData() : ""));
+
+		for (Flag<?> datum : this.getFlags()) {
+			ret.add(datum.getFlag().getLore() + (datum.getFlag() == Flag.Flags.Limit ? " : " + datum.getData() : ""));
 		}
 
 		return ret;
 	}
 
 	public boolean NBTEmpty() {
-		return getNbt() == null || getNbt().isEmpty() || getNbt().equals("null");
+		String nbt = getNBT();
+		return nbt != null && !nbt.isEmpty() && !nbt.equals("null");
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	@Getter
 	public enum Status {
 		Blocked("Заблокированно"),
 		Craft("Отключен крафт"),
-		Limit,
-		Enchant;
-
-		String lore;
-
-		Status() {
-			lore = "";
-		}
+		Limit(""),
+		Enchant("");
+		final String lore;
 
 		Status(String s) {
 			lore = s;
 		}
-	}
-
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
 	}
 }

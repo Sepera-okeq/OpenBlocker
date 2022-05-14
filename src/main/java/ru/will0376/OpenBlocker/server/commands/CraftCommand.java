@@ -11,7 +11,7 @@ import ru.justagod.cutter.GradleSideOnly;
 import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
-import ru.will0376.OpenBlocker.common.utils.FlagData;
+import ru.will0376.OpenBlocker.common.utils.Flag;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,11 +46,11 @@ public class CraftCommand extends CommandAbstract {
 			BlockHelper.addNewBlocked(blockedByStack);
 		}
 
-		if (blockedByStack.getNbt() != null && !blockedByStack.getNbt().isEmpty() && !blockedByStack.getNbt()
-				.equals("null")) blockedByStack = (Blocked) blockedByStack.clone();
+		if (blockedByStack.getNBT() != null && !blockedByStack.getNBT().isEmpty() && !blockedByStack.getNBT().equals("null"))
+			blockedByStack = (Blocked) blockedByStack.clone();
 
 		if (parse.hasOption("allMeta"))
-			blockedByStack.addNewFlag(FlagData.Flags.AllMeta, true);
+			blockedByStack.addNewFlag(Flag.Flags.AllMeta, true);
 
 		BlockHelper.addStatus(blockedByStack, Blocked.Status.Craft);
 		sender.sendMessage(new TextComponentString("Done!"));
