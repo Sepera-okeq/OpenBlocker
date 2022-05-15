@@ -1,18 +1,17 @@
 package ru.will0376.OpenBlocker.common;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentTranslation;
 import ru.will0376.OpenBlocker.Main;
+import ru.will0376.OpenBlocker.common.utils.Data;
 import ru.will0376.OpenBlocker.common.utils.Flag;
-import ru.will0376.OpenBlocker.common.utils.FlagData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@lombok.Data
 @Builder(toBuilder = true)
 public class Blocked implements Cloneable {
 	String reason;
@@ -25,34 +24,22 @@ public class Blocked implements Cloneable {
 	List<Flag<?>> flags = new ArrayList<>();
 
 	@Builder.Default
-	List<FlagData<?>> data = new ArrayList<>();
+	List<Data<?>> data = new ArrayList<>();
 
 	public int getEnchId() {
-		return data.stream()
-				.filter(e -> e.getAConst() == FlagData.Const.EnchantId)
-				.findFirst()
-				.orElse(new FlagData<>())
-				.getAsInteger();
+		return data.stream().filter(e -> e.getAConst() == Data.Const.EnchantId).findFirst().orElse(new Data<>()).getAsInteger();
 	}
 
 	public int getEnchLVL() {
-		return data.stream()
-				.filter(e -> e.getAConst() == FlagData.Const.EnchantLVL)
-				.findFirst()
-				.orElse(new FlagData<>())
-				.getAsInteger();
+		return data.stream().filter(e -> e.getAConst() == Data.Const.EnchantLVL).findFirst().orElse(new Data<>()).getAsInteger();
 	}
 
-	public void addData(FlagData.Const c, Object data) {
-		this.data.add(new FlagData<>(c, data));
+	public void addData(Data.Const c, Object data) {
+		this.data.add(new Data<>(c, data));
 	}
 
 	public String getNBT() {
-		return data.stream()
-				.filter(e -> e.getAConst() == FlagData.Const.NBTData)
-				.findFirst()
-				.orElse(new FlagData<>())
-				.getString();
+		return data.stream().filter(e -> e.getAConst() == Data.Const.NBTData).findFirst().orElse(new Data<>()).getString();
 	}
 
 	public static Blocked fromJson(String in) {

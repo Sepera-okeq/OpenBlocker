@@ -11,7 +11,7 @@ import lombok.extern.log4j.Log4j2;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FlagData<T> {
+public class Data<T> {
 	Const aConst;
 	T data;
 

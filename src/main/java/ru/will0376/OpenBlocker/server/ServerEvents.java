@@ -101,7 +101,7 @@ public class ServerEvents {
 				return false;
 		}
 
-		if (check(player, is, Main.config.isDeleteBlocked() && (!debug.contains("RightClickBlock") && !debug.contains(
+		if (checkBlocked(player, is, Main.config.isDeleteBlocked() && (!debug.contains("RightClickBlock") && !debug.contains(
 				"BreakEvent")), ChatForm.prefix + new TextComponentTranslation(translation, is.getItem()
 				.getRegistryName()
 				.toString(), is.getMetadata()).getFormattedText())) {
@@ -121,7 +121,7 @@ public class ServerEvents {
 
 		EntityPlayer player = e.player;
 		ItemStack is = e.pickedUp.getItem();
-		if (check(player, is, true, ChatForm.prefix + new TextComponentTranslation("serverevent.pickup", is.getItem()
+		if (checkBlocked(player, is, true, ChatForm.prefix + new TextComponentTranslation("serverevent.pickup", is.getItem()
 				.getRegistryName()
 				.toString(), is.getMetadata()).getFormattedText())) {
 			e.setCanceled(true);
@@ -135,11 +135,12 @@ public class ServerEvents {
 			EntityPlayer player = e.player;
 			for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 				ItemStack is = player.inventory.getStackInSlot(i);
-				check(player, is, Main.config.isDeleteBlocked(), ChatForm.prefix + new TextComponentTranslation("serverevent" +
-						".tick", is.getItem()
+				checkBlocked(player, is, Main.config.isDeleteBlocked(), ChatForm.prefix + new TextComponentTranslation(
+						"serverevent" + ".tick", is.getItem()
 						.getRegistryName()
 						.toString(), is.getMetadata()).getFormattedText());
-				checkEnchant(player, is, i);
+				if (is.isItemEnchanted())
+					checkEnchant(player, is, i);
 			}
 		}
 	}
@@ -153,28 +154,25 @@ public class ServerEvents {
 
 	public static void checkEnchant(EntityPlayer player, ItemStack is, int invStackSlot) {
 		try {
-			NBTTagList nbts = (NBTTagList) is.getTagCompound().getTag("ench");
-			if (is.isItemEnchanted()) {
-				for (NBTBase tgs : nbts) {
-					NBTTagCompound tmp = (NBTTagCompound) tgs;
-					int id = tmp.getShort("id");
-					int lvl = tmp.getShort("lvl");
-					if (BlockHelper.findBlockedByEnch(id, lvl) != null && !checkPlayer(player)) {
-						player.inventory.setInventorySlotContents(invStackSlot, removeEnchID(id, is));
-						sendToPlayerMessage(player, ChatForm.prefix + new TextComponentTranslation("serverevent.blockenchant",
-								Enchantment.getEnchantmentByID(id)
-								.getTranslatedName(lvl)).getFormattedText());
-					}
+			for (NBTBase tgs : is.getEnchantmentTagList()) {
+				NBTTagCompound tmp = (NBTTagCompound) tgs;
+				int id = tmp.getShort("id");
+				int lvl = tmp.getShort("lvl");
+				if (BlockHelper.findBlockedByEnch(id, lvl) != null && !checkPlayer(player)) {
+					player.inventory.setInventorySlotContents(invStackSlot, removeEnchID(id, is));
+					sendToPlayerMessage(player, ChatForm.prefix + new TextComponentTranslation("serverevent.blockenchant",
+							Enchantment.getEnchantmentByID(id)
+							.getTranslatedName(lvl)).getFormattedText());
 				}
 			}
 		} catch (Exception ignore) {
 		}
 	}
 
-	public static boolean check(EntityPlayer player, ItemStack is, boolean delete, String text) {
+	public static boolean checkBlocked(EntityPlayer player, ItemStack is, boolean delete, String text) {
 		Blocked blockedByStack = BlockHelper.findBlockedByStack(is);
 		if (blockedByStack != null && blockedByStack.getStatus()
-				.contains(Blocked.Status.Blocked) && !checkPlayer(player) && checkNBT(player, is)) {
+				.contains(Blocked.Status.Blocked) && !checkPlayer(player) && checkNBT(is)) {
 			if (delete) {
 				for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 					if (player.inventory.getStackInSlot(i) == is)
@@ -200,7 +198,7 @@ public class ServerEvents {
 					sendToPlayerMessage(event.getPlayer(), ChatForm.prefix + new TextComponentTranslation("serverevent" +
 							".limitevent.limitover", limit).getFormattedText());
 					if (Main.debug)
-						sendToPlayerDebugMessage(event.getPlayer(), "[DEBUG_limit] pickup check done. Canceled event.");
+						sendToPlayerDebugMessage(event.getPlayer(), "[DEBUG_limit] pickup checkBlocked done. Canceled event.");
 					event.setCanceled(true);
 				} else {
 					event.getPlayer()
@@ -213,7 +211,7 @@ public class ServerEvents {
 	}
 
 	@GradleSideOnly(GradleSide.SERVER)
-	private static boolean checkNBT(EntityPlayer player, ItemStack is) {
+	private static boolean checkNBT(ItemStack is) {
 		if (!is.hasTagCompound())
 			return true;
 		return BlockHelper.checkNBT(is.copy());

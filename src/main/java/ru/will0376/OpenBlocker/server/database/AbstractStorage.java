@@ -10,8 +10,8 @@ import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
 import ru.will0376.OpenBlocker.common.Config;
+import ru.will0376.OpenBlocker.common.utils.Data;
 import ru.will0376.OpenBlocker.common.utils.Flag;
-import ru.will0376.OpenBlocker.common.utils.FlagData;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -90,7 +90,7 @@ public abstract class AbstractStorage {
 								break;
 
 							Blocked clone = (Blocked) build.clone();
-							clone.addData(FlagData.Const.NBTData, s1);
+							clone.addData(Data.Const.NBTData, s1);
 							BlockHelper.Instance.blockedList.add(clone);
 
 							if (Main.debug)
@@ -99,7 +99,7 @@ public abstract class AbstractStorage {
 						continue;
 					} else {
 						if (!"null".equals(nbt))
-							build.addData(FlagData.Const.NBTData, nbt);
+							build.addData(Data.Const.NBTData, nbt);
 					}
 
 					BlockHelper.Instance.blockedList.add(build);

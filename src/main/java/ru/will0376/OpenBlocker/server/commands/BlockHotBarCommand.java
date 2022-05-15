@@ -11,8 +11,8 @@ import ru.will0376.OpenBlocker.Main;
 import ru.will0376.OpenBlocker.common.BlockHelper;
 import ru.will0376.OpenBlocker.common.Blocked;
 import ru.will0376.OpenBlocker.common.utils.Base64;
+import ru.will0376.OpenBlocker.common.utils.Data;
 import ru.will0376.OpenBlocker.common.utils.Flag;
-import ru.will0376.OpenBlocker.common.utils.FlagData;
 
 import java.util.Arrays;
 import java.util.List;
@@ -57,7 +57,7 @@ public class BlockHotBarCommand extends CommandAbstract {
 				blockedByStack.addNewFlag(Flag.Flags.Interaction, true);
 			if (parse.hasOption("useNbt")) {
 				NBTTagCompound nbtTagCompound = itemStack.writeToNBT(new NBTTagCompound());
-				blockedByStack.addData(FlagData.Const.NBTData, Base64.encode(nbtTagCompound.toString()));
+				blockedByStack.addData(Data.Const.NBTData, Base64.encode(nbtTagCompound.toString()));
 			}
 
 			BlockHelper.addNewBlocked(blockedByStack);
