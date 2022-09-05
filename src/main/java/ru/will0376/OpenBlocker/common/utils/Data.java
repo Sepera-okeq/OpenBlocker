@@ -28,6 +28,8 @@ public class Data<T> {
 	}
 
 	public <C> C getAs(Class<C> clazz, C defaultRet) {
+		if (aConst == null || aConst.clazz == null || clazz == null)
+			return defaultRet;
 		if (aConst.clazz == clazz)
 			return clazz.cast(data);
 		return defaultRet;
@@ -40,6 +42,6 @@ public class Data<T> {
 		EnchantId(Integer.class),
 		EnchantLVL(Integer.class);
 
-		Class<?> clazz;
+		final Class<?> clazz;
 	}
 }
